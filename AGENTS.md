@@ -42,3 +42,28 @@ Synthetic fixtures must be labelled `SYNTHETIC TEST DATA — NOT VALID FOR SCIEN
 - Do not add Kubernetes, billing, production authentication, live NIGNET integration, correction streaming, NRTK/VRS algorithms, or scientific processing during Phase 1.
 - Prefer focused dependencies and reproducible commands. Document external dependencies explicitly.
 - Scientific GNSS changes require the review and evidence described in `CONTRIBUTING.md`.
+
+---
+
+## NLGCP Technical Documentation Baseline
+
+The authoritative technical baseline is located at:
+
+    docs/technical-baseline/v1.0/
+
+Before implementing any phase, read the technical documents and ADRs
+relevant to that phase.
+
+Do not attempt to read all documentation indiscriminately. The active
+implementation prompt should identify the minimum required documents.
+
+If implementation instructions conflict with the technical baseline:
+
+1. stop the conflicting implementation;
+2. identify the conflicting documents or ADRs;
+3. report the conflict;
+4. do not silently change architecture.
+
+Architecture changes require an explicit ADR or documented superseding
+decision.
+
