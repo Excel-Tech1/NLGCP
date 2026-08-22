@@ -1,0 +1,12 @@
+.git
+.github
+.venv
+build
+**/node_modules
+**/.next
+data
+storage
+research
+tests
+.env
+*.log

@@ -1,0 +1,16 @@
+name: Bug report
+description: Report a reproducible NLGCP software defect
+title: "[Bug]: "
+body:
+  - type: textarea
+    id: description
+    attributes: {label: Description, description: What happened and what was expected?}
+    validations: {required: true}
+  - type: textarea
+    id: reproduce
+    attributes: {label: Reproduction, description: Include commands and sanitized logs. Never include credentials or restricted GNSS data.}
+    validations: {required: true}
+  - type: dropdown
+    id: review
+    attributes: {label: Area, options: [Ordinary software, GNSS infrastructure, Scientific GNSS algorithm]}
+    validations: {required: true}

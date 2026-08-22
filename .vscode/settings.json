@@ -1,0 +1,11 @@
+{
+  "editor.formatOnSave": true,
+  "files.exclude": {"**/.git": true, "**/.venv": true, "**/.next": true, "**/build": true},
+  "search.exclude": {"**/node_modules": true, "data/raw": true, "storage": true},
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.analysis.typeCheckingMode": "strict",
+  "[python]": {"editor.defaultFormatter": "ms-python.python"},
+  "[go]": {"editor.defaultFormatter": "golang.go"},
+  "[typescript]": {"editor.defaultFormatter": "esbenp.prettier-vscode"},
+  "[typescriptreact]": {"editor.defaultFormatter": "esbenp.prettier-vscode"}
+}

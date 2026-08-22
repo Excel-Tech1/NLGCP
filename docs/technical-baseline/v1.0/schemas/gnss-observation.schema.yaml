@@ -1,0 +1,18 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: GNSSObservation
+required: [station_id, epoch_gnss, arrival_time_utc, constellation, satellite, signal]
+properties:
+  station_id: {type: string}
+  epoch_gnss: {type: string, format: date-time}
+  arrival_time_utc: {type: string, format: date-time}
+  constellation: {type: string, enum: [GPS, GLO, GAL, BDS, QZSS, SBAS, NAVIC]}
+  satellite: {type: string}
+  signal: {type: string}
+  pseudorange_m: {type: [number, 'null']}
+  carrier_phase_cycles: {type: [number, 'null']}
+  doppler_hz: {type: [number, 'null']}
+  cn0_dbhz: {type: [number, 'null']}
+  lli: {type: [integer, 'null']}
+  elevation_deg: {type: [number, 'null']}
+  azimuth_deg: {type: [number, 'null']}
+  quality_flags: {type: array, items: {type: string}}

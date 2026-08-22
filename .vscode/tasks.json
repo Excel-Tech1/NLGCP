@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {"label": "Start Infrastructure", "type": "shell", "command": "make up", "problemMatcher": []},
+    {"label": "Stop Infrastructure", "type": "shell", "command": "make down", "problemMatcher": []},
+    {"label": "Run Python Tests", "type": "shell", "command": ".venv/bin/python -m pytest", "group": "test"},
+    {"label": "Run Go Tests", "type": "shell", "command": "cd services/gnss-ingestor && go test ./...", "group": "test"},
+    {"label": "Build C++ Engine", "type": "shell", "command": "cmake -S services/nrtk-engine -B build/nrtk-engine && cmake --build build/nrtk-engine", "group": "build"},
+    {"label": "Run API", "type": "shell", "command": "make api", "isBackground": true, "problemMatcher": []},
+    {"label": "Run Frontend", "type": "shell", "command": "make web", "isBackground": true, "problemMatcher": []},
+    {"label": "Run All Checks", "type": "shell", "command": "make check", "group": {"kind": "test", "isDefault": true}}
+  ]
+}
