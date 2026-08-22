@@ -5,7 +5,7 @@ Allowed statuses: Not Started, Planning, In Progress, Blocked, Testing, Validati
 | Phase | Status | Scope |
 |---|---|---|
 | Phase 0 — Documentation & Architecture | Complete | Authoritative bootstrap architecture and phase plan |
-| Phase 1 — Engineering Foundation | Testing | Repository and toolchains pass; live Compose health awaits a responsive Docker daemon |
+| Phase 1 — Engineering Foundation | Complete | Engineering foundation verified: toolchains, Compose services, health checks, GNSS tool provenance, and project-wide quality gates pass |
 | Phase 2 — Data Acquisition & Station Registry | Not Started | Approved data acquisition and authoritative station metadata |
 | Phase 3 — Single-Base RTK Baseline | Not Started | Reproducible offline baseline |
 | Phase 4 — GNSS Quality-Control Engine | Not Started | Observation and station QC |

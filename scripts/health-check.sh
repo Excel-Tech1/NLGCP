@@ -27,19 +27,17 @@ fi
 
 report_http "NATS/JetStream" "http://localhost:${NATS_MONITOR_PORT:-8222}/healthz?js-enabled-only=true"
 
-if command -v redis-cli >/dev/null 2>&1; then
-  if redis-cli -u "${REDIS_URL:-redis://localhost:6379/0}" ping 2>/dev/null | grep -q PONG; then
+if docker compose ps --status running redis 2>/dev/null | grep -q redis; then
+  if docker compose exec -T redis redis-cli ping 2>/dev/null | grep -q PONG; then
     printf '%-18s HEALTHY\n' "Redis"
   else
     printf '%-18s FAILED\n' "Redis"
     healthy=1
   fi
-elif docker compose exec -T redis redis-cli ping 2>/dev/null | grep -q PONG; then
-  printf '%-18s HEALTHY\n' "Redis"
 else
-  printf '%-18s NOT INSTALLED\n' "Redis"
+  printf '%-18s FAILED\n' "Redis"
+  healthy=1
 fi
-
 report_http "API" "http://localhost:${API_PORT:-8000}/health"
 report_http "Frontend" "http://localhost:${WEB_PORT:-3000}/"
 
