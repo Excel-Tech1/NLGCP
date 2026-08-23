@@ -49,6 +49,39 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+    environment:
+      NLGCP_DATA_ROOT: /data/nlgcp
+    volumes:
+      - type: bind
+        source: "${NLGCP_DATA_ROOT:?NLGCP_DATA_ROOT must be configured}"
+        target: /data/nlgcp
+        read_only: true
+        bind:
+          create_host_path: false
+
+      - type: bind
+        source: "${NLGCP_DATA_ROOT:?NLGCP_DATA_ROOT must be configured}/manifests"
+        target: /data/nlgcp/manifests
+        bind:
+          create_host_path: false
+
+      - type: bind
+        source: "${NLGCP_DATA_ROOT:?NLGCP_DATA_ROOT must be configured}/working"
+        target: /data/nlgcp/working
+        bind:
+          create_host_path: false
+
+      - type: bind
+        source: "${NLGCP_DATA_ROOT:?NLGCP_DATA_ROOT must be configured}/processed"
+        target: /data/nlgcp/processed
+        bind:
+          create_host_path: false
+
+      - type: bind
+        source: "${NLGCP_DATA_ROOT:?NLGCP_DATA_ROOT must be configured}/validation"
+        target: /data/nlgcp/validation
+        bind:
+          create_host_path: false
     ports:
       - "127.0.0.1:${API_PORT:-8000}:8000"
     healthcheck:
