@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "nlgcp-api"
 version = "0.1.0"
-description = "NLGCP Phase 1 control-plane API foundation"
+description = "NLGCP control-plane API and research tooling foundation"
 requires-python = ">=3.12"
 dependencies = [
   "fastapi>=0.115,<1",
@@ -24,10 +24,13 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["apps/api/src/nlgcp_api"]
+packages = [
+  "apps/api/src/nlgcp_api",
+  "research/single_base_rtk/src/nlgcp_single_base",
+]
 
 [tool.pytest.ini_options]
-testpaths = ["apps/api/tests"]
+testpaths = ["apps/api/tests", "research/single_base_rtk/tests"]
 
 [tool.ruff]
 target-version = "py312"
@@ -39,4 +42,10 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["apps/api/src", "apps/api/tests"]
+files = [
+  "apps/api/src",
+  "apps/api/tests",
+  "research/single_base_rtk/src",
+  "research/single_base_rtk/tests",
+  "scripts/run_single_base_rtk.py",
+]
