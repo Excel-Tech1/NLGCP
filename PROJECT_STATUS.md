@@ -7,7 +7,7 @@ Allowed statuses: Not Started, Planning, In Progress, Blocked, Testing, Validati
 | Phase 0 — Documentation & Architecture | Complete | Authoritative bootstrap architecture and phase plan |
 | Phase 1 — Engineering Foundation | Complete | Engineering foundation verified: toolchains, Compose services, health checks, GNSS tool provenance, and project-wide quality gates pass |
 | Phase 2 — Data Acquisition & Station Registry | Not Started | Approved data acquisition and authoritative station metadata |
-| Phase 3 — Single-Base RTK Baseline | In Progress | Reproducible offline baseline engineering scaffold; real scientific execution blocked pending Phase 2 verified inputs |
+| Phase 3 — Single-Base RTK Baseline | Validation | Reproducible offline single-base RTK baseline; real scientific execution completed for DOY 2024/026 (ABFC base, 3 float-only baselines) with recorded evidence, figures, tables, and validation report; fixed-ambiguity demonstration is a documented follow-on |
 | Phase 4 — GNSS Quality-Control Engine | Not Started | Observation and station QC |
 | Phase 5 — Offline NRTK Engine | Not Started | Network processing research |
 | Phase 6 — Atmospheric & Spatial Error Model | Not Started | Validated error models |

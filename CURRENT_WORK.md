@@ -6,11 +6,11 @@ Phase 3 — Single-Base RTK Baseline
 
 ## Current Milestone
 
-Phase 3 Engineering Scaffold
+Phase 3 Real Scientific Benchmark Execution and Reporting
 
 ## Status
 
-Testing
+Validation
 
 ## Completed
 
@@ -49,18 +49,28 @@ Testing
   - material-input fingerprints prevent accidental experiment-id overwrite with different inputs;
   - NLGCP commit and dirty working-tree status are recorded in experiment manifests.
 
+- Input SHA-256s wired through the pipeline (observation per-station, navigation broadcast) and enforced from the conversion manifest via the scientific execution gate.
+- Real Phase 3 scientific benchmark executed for DOY 2024/026 with ABFC (ABFC00NGA) as base on all three ≥400 km baselines using source-verified RTKLIB `rnx2rtkp v2.4.2-p13`:
+  - PHRI — 470.870 km, 100% availability, 2880 epochs, 6 sats, FLOAT-only, horiz RMSE 1.093 m / 3D 1.664 m / vert 1.254 m.
+  - EKAK — 487.636 km, 100% availability, 2880 epochs, 6 sats, FLOAT-only, horiz RMSE 1.255 m / 3D 2.247 m / vert 1.864 m.
+  - MGBO — 689.687 km, 100% availability, 2880 epochs, 6 sats, FLOAT-only, horiz RMSE 1.377 m / 3D 1.646 m / vert 0.901 m.
+  - All three baselines were FLOAT-only (fix_rate 0.0); long-baseline ambiguity resolution did not converge, so no fixed-ambiguity accuracy is claimed.
+- Experiment manifests record recorded/observed SHA-256 matches for all inputs plus config/material fingerprints, execution status, NLGCP commit, and dirty-tree state.
+- Analysis finalised: baseline metrics and per-baseline aggregates written to `processed/single-base/_phase3-summary/`.
+- Deliverables generated under `processed/single-base/`: 14 figures, tables (CSV/JSON/Markdown), `validation/reports/phase3-validation-report.md`, and `validation/reports/phase3-thesis-evidence.md`.
+- `make check` Python portion green for the implementation: Ruff, mypy (30 source files, strict), pytest (46 passed), and the single-base test suite.
+
 ## In Progress
 
-- Phase 3 handoff review after hardening.
+- Phase 3 validation-review wrap-up and milestone commit.
 
 ## Not Started
 
-- Verified Phase 2 data acquisition and authoritative station registry.
-- Real Phase 3 scientific benchmark execution.
+- Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry).
 
 ## Blocked
 
-Real Phase 3 scientific execution is blocked until Phase 2 input gate evidence exists.
+None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) result on these ≥400 km baselines is limited by network geometry and not attempted here; that is a documented follow-on, not a defect in this baseline.
 
 ## Known Issues
 
@@ -81,12 +91,12 @@ Real Phase 3 scientific execution is blocked until Phase 2 input gate evidence e
 
 ## Next Action
 
-Continue with Phase 2 data acquisition/station registry before attempting real Phase 3 scientific execution. Use the Phase 3 dry-run path only for engineering smoke tests until the input gate is satisfied.
+Close out the Phase 3 real-benchmark milestone: commit the implementation, deliverables, and handoff. Review the FLOAT-only limitation on ≥400 km baselines as a follow-on and decide whether a shorter-baseline fixed-ambiguity demonstration is needed before proceeding to Phase 4.
 
 ## Last Verified Commit
 
-Current Phase 3 base: `791a2dd`.
+Pending milestone commit on `phase3/single-base-scaffold` (base merged at `2fea34a`).
 
 ## Last Updated
 
-2026-08-23
+2026-09-04
