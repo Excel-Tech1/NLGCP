@@ -60,17 +60,28 @@ Validation
 - Deliverables generated under `processed/single-base/`: 14 figures, tables (CSV/JSON/Markdown), `validation/reports/phase3-validation-report.md`, and `validation/reports/phase3-thesis-evidence.md`.
 - `make check` Python portion green for the implementation: Ruff, mypy (30 source files, strict), pytest (46 passed), and the single-base test suite.
 
+### Follow-on shorter-baseline control sprint (on `phase3/single-base-scaffold`)
+
+- Verified-baseline matrix logic added to `src/nlgcp_single_base/control.py` (pure/testable): eligibility filtering by `scientifically_valid` + verified ECEF, unordered-pair matrix, shortest-available selection, distance ranking, `control_shortest_available`/`milestone_long_baseline` source tagging, faithful comparison-row assembly that never coerces an unattained FIX into a TTFF value.
+- Only 4 of 8 stations are scientifically valid with verified IGS20/PRIDE coords (ABFC, EKAK, MGBO, PHRI); BKFP invalid, UNEC/FUTY/ULAG no coordinate entry. Six eligible unordered pairs; shortest available = **EKAK-PHRI 105.553 km**.
+- Ran the control experiment EKAK->PHRI (105.553 km) on DOY 2024/026 with the identical RTKLIB `rnx2rtkp v2.4.2-p13` configuration: `execution_status=complete`, gates open, rc=0 (29.6 s), 2880/2880 epochs, 100% availability, **FLOAT-only (fix_rate 0.0, TTFF not achieved)**, horiz RMSE 0.968 m, vert RMSE 0.584 m, 3D RMSE 1.130 m.
+- Control shows materially better accuracy than the 470-690 km baselines (horiz 0.968 vs 1.09-1.38 m; vert 0.584 vs 0.90-1.86 m) while confirming FLOAT-only persists even at the shortest verified baseline: the FLOAT-only outcome is a property of the single-base broadcast-ephemeris configuration across the verified range, not an artefact of the very-long baselines.
+- Multi-day extension is a **hard limitation**: only DOY 026 has converted sessions + broadcast nav in the real-data enclave; no other day was converted (documented, not substituted).
+- Comparative deliverables regenerated from stored manifests under `processed/single-base/`: `tables/{baseline-matrix,baseline-comparison,rmse-comparison,fix-float-comparison,blocked-experiments}.*`, `_phase3-summary/followon-comparison.json`, and figures `fig{3,4,5,6,7,8}*` plus `sb-2024d026-ekak-phri-static-{status-timeline,enu-residuals}.png`.
+- `validation/reports/phase3-validation-report.md` extended with **Addendum A — Shorter-Baseline Control Experiment**; original milestone sections 1-25 unchanged.
+- Added `tests/test_control.py` (10 tests) covering matrix/eligibility/ranking/tagging/FLOAT-preservation; `make check` Python portion green: Ruff (all checks passed), mypy (32 source files, strict), pytest (50 passed).
+
 ## In Progress
 
-- Phase 3 validation-review wrap-up and milestone commit.
+- Phase 3 follow-on validation push and closure on `phase3/single-base-scaffold`.
 
 ## Not Started
 
-- Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry).
+- Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry; the 105 km control remains FLOAT-only, confirming the reference-geometry constraint on this dataset).
 
 ## Blocked
 
-None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) result on these ≥400 km baselines is limited by network geometry and not attempted here; that is a documented follow-on, not a defect in this baseline.
+None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) result on these ≥400 km baselines is limited by network geometry and not attempted here; that is a documented follow-on, not a defect in this baseline. Multi-day extension is a hard limitation: only DOY 026 has converted sessions + broadcast nav in the real-data enclave.
 
 ## Known Issues
 
@@ -91,11 +102,11 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Close out the Phase 3 real-benchmark milestone: commit the implementation, deliverables, and handoff. Review the FLOAT-only limitation on ≥400 km baselines as a follow-on and decide whether a shorter-baseline fixed-ambiguity demonstration is needed before proceeding to Phase 4.
+Close out the Phase 3 follow-on: commit the control implementation, deliverables, and handoff; push `phase3/single-base-scaffold`; do not merge into main. The FLOAT-only outcome at 105 km (shortest verified baseline) reinforces the documented limitation and the network-RTK/VRS rationale for Phase 4.
 
 ## Last Verified Commit
 
-Pending milestone commit on `phase3/single-base-scaffold` (base merged at `2fea34a`).
+On `phase3/single-base-scaffold`: milestone `43c87ba` complete, long-baseline benchmark; follow-on control (EKAK->PHRI 105 km, FLOAT-only, horiz RMSE 0.968 m) run and analysed; `make check` Python portion green (Ruff, mypy 32 files, pytest 50 passed). Pending the final follow-on commit + push.
 
 ## Last Updated
 
