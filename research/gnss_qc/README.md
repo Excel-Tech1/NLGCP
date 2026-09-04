@@ -29,6 +29,8 @@ python scripts/run_gnss_qc.py summarize --profile network_rtk
 
 The default dataset command evaluates all three profiles in one RINEX parse pass. `--stream-only` avoids retaining conversions. The normal mode writes derivative `.24D` and `.24O` files under `working/qc-converted/`; immutable `raw/` and `00-deliveries/` are never changed.
 
+Dataset commands default to four independent session workers. Use `--workers 1` for strictly sequential execution or a smaller value on a constrained host. Each worker streams only one session, and each session writes to its own deterministic directory.
+
 Results are profile-separated under:
 
 ```text

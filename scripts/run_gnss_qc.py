@@ -31,6 +31,12 @@ def parser() -> argparse.ArgumentParser:
         command.add_argument("--profiles", nargs="+", default=DEFAULT_PROFILES)
         command.add_argument("--dry-run", action="store_true")
         command.add_argument(
+            "--workers",
+            type=int,
+            default=4,
+            help="Independent session workers (default: 4)",
+        )
+        command.add_argument(
             "--stream-only",
             action="store_true",
             help="Analyse through a conversion pipe without retaining converted observations",
@@ -76,7 +82,13 @@ def main() -> int:
             )
         )
         return 0
-    rows = run_dataset(data_root, sessions, profiles, convert=not args.stream_only)
+    rows = run_dataset(
+        data_root,
+        sessions,
+        profiles,
+        convert=not args.stream_only,
+        workers=args.workers,
+    )
     counts: dict[str, dict[str, int]] = {}
     for row in rows:
         profile = row["qc_profile"]["name"]

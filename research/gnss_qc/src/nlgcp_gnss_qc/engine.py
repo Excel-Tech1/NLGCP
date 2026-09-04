@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import tempfile
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -126,6 +127,7 @@ def run_dataset(
     *,
     convert: bool = True,
     progress_every: int = 25,
+    workers: int = 1,
 ) -> list[dict[str, Any]]:
     """Process sessions independently so one bad file cannot terminate a batch."""
 
@@ -134,7 +136,10 @@ def run_dataset(
     provenance = git_provenance(Path.cwd())
     results: list[dict[str, Any]] = []
     unexpected = 0
-    for index, session in enumerate(sessions, start=1):
+    if workers < 1:
+        raise QCExecutionError("workers must be at least 1")
+
+    def execute(session: SessionInput) -> tuple[list[dict[str, Any]], bool]:
         try:
             rows = process_session(
                 data_root,
@@ -145,15 +150,24 @@ def run_dataset(
                 provenance=provenance,
                 convert=convert,
             )
+            return rows, False
         except Exception as exc:  # batch isolation is intentional; details are persisted
-            unexpected += 1
-            rows = _failure_results(data_root, session, profiles, provenance, exc, convert)
-        results.extend(rows)
-        if progress_every > 0 and (index % progress_every == 0 or index == len(sessions)):
-            print(
-                f"QC progress: {index}/{len(sessions)} sessions; unexpected_failures={unexpected}",
-                flush=True,
+            return (
+                _failure_results(data_root, session, profiles, provenance, exc, convert),
+                True,
             )
+
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="nlgcp-qc") as executor:
+        completed = executor.map(execute, sessions)
+        for index, (rows, failed) in enumerate(completed, start=1):
+            unexpected += int(failed)
+            results.extend(rows)
+            if progress_every > 0 and (index % progress_every == 0 or index == len(sessions)):
+                print(
+                    f"QC progress: {index}/{len(sessions)} sessions; "
+                    f"unexpected_failures={unexpected}; workers={workers}",
+                    flush=True,
+                )
     return results
 
 

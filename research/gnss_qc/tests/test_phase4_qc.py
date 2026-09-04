@@ -449,6 +449,42 @@ def test_verified_conversion_is_resumable(tmp_path: Path, monkeypatch: pytest.Mo
     assert second.converted_sha256 == first.converted_sha256
 
 
+def test_parallel_batch_isolates_unexpected_session_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    sessions = [
+        SessionInput("ABFC00NGA", 2024, doy, f"raw/{doy}", "delivery/x", "hash", 1)
+        for doy in (1, 2, 3)
+    ]
+    profile = load_profiles()["archive"]
+    monkeypatch.setattr(qc_engine, "inventory_navigation_products", lambda _root: [])
+    monkeypatch.setattr(qc_engine, "load_coordinate_eligibility", lambda _root: {})
+    monkeypatch.setattr(
+        qc_engine,
+        "git_provenance",
+        lambda _root: {"git_commit": "test", "implementation_sha256": "test"},
+    )
+
+    def fake_process(*args: object, **kwargs: object) -> list[dict[str, object]]:
+        item = args[1]
+        assert isinstance(item, SessionInput)
+        if item.day_of_year == 2:
+            raise RuntimeError("synthetic isolated failure")
+        return [
+            {
+                "qc_profile": {"name": "archive"},
+                "overall_classification": "ACCEPT",
+            }
+        ]
+
+    monkeypatch.setattr(qc_engine, "process_session", fake_process)
+    rows = qc_engine.run_dataset(
+        tmp_path, sessions, [profile], convert=False, progress_every=0, workers=3
+    )
+    assert len(rows) == 3
+    assert sum(row["overall_classification"] == "REJECT" for row in rows) == 1
+
+
 def _navigation() -> NavigationProduct:
     return NavigationProduct(
         product_type="broadcast_navigation",
