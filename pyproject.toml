@@ -17,7 +17,9 @@ dependencies = [
 dev = [
   "alembic>=1.14,<2",
   "httpx>=0.28,<1",
+  "matplotlib>=3.9,<4",
   "mypy>=1.14,<2",
+  "numpy>=2,<3",
   "psycopg[binary]>=3.2,<4",
   "pytest>=8.3,<9",
   "ruff>=0.9,<1",
@@ -26,11 +28,16 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = [
   "apps/api/src/nlgcp_api",
+  "research/gnss_qc/src/nlgcp_gnss_qc",
   "research/single_base_rtk/src/nlgcp_single_base",
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["apps/api/tests", "research/single_base_rtk/tests"]
+testpaths = [
+  "apps/api/tests",
+  "research/gnss_qc/tests",
+  "research/single_base_rtk/tests",
+]
 
 [tool.ruff]
 target-version = "py312"
@@ -39,13 +46,20 @@ line-length = 100
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
 
+[tool.ruff.lint.per-file-ignores]
+# Scientific Markdown/SVG source strings are intentionally kept readable as output text.
+"research/gnss_qc/src/nlgcp_gnss_qc/aggregate.py" = ["E501"]
+
 [tool.mypy]
 python_version = "3.12"
 strict = true
 files = [
   "apps/api/src",
   "apps/api/tests",
+  "research/gnss_qc/src",
+  "research/gnss_qc/tests",
   "research/single_base_rtk/src",
   "research/single_base_rtk/tests",
+  "scripts/run_gnss_qc.py",
   "scripts/run_single_base_rtk.py",
 ]

@@ -1,0 +1,44 @@
+{
+  "profile_set_version": "1.0",
+  "status": "PROVISIONAL — calibration against reviewed Nigerian field evidence is required",
+  "basis": [
+    "The 2024 delivery is nominally daily at 30-second sampling, as measured in Phase 2.",
+    "Phase 3 requested complete daily sessions and required broadcast navigation plus verified coordinates.",
+    "No C/N0, satellite-count, residual, or cycle-slip rejection threshold is asserted in this version."
+  ],
+  "profiles": {
+    "archive": {
+      "expected_interval_seconds": null,
+      "sampling_tolerance_seconds": 0.001,
+      "accept_completeness_fraction": 1.0,
+      "reject_below_completeness_fraction": 0.0,
+      "maximum_warn_gap_seconds": 86400.0,
+      "require_dual_frequency_phase": false,
+      "require_navigation": false,
+      "require_verified_coordinates": false,
+      "warn_on_partial_session": true
+    },
+    "single_base_rtk": {
+      "expected_interval_seconds": 30.0,
+      "sampling_tolerance_seconds": 0.001,
+      "accept_completeness_fraction": 0.99,
+      "reject_below_completeness_fraction": 0.75,
+      "maximum_warn_gap_seconds": 300.0,
+      "require_dual_frequency_phase": true,
+      "require_navigation": true,
+      "require_verified_coordinates": true,
+      "warn_on_partial_session": true
+    },
+    "network_rtk": {
+      "expected_interval_seconds": 30.0,
+      "sampling_tolerance_seconds": 0.001,
+      "accept_completeness_fraction": 0.99,
+      "reject_below_completeness_fraction": 0.75,
+      "maximum_warn_gap_seconds": 300.0,
+      "require_dual_frequency_phase": true,
+      "require_navigation": true,
+      "require_verified_coordinates": true,
+      "warn_on_partial_session": true
+    }
+  }
+}
