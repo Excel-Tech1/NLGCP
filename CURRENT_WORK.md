@@ -2,11 +2,11 @@
 
 ## Active Phase
 
-Phase 1 — Engineering Foundation
+Phase 2 - Data Acquisition & Station Registry
 
 ## Current Milestone
 
-Phase 1 Closure
+P2-S3 - Manifest and File Integrity
 
 ## Status
 
@@ -14,59 +14,64 @@ Complete
 
 ## Completed
 
-- Repository governance, documentation index, data policy, VS Code, CI, security, and handoff foundations established.
-- FastAPI, Go, mixed C/C++, and Next.js foundations created and verified.
-- PostgreSQL/PostGIS, NATS JetStream, Redis, API, and web services are running and healthy under Docker Compose.
-- PostgreSQL/PostGIS health verified from the NLGCP Compose service.
-- NATS JetStream health verified.
-- Redis health verification corrected to target the NLGCP Compose service rather than the host Redis instance.
-- API and frontend runtime health verified.
-- Host port defaults aligned to avoid conflicts with existing system PostgreSQL and Redis services:
-  - PostgreSQL: 15432
-  - Redis: 16379
-- `make health` passes for PostgreSQL/PostGIS, NATS/JetStream, Redis, API, Frontend, RTKLIB, and PRIDE PPP-AR.
-- `make check` passes Ruff, mypy, pytest, Go formatting/vet/tests, CMake/CTest, ESLint, TypeScript, and Next.js production build.
-- RTKLIB provenance resolved to the official RTKLIB repository, tag `v2.4.2-p13`, commit `71db0ffa0d9735697c6adfd06fdf766d0e5ce807`; installed `rnx2rtkp` matches the source-tree build by SHA-256.
-- PRIDE PPP-AR 3.2.8 provenance resolved to the official PrideLab repository at commit `4907bfe5ba1e9d9faf90414fcf7a2bed5ad44695`.
-- PRIDE core `src/` contains no tracked modifications.
-- Installed PRIDE compiled binaries match the source-tree `bin/` binaries by SHA-256.
-- Installed `pdp3` wrapper exactly matches `scripts/pdp3.sh`.
-- PRIDE runtime table updates were identified and hashed separately for reproducibility.
+- Phase 1 engineering foundation is complete at commit `b2a2097`.
+- Phase 2 PostgreSQL/PostGIS station registry foundation exists.
+- Provider metadata provenance migration `5d50ff0e583d` is implemented with:
+  - `providers.metadata_source_id`;
+  - `metadata_sources.source_path`;
+  - deterministic source identity uniqueness for importer idempotency.
+- Provenance-controlled station metadata importer package implemented under `apps/api/src/nlgcp_api/station_metadata/`.
+- Import validation rejects unsupported schemas, unknown source keys, unsafe source paths, partial coordinates, invalid intervals, overlapping histories, and equipment rows without receiver/antenna facts.
+- Provenance resolution verifies source files under `NLGCP_DATA_ROOT`, computes SHA256, and fails closed on checksum mismatch.
+- Database repository performs transactional imports, idempotent exact re-runs, and conflict detection without overwriting authoritative metadata.
+- CLI entrypoint implemented at `scripts/phase2/import_station_metadata.py`.
+- Automated tests use synthetic fixture material only and do not insert real stations.
+- Report-only RINEX inventory tooling implemented under `apps/api/src/nlgcp_api/rinex_inventory.py`.
+- RINEX discovery recursively scans configurable `NLGCP_DATA_ROOT`, identifies observation/navigation candidates, reports vault-relative paths, station markers where determinable, RINEX version, file type, compression, file size, observation date, first/last epoch, approximate sampling interval, SHA256, parser status, warnings, and errors.
+- Plain text and gzip RINEX files are parsed; known but unsupported compression such as Unix `.Z` is reported as `not_parsed` without modifying files.
+- Deterministic JSON inventory writing implemented for `manifests/rinex-inventory.json`.
+- CLI entrypoint implemented at `scripts/phase2/discover_rinex_inventory.py`.
+- Deterministic scientific-data manifest tooling implemented under `apps/api/src/nlgcp_api/data_manifest.py`.
+- Manifest records vault-relative paths, filenames, file sizes, UTC modified timestamps, SHA256 checksums, artifact types, parser statuses, warnings, and errors.
+- Duplicate checksum detection and case-normalized conflicting-path detection are implemented.
+- Malformed/error artifact reporting is included without moving or deleting files.
+- CLI entrypoint implemented at `scripts/phase2/build_data_manifest.py`; default behavior is report-only and excludes the output manifest itself for rerun idempotency.
 
 ## In Progress
 
-- Phase 1 closure commit.
+- None.
 
 ## Not Started
 
-- Phase 2 — Data Acquisition & Station Registry.
-- Scientific GNSS implementation beyond the engineering foundation.
+- P2-S4 - GNSS Dataset QC Tooling.
+- Real station metadata import.
+- Scientific GNSS processing or Phase 3 RTK experiments.
 
 ## Blocked
 
-None for Phase 1.
+None for P2-S1, P2-S2, or P2-S3.
 
 ## Known Issues
 
 - Native Next.js SWC terminates with `Bus error` on this host; the verified production build currently uses the Next.js WASM compiler workaround.
-- ESLint 9 is required by the current Next.js lint plugin chain but npm reports that major as unsupported; npm audit reports zero known vulnerabilities.
+- ESLint 9 is required by the current Next.js lint plugin chain but npm reports that major as unsupported; npm audit previously reported zero known vulnerabilities.
 - PRIDE runtime tables may update independently of the pinned application source and therefore must be recorded with experiment provenance.
 
 ## Decisions Made
 
-- Bootstrap remains in the existing `NLGCP` directory.
-- GNSS tools remain external to the repository but must have pinned provenance recorded.
-- Raw scientific GNSS data will remain outside Git and immutable.
-- Phase completion remains evidence-based; compilation alone is not scientific validation.
+- Raw scientific GNSS data remains outside Git and immutable.
+- Unknown station metadata remains null/omitted rather than inferred.
+- Re-imports are idempotent only when the package exactly matches existing authoritative records; conflicting records fail closed for operator review.
+- Synthetic station metadata remains limited to automated tests and disposable environments.
 
 ## Next Action
 
-Record final Phase 1 evidence, commit the verified engineering foundation changes, then proceed to Phase 2 — Data Acquisition & Station Registry. Do not begin Phase 3 automatically.
+Start P2-S4 - GNSS Dataset QC Tooling. Build historical RINEX QC reporting with explicit unknown/not-computable states and synthetic fixtures only.
 
 ## Last Verified Commit
 
-Current pre-closure HEAD: `a3371e7`.
+Current HEAD: `b2a2097`.
 
 ## Last Updated
 
-2026-08-22
+2026-08-24

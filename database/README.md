@@ -38,6 +38,16 @@ It creates:
 - `station_coordinates`
 - `station_equipment`
 
+The Phase 2 provider provenance migration is:
+
+`5d50ff0e583d`
+
+It adds:
+
+- `metadata_sources.source_path`
+- deterministic source identity uniqueness for importer idempotency
+- `providers.metadata_source_id`
+
 Station coordinates and equipment are stored as effective-dated historical records. Unknown scientific metadata must remain NULL rather than being fabricated.
 
 Large GNSS observation files do not belong in PostgreSQL. They remain in the external data vault referenced by `NLGCP_DATA_ROOT`. PostgreSQL stores structured metadata, provenance, catalogue information, quality-control state, and relationships.
