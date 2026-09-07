@@ -2,17 +2,17 @@
 
 ## Active Phase
 
-Phase 5 — Offline Network RTK Engine (`phase5/offline-network-rtk`)
+Phase 5 — Offline Network RTK Engine (merged to `main`; Phase 6 not started)
 
 ## Current Milestone
 
-Phase 5 Offline Network RTK Framework and Real-Data Pilot (DOY 2024/026)
+Phase 5 Integration and Main Merge Closure
 
 ## Status
 
-Validation (Phase 4 engineering + 2024 dataset validation COMPLETE with
-provisional calibration; Phase 5 framework + real pilot COMPLETE on branch,
-merge to `main` pending)
+Complete (Phase 4 engineering + 2024 dataset validation COMPLETE with
+provisional calibration; Phase 5 engineering + real pilot COMPLETE on `main`;
+scientific scope representative DOY 026 only)
 
 ## Completed (Phase 5)
 
@@ -113,10 +113,23 @@ merge to `main` pending)
 
 ## In Progress
 
-- Phase 5 integration: latest `main` (Phase 4 closure `345646d`) merged into
-  `phase5/offline-network-rtk`; re-verify tests and `make check`, then merge
-  Phase 5 into `main`. Phase 6 readiness assessment (residual dataset
-  available, no atmospheric modelling started).
+- Phase 6 Atmospheric & Spatial Error Model sprint preparation (not started;
+  residual dataset from Phase 5 pilot available as input).
+
+## Phase 5 Integration Record (2026-09-07)
+
+- Merged latest `main` (Phase 4 closure `345646d`) into
+  `phase5/offline-network-rtk` (merge `9c47203`; Phase 5 commit `8976de3`
+  retained unamended): Phase 4 closure code, README, and closure evidence
+  preserved; Phase 5 implementation, pilot definition, and pilot evidence
+  preserved; status docs reconciled.
+- Merged `phase5/offline-network-rtk` into `main` with `git merge --no-ff`
+  (merge `9a2d870`); post-merge `make check` green on `main`.
+- Final authoritative state: Phase 4 engineering COMPLETE, Phase 4 2024
+  validation COMPLETE, Phase 4 scientific thresholds PROVISIONAL;
+  Phase 5 engineering COMPLETE, Phase 5 real-data pilot COMPLETE,
+  Phase 5 scientific scope representative DOY 026 only (no general NRTK
+  improvement proven or claimed).
 
 ## Phase 4 Validation Closure (2026-09-07)
 
@@ -167,11 +180,8 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Re-verify the integrated branch (`make check` on
-`phase5/offline-network-rtk`), then merge Phase 5 into `main` with
-`git merge --no-ff`. Do not begin Phase 6 atmospheric modelling or VRS
-generation. Phase 5 admission stays ACCEPT-only (WARN requires review;
-REJECT/BLOCKED excluded).
+Prepare the Phase 6 Atmospheric & Spatial Error Model sprint. Do not begin
+atmospheric modelling or VRS generation in this task.
 
 ## Consolidation Record (2026-09-07)
 
@@ -183,10 +193,10 @@ REJECT/BLOCKED excluded).
 
 ## Last Verified Commit
 
-Integrated `main` Phase 4 closure `345646d` into `phase5/offline-network-rtk`
-(Phase 5 commit `8976de3` retained unamended); pilot
-`net-2024d026-phri-rover` outputs preserved; post-integration `make check`
-pending at time of writing (see Next Action).
+`main` merge `9a2d870` (Merge Phase 5 offline network RTK) atop Phase 4
+closure `345646d` and Phase 5 commits `8976de3` + integration `9c47203`;
+pilot `net-2024d026-phri-rover` outputs preserved; post-merge `make check`
+green (see EVIDENCE_INDEX).
 
 ## Last Updated
 
