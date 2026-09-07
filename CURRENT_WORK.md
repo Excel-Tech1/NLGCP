@@ -2,17 +2,80 @@
 
 ## Active Phase
 
-Phase 5 — Offline Network RTK Engine (merged to `main`; Phase 6 not started)
+Phase 6 — Atmospheric & Spatial Error Model (implemented on
+`phase6/atmospheric-spatial-error-model`; real DOY 026 pilot COMPLETE)
 
 ## Current Milestone
 
-Phase 5 Integration and Main Merge Closure
+Phase 6 Implementation and Real-Data Pilot
 
 ## Status
 
-Complete (Phase 4 engineering + 2024 dataset validation COMPLETE with
-provisional calibration; Phase 5 engineering + real pilot COMPLETE on `main`;
-scientific scope representative DOY 026 only)
+Engineering + real pilot COMPLETE (Phase 4 engineering + 2024 dataset
+validation COMPLETE with provisional calibration; Phase 5 engineering +
+real pilot COMPLETE; scientific scope representative DOY 026 only)
+
+## Completed (Phase 6)
+
+- Atmospheric/spatial modelling package added under
+  `research/atmospheric_spatial_model` (`nlgcp_atmospheric_model`:
+  models, observations, combinations, satellite_geometry, ionosphere,
+  troposphere, spatial, interpolation, validation, metrics, provenance,
+  pipeline, reporting) reusing Phase 5 admission/geometry and Phase 4 QC
+  fingerprints without duplication; documented observation model in
+  `docs/phase6-atmospheric-spatial-model.md` (code/carrier equations,
+  single/double differences, GPS L1/L2 geometry-free combination with
+  IS-GPS-200 frequencies, Saastamoinen/Niell troposphere, symbols, units,
+  IGS20 frame, GPST/UTC conventions, limitations, references).
+- Fail-closed admission requires the Phase 5 experiment admission
+  (ACCEPT-only stations), verified IGS20 coordinates, and present RINEX
+  files; RTKLIB `.pos` satellite fields declared unavailable with the
+  reason recorded — satellite observables are extracted from RINEX 2.11
+  observation files with exact line-consumption parsing (blank lines
+  inside satellite blocks are structural; regression-tested).
+- Deterministic observable discovery (per-station codes/constellations/
+  satellites/epochs, common codes, GPS L1/L2 compatibility) and the
+  common-epoch/common-satellite engine with per-epoch statistics (no
+  interpolation across missing observations).
+- GPS broadcast-geometry layer (RINEX 3 merged BRDC, IS-GPS-200 Kepler,
+  recorded nav hash, fail-closed non-GPS/missing records) and the
+  standard-atmosphere tropospheric a priori chain (Berg/Saastamoinen/
+  Niell, labelled not measured meteorology).
+- Arc-detrended geometry-free SD proxies with stride-aware gap handling
+  (gaps open new arcs, never rejoin), LLI-change segmentation (static
+  PHRI L2 LLI=4 converter annotation documented with full-cycle
+  evidence), and 0.5 m GF-jump protection; datum-anchored spatial
+  records (datum self-differences identically zero); target-fit
+  reference sets exclude the target (no leakage).
+- Interpolation candidates zero/nearest/IDW/planar with method minimums
+  (no kriging: 3 references cannot support it) and extrapolation flags;
+  identical-sample LOOCV over all 4 rotations with bias/MAE/RMSE/std/
+  correlation/coverage; pilot RMS-vs-distance decorrelation labelled
+  representative-only.
+- CLI `scripts/run_atmospheric_model.py` (`inspect`, `plan`, `derive`,
+  `fit`, `validate`, `summarize`) with dry-run support and
+  machine-readable output; fingerprint-gated resumability; tables
+  (baseline matrix, LOOCV summary, decorrelation), figures
+  (LOOCV RMSE, decorrelation, common-satellite availability), and
+  cross-experiment summary CSVs.
+- 76 synthetic-only Phase 6 tests (parsing incl. blank-line alignment,
+  common selection, GF reference values, arc rules, geometry, tropo,
+  interpolation, LOOCV, provenance, pipeline admission, reporting);
+  `pyproject.toml` registers the new package, tests, and script.
+- Real pilot `atm-2024d026-phri-target` (stride 6, 180 s): derive
+  COMPLETE (480 common epochs; median 16 common sats, 9 GPS L1/L2;
+  100% usable; pair-SD RMS 4.18 m over ±25 m; tropo 20848 terms),
+  fit COMPLETE (21656 predictions, 21095 fitted), validate COMPLETE
+  (17768 identical samples; zero RMSE 2.984 m beats IDW 3.546,
+  nearest 4.004, planar 15.300; decorrelation slope 0.59 mm/km,
+  corr 0.48, pilot-only). Nearest-reference non-improvement and the
+  zero-control win are reported, not hidden. Evidence in
+  `research/atmospheric_spatial_model/PILOT_EVIDENCE.md`; outputs under
+  `${NLGCP_DATA_ROOT}/processed/atmospheric-model/` (outside Git).
+- Six implementation defects found by the real pilot and fixed with
+  regression tests (parser alignment, stride-aware arcs, gap/LLI rules,
+  fit leakage, datum anchoring, identical-sample ranking); buggy-run
+  products deleted and regenerated under new fingerprints.
 
 ## Completed (Phase 5)
 
@@ -113,8 +176,8 @@ scientific scope representative DOY 026 only)
 
 ## In Progress
 
-- Phase 6 Atmospheric & Spatial Error Model sprint preparation (not started;
-  residual dataset from Phase 5 pilot available as input).
+- Phase 6 branch verification (`make check`) and merge preparation. Do
+  not begin VRS generation (Phase 7) in this task.
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -154,8 +217,7 @@ scientific scope representative DOY 026 only)
 ## Not Started
 
 - Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry; the 105 km control remains FLOAT-only, confirming the reference-geometry constraint on this dataset).
-- Phase 6 atmospheric/spatial error interpolation; Phase 7 VRS generation;
-  live RTCM/NTRIP work (explicitly out of scope for Phase 5).
+- Phase 7 VRS generation; live RTCM/NTRIP work (explicitly out of scope for Phase 6).
 
 ## Blocked
 
@@ -180,8 +242,8 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Prepare the Phase 6 Atmospheric & Spatial Error Model sprint. Do not begin
-atmospheric modelling or VRS generation in this task.
+Run `make check` on the Phase 6 branch, then merge to `main`. Do not
+begin VRS generation (Phase 7) in this task.
 
 ## Consolidation Record (2026-09-07)
 
@@ -200,4 +262,4 @@ green (see EVIDENCE_INDEX).
 
 ## Last Updated
 
-2026-09-07 (Phase 5 implementation sprint)
+2026-09-07 (Phase 6 implementation sprint)
