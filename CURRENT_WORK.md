@@ -2,15 +2,53 @@
 
 ## Active Phase
 
-Phase 3 — Single-Base RTK Baseline
+Phase 5 — Offline Network RTK Engine (`phase5/offline-network-rtk`)
 
 ## Current Milestone
 
-Phase 3 Real Scientific Benchmark Execution and Reporting
+Phase 5 Offline Network RTK Framework and Real-Data Pilot (DOY 2024/026)
 
 ## Status
 
 Validation
+
+## Completed (Phase 5)
+
+- Offline network RTK package added under `research/network_rtk`
+  (`nlgcp_network_rtk`: models, admission, geometry, overlap, baselines,
+  residuals, metrics, runner, summarize, io) reusing Phase 3 RTKLIB/solution
+  infrastructure and Phase 4 QC outputs without duplication.
+- Fail-closed admission requires Phase 4 `network_rtk` ACCEPT (diagnostic
+  runs explicitly labelled); records station, DOY, paths, QC profile/status,
+  reject/block reasons, hashes, Phase 4 fingerprints, metadata provenance,
+  equipment, sampling interval, and time coverage.
+- Network minimum documented and enforced: 3 admitted reference stations
+  (triangle/polygon floor for later Phase 6 modelling); geometry adequacy
+  assessed separately.
+- Deterministic geometry (baseline matrix, centroid, ref-to-rover distances,
+  nearest/farthest/mean, extent, triangle area) from verified coordinates only.
+- Common-epoch overlap from actual first/last epochs (no whole-day assumption).
+- Per-baseline RTKLIB execution (`rnx2rtkp v2.4.2-p13`, recorded SHA) labelled
+  as network INPUT/baseline solutions; residual dataset with unavailable
+  satellite fields documented as null; aggregate metrics labelled NOT VRS.
+- CLI `scripts/run_network_rtk.py` (`discover`, `plan`, `validate`, `run`,
+  `summarize`) with dry-run support and machine-readable output.
+- Fingerprint-gated resumability; bounded (≤8) parallel workers with
+  order-deterministic outputs; unexpected failures isolated from
+  REJECT/BLOCKED science states.
+- 44 synthetic-only Phase 5 tests (admission, geometry, overlap, metrics,
+  runner, determinism, reproducibility); `pyproject.toml` registers the new
+  package, tests, and script for Ruff/mypy/pytest.
+- Real-data discovery: only DOY 026 admits ≥3 `network_rtk` sessions
+  (ABFC/EKAK/MGBO/PHRI); all other 2024 days BLOCKED with reasons.
+- Real pilot `net-2024d026-phri-rover` executed: 3/3 baselines COMPLETE,
+  100% availability, 8640 epochs (ABFC→PHRI FLOAT-only 1.093/1.664 m
+  reproducing Phase 3; EKAK→PHRI FLOAT-only 0.968/1.130 m reproducing the
+  control; MGBO→PHRI 1029 km with 2 isolated FIX epochs, effectively
+  FLOAT-only 1.802/2.598 m). Nearest single reference outperforms the
+  network-input mean: no improvement claimed. Evidence summary in
+  `research/network_rtk/PILOT_EVIDENCE.md`; full outputs under
+  `${NLGCP_DATA_ROOT}/processed/network-rtk/` (outside Git).
 
 ## Completed
 
@@ -73,12 +111,15 @@ Validation
 
 ## In Progress
 
-- Phase 4 GNSS QC and station-health validation on `main` (engine merged; recorded real-data QC validation run still pending).
-- Phase 3 follow-on validation push and closure (historical reference on `phase3/single-base-scaffold`; content preserved in `main` via the Phase 4 line).
+- Phase 5 branch quality gate (`make check` full) and review before merge to
+  `main`; Phase 6 readiness assessment (residual dataset available, no
+  atmospheric modelling started).
 
 ## Not Started
 
 - Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry; the 105 km control remains FLOAT-only, confirming the reference-geometry constraint on this dataset).
+- Phase 6 atmospheric/spatial error interpolation; Phase 7 VRS generation;
+  live RTCM/NTRIP work (explicitly out of scope for Phase 5).
 
 ## Blocked
 
@@ -103,7 +144,9 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Run the recorded Phase 4 real-data QC validation (`scripts/run_gnss_qc.py dataset` against the canonical 2024 manifest under `${NLGCP_DATA_ROOT}`) and record the evidence; do not mark Phase 4 Complete on code existence alone. Do not begin Phase 5 automatically.
+Run the full branch quality gate (`make check`) on
+`phase5/offline-network-rtk`, then review and merge to `main`. Do not begin
+Phase 6 atmospheric modelling or VRS generation.
 
 ## Consolidation Record (2026-09-07)
 
@@ -115,8 +158,11 @@ Run the recorded Phase 4 real-data QC validation (`scripts/run_gnss_qc.py datase
 
 ## Last Verified Commit
 
-`main` merge `de40037` (Phase 4 GNSS QC and station health); `make check` green (Ruff, mypy 58 files strict, pytest 120 passed, Go, CTest, ESLint, tsc, Next.js build).
+Phase 5 worktree `phase5/offline-network-rtk` (branched from `main`
+`9acaf36`); pilot `net-2024d026-phri-rover` COMPLETE with 3/3 baselines;
+`make check` green (Ruff, mypy 75 files strict, pytest 164 passed
+— 120 existing + 44 new — Go, CTest, ESLint, tsc, Next.js build; EXIT 0).
 
 ## Last Updated
 
-2026-09-07
+2026-09-07 (Phase 5 implementation sprint)

@@ -1,0 +1,25 @@
+{
+  "coordinate_epoch": "2024-01-26T11:59:42Z",
+  "coordinate_frame": "IGS20",
+  "day_of_year": 26,
+  "diagnostic": false,
+  "end_time_utc": "2024-01-26T23:59:30Z",
+  "experiment_id": "net-2024d026-phri-rover",
+  "minimum_reference_station_count": 3,
+  "navigation_products": [
+    "external-products/brdc/2024/BRDC00IGS_R_20240260000_01D_MN.rnx.gz"
+  ],
+  "notes": "Phase 5 pilot: three independent single-base inputs (105-1029 km) to PHRI on the only DOY with >=3 network_rtk ACCEPT sessions. Outputs are network inputs, not a VRS solution.",
+  "processing_mode": "static",
+  "qc_profile": "network_rtk",
+  "reference_stations": [
+    "ABFC00NGA",
+    "EKAK00NGA",
+    "MGBO00NGA"
+  ],
+  "research_question": "Do multiple independent single-base inputs spanning 105-1029 km provide a usable network-input foundation for later spatial modelling at PHRI on DOY 2024/026, compared with the nearest single reference?",
+  "sampling_interval_seconds": 30.0,
+  "start_time_utc": "2024-01-26T00:00:00Z",
+  "test_station": "PHRI00NGA",
+  "year": 2024
+}

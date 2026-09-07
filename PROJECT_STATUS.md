@@ -9,7 +9,7 @@ Allowed statuses: Not Started, Planning, In Progress, Blocked, Testing, Validati
 | Phase 2 — Data Acquisition & Station Registry | In Progress | Approved data acquisition and authoritative station metadata; P2-S1 metadata import foundation, P2-S2 RINEX inventory, and P2-S3 file manifest complete |
 | Phase 3 — Single-Base RTK Baseline | Validation | Reproducible offline single-base RTK baseline; real scientific execution completed for DOY 2024/026 (ABFC base, 3 float-only baselines) plus a shorter-baseline control experiment (EKAK-PHRI 105.553 km, also FLOAT-only, horiz RMSE 0.968 m) with recorded evidence, figures, tables, and validation report; fixed-ambiguity demonstration is a documented follow-on |
 | Phase 4 — GNSS Quality-Control Engine | Validation | Observation and station QC engine merged to main (`research/gnss_qc`, `scripts/run_gnss_qc.py`); full `make check` green; recorded real-data QC validation run pending before Complete |
-| Phase 5 — Offline NRTK Engine | Not Started | Network processing research |
+| Phase 5 — Offline NRTK Engine | Validation | Offline network framework implemented on `phase5/offline-network-rtk` (admission, geometry, overlap, multi-baseline RTKLIB inputs, residual dataset, metrics, CLI, 44 tests); real pilot `net-2024d026-phri-rover` COMPLETE (3/3 baselines, FLOAT-only incl. 2 isolated FIX epochs on 1029 km; no improvement claimed); `make check` green (EXIT 0) |
 | Phase 6 — Atmospheric & Spatial Error Model | Not Started | Validated error models |
 | Phase 7 — VRS Generator | Not Started | Validated virtual observations |
 | Phase 8 — Hybrid Correction Decision Engine | Not Started | Correction selection |
