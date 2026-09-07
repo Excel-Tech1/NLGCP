@@ -1,0 +1,16 @@
+{
+  "coordinate_epoch": "2024-01-26T11:59:42Z",
+  "coordinate_frame": "IGS20",
+  "day_of_year": 26,
+  "epoch_stride": 6,
+  "experiment_id": "atm-2024d026-phri-target",
+  "gf_slip_threshold_m": 0.5,
+  "min_elevation_deg": 10.0,
+  "minimum_reference_station_count": 3,
+  "notes": "Phase 6 pilot on the Phase 5 DOY 026 admitted network (ABFC/EKAK/MGBO references, PHRI target). Epoch stride 6 (180 s) bounds pilot cost; full-rate rerun must invalidate via fingerprint. Satellite-derived proxies only; position RMSE never substituted.",
+  "phase5_experiment_id": "net-2024d026-phri-rover",
+  "reference_stations": ["ABFC00NGA", "EKAK00NGA", "MGBO00NGA"],
+  "research_question": "Can a simple spatial model predict satellite-derived differential error proxies at held-out PHRI better than nearest-reference or zero-correction baselines on DOY 026?",
+  "target_station": "PHRI00NGA",
+  "year": 2024
+}
