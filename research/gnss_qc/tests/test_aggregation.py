@@ -113,3 +113,69 @@ def test_equipment_transition_remains_transparent(tmp_path: Path) -> None:
     assert "authoritative effective-date metadata unavailable" in equipment_path.read_text(
         encoding="utf-8"
     )
+
+
+def test_report_reflects_provenanced_product(tmp_path: Path) -> None:
+    nav_dir = tmp_path / "external-products" / "brdc" / "2024"
+    nav_dir.mkdir(parents=True)
+    (nav_dir / "BRDC00IGS_R_20240260000_01D_MN.rnx.gz").write_bytes(b"synthetic nav")
+    write_result(tmp_path, result("ABFC00NGA", 26, "ACCEPT"))
+    summary = summarize_profile(tmp_path, "archive")
+    inventory = summary["external_product_inventory"]
+    assert len(inventory) == 1
+    assert inventory[0]["acquisition_provenance"]
+    report = Path(summary["validation_report"]).read_text(encoding="utf-8")
+    assert (
+        "Acquisition provenance and product hashes are recorded for the currently "
+        "catalogued broadcast-navigation product." in report
+    )
+    assert "acquisition provenance is not currently recorded" not in report
+
+
+def test_report_flags_missing_provenance(tmp_path: Path) -> None:
+    nav_dir = tmp_path / "external-products" / "brdc" / "2024"
+    nav_dir.mkdir(parents=True)
+    (nav_dir / "ABFC0260.24N").write_bytes(b"synthetic nav without provenance")
+    write_result(tmp_path, result("ABFC00NGA", 26, "ACCEPT"))
+    summary = summarize_profile(tmp_path, "archive")
+    inventory = summary["external_product_inventory"]
+    assert len(inventory) == 1
+    assert inventory[0]["acquisition_provenance"] is None
+    report = Path(summary["validation_report"]).read_text(encoding="utf-8")
+    assert "missing acquisition provenance remains explicit for 1 of 1" in report
+
+
+def test_report_does_not_fabricate_provenance(tmp_path: Path) -> None:
+    nav_dir = tmp_path / "external-products" / "brdc" / "2024"
+    nav_dir.mkdir(parents=True)
+    (nav_dir / "ABFC0260.24N").write_bytes(b"synthetic nav without provenance")
+    write_result(tmp_path, result("ABFC00NGA", 26, "ACCEPT"))
+    summary = summarize_profile(tmp_path, "archive")
+    assert summary["external_product_inventory"][0]["acquisition_provenance"] is None
+    report = Path(summary["validation_report"]).read_text(encoding="utf-8")
+    assert "igs.bkg.bund.de" not in report
+    assert "Acquisition provenance and product hashes are recorded" not in report
+
+
+def test_report_empty_inventory_states_no_products(tmp_path: Path) -> None:
+    write_result(tmp_path, result("ABFC00NGA", 1, "ACCEPT"))
+    summary = summarize_profile(tmp_path, "archive")
+    assert summary["external_product_inventory"] == []
+    report = Path(summary["validation_report"]).read_text(encoding="utf-8")
+    assert "no external navigation products are currently catalogued" in report
+
+
+def test_summaries_remain_deterministic(tmp_path: Path) -> None:
+    write_result(tmp_path, result("ABFC00NGA", 1, "ACCEPT"))
+    write_result(tmp_path, result("EKAK00NGA", 1, "WARN"))
+    first = summarize_profile(tmp_path, "archive")
+    first_report = Path(first["validation_report"]).read_text(encoding="utf-8")
+    second = summarize_profile(tmp_path, "archive")
+    second_report = Path(second["validation_report"]).read_text(encoding="utf-8")
+    assert first_report == second_report
+    assert first["classification_counts"] == second["classification_counts"] == {
+        "ACCEPT": 1,
+        "WARN": 1,
+        "REJECT": 0,
+        "BLOCKED": 0,
+    }

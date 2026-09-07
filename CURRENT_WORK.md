@@ -10,7 +10,9 @@ Phase 5 Offline Network RTK Framework and Real-Data Pilot (DOY 2024/026)
 
 ## Status
 
-Validation
+Validation (Phase 4 engineering + 2024 dataset validation COMPLETE with
+provisional calibration; Phase 5 framework + real pilot COMPLETE on branch,
+merge to `main` pending)
 
 ## Completed (Phase 5)
 
@@ -111,9 +113,30 @@ Validation
 
 ## In Progress
 
-- Phase 5 branch quality gate (`make check` full) and review before merge to
-  `main`; Phase 6 readiness assessment (residual dataset available, no
-  atmospheric modelling started).
+- Phase 5 integration: latest `main` (Phase 4 closure `345646d`) merged into
+  `phase5/offline-network-rtk`; re-verify tests and `make check`, then merge
+  Phase 5 into `main`. Phase 6 readiness assessment (residual dataset
+  available, no atmospheric modelling started).
+
+## Phase 4 Validation Closure (2026-09-07)
+
+- Full 2024 canonical QC run executed against `${NLGCP_DATA_ROOT}` (`/home/excellence/nlgcp-data`): 1290 canonical observation sessions, 8 stations, 3 profiles, 3870 profile results, 0 unexpected processing failures.
+- Archive: ACCEPT 694, WARN 596, REJECT 0, BLOCKED 0. Single-base RTK: ACCEPT 4, WARN 0, REJECT 341, BLOCKED 945. Network RTK: ACCEPT 4, WARN 0, REJECT 341, BLOCKED 945.
+- Navigation coverage: 7 navigation-covered sessions; 1283 navigation-blocked RTK sessions. RTK BLOCKED denotes missing required external evidence/dependency (strongly associated with limited navigation/product coverage), not software failure. RTK REJECT denotes observed-data QC failure, not missing navigation.
+- RTK-profile dataset: 371 partial/severely truncated sessions, 263 major-gap sessions, 1 excluded exact duplicate (EKAK DOY 200), 4 explicit aliases resolved (BIKE->BKFP, YLAD->FUTY, LGLA->ULAG, ENEN->UNEC).
+- Only DOY 026 provides a four-station ACCEPT-only network overlap (ABFC00NGA, EKAK00NGA, MGBO00NGA, PHRI00NGA).
+- External product inventory: `external-products/brdc/2024/BRDC00IGS_R_20240260000_01D_MN.rnx.gz` (IGS merged broadcast navigation via BKG archive) with recorded acquisition provenance and SHA-256 `a64183872be90e6052bd2d8e6aed43b59b897abd81a5636a36911c24c1aa7b2b`.
+- Fixed the validation-report Known Limitations inconsistency: the report generator (`research/gnss_qc/src/nlgcp_gnss_qc/aggregate.py`) now derives the provenance sentence deterministically from the catalogued product inventory instead of hard-coding that provenance is unrecorded. Added 5 aggregation tests (provenance present/missing, no fabrication, empty inventory, determinism); QC suite passes (43 tests).
+- Regenerated all three profile summaries; canonical report at `/home/excellence/nlgcp-data/validation/reports/phase4-gnss-qc-validation-report.md` with per-profile tables (9 CSVs) and figures (4 SVGs) under `/home/excellence/nlgcp-data/processed/qc/profiles/<profile>/{tables,figures}`.
+- Phase 4 engineering milestone: COMPLETE. Phase 4 real 2024 QC run: COMPLETE. Phase 4 profile calibration status: PROVISIONAL (thresholds version 1.0; calibration against reviewed Nigerian field evidence is a documented follow-on validation requirement, not claimed here).
+
+## Phase 5 Integration Record (2026-09-07)
+
+- Merged latest `main` (Phase 4 closure `345646d`) into
+  `phase5/offline-network-rtk`: Phase 4 closure code (`aggregate.py`
+  provenance fix, 5 aggregation tests), README, and closure evidence rows
+  preserved; Phase 5 implementation, pilot definition, and pilot evidence
+  preserved; status docs reconciled to carry both lines.
 
 ## Not Started
 
@@ -144,9 +167,11 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Run the full branch quality gate (`make check`) on
-`phase5/offline-network-rtk`, then review and merge to `main`. Do not begin
-Phase 6 atmospheric modelling or VRS generation.
+Re-verify the integrated branch (`make check` on
+`phase5/offline-network-rtk`), then merge Phase 5 into `main` with
+`git merge --no-ff`. Do not begin Phase 6 atmospheric modelling or VRS
+generation. Phase 5 admission stays ACCEPT-only (WARN requires review;
+REJECT/BLOCKED excluded).
 
 ## Consolidation Record (2026-09-07)
 
@@ -158,10 +183,10 @@ Phase 6 atmospheric modelling or VRS generation.
 
 ## Last Verified Commit
 
-Phase 5 worktree `phase5/offline-network-rtk` (branched from `main`
-`9acaf36`); pilot `net-2024d026-phri-rover` COMPLETE with 3/3 baselines;
-`make check` green (Ruff, mypy 75 files strict, pytest 164 passed
-— 120 existing + 44 new — Go, CTest, ESLint, tsc, Next.js build; EXIT 0).
+Integrated `main` Phase 4 closure `345646d` into `phase5/offline-network-rtk`
+(Phase 5 commit `8976de3` retained unamended); pilot
+`net-2024d026-phri-rover` outputs preserved; post-integration `make check`
+pending at time of writing (see Next Action).
 
 ## Last Updated
 
