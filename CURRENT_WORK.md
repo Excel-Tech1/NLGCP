@@ -2,15 +2,15 @@
 
 ## Active Phase
 
-Phase 3 — Single-Base RTK Baseline
+Phase 4 — GNSS QC and Station Health (validation closure; engineering + 2024 dataset validation COMPLETE, profile calibration PROVISIONAL)
 
 ## Current Milestone
 
-Phase 3 Real Scientific Benchmark Execution and Reporting
+Phase 4 GNSS QC Dataset Validation Closure
 
 ## Status
 
-Validation
+Complete (engineering milestone and 2024 dataset validation run; scientific profile calibration remains provisional)
 
 ## Completed
 
@@ -73,8 +73,19 @@ Validation
 
 ## In Progress
 
-- Phase 4 GNSS QC and station-health validation on `main` (engine merged; recorded real-data QC validation run still pending).
-- Phase 3 follow-on validation push and closure (historical reference on `phase3/single-base-scaffold`; content preserved in `main` via the Phase 4 line).
+- Phase 5 offline network RTK work, developed separately (worktree `~/NLGCP-phase5`, branch `phase5/offline-network-rtk`); it must continue to honor Phase 4 admission gates (ACCEPT auto-admitted, WARN requires review, REJECT/BLOCKED excluded).
+
+## Phase 4 Validation Closure (2026-09-07)
+
+- Full 2024 canonical QC run executed against `${NLGCP_DATA_ROOT}` (`/home/excellence/nlgcp-data`): 1290 canonical observation sessions, 8 stations, 3 profiles, 3870 profile results, 0 unexpected processing failures.
+- Archive: ACCEPT 694, WARN 596, REJECT 0, BLOCKED 0. Single-base RTK: ACCEPT 4, WARN 0, REJECT 341, BLOCKED 945. Network RTK: ACCEPT 4, WARN 0, REJECT 341, BLOCKED 945.
+- Navigation coverage: 7 navigation-covered sessions; 1283 navigation-blocked RTK sessions. RTK BLOCKED denotes missing required external evidence/dependency (strongly associated with limited navigation/product coverage), not software failure. RTK REJECT denotes observed-data QC failure, not missing navigation.
+- RTK-profile dataset: 371 partial/severely truncated sessions, 263 major-gap sessions, 1 excluded exact duplicate (EKAK DOY 200), 4 explicit aliases resolved (BIKE->BKFP, YLAD->FUTY, LGLA->ULAG, ENEN->UNEC).
+- Only DOY 026 provides a four-station ACCEPT-only network overlap (ABFC00NGA, EKAK00NGA, MGBO00NGA, PHRI00NGA).
+- External product inventory: `external-products/brdc/2024/BRDC00IGS_R_20240260000_01D_MN.rnx.gz` (IGS merged broadcast navigation via BKG archive) with recorded acquisition provenance and SHA-256 `a64183872be90e6052bd2d8e6aed43b59b897abd81a5636a36911c24c1aa7b2b`.
+- Fixed the validation-report Known Limitations inconsistency: the report generator (`research/gnss_qc/src/nlgcp_gnss_qc/aggregate.py`) now derives the provenance sentence deterministically from the catalogued product inventory instead of hard-coding that provenance is unrecorded. Added 5 aggregation tests (provenance present/missing, no fabrication, empty inventory, determinism); QC suite passes (43 tests).
+- Regenerated all three profile summaries; canonical report at `/home/excellence/nlgcp-data/validation/reports/phase4-gnss-qc-validation-report.md` with per-profile tables (9 CSVs) and figures (4 SVGs) under `/home/excellence/nlgcp-data/processed/qc/profiles/<profile>/{tables,figures}`.
+- Phase 4 engineering milestone: COMPLETE. Phase 4 real 2024 QC run: COMPLETE. Phase 4 profile calibration status: PROVISIONAL (thresholds version 1.0; calibration against reviewed Nigerian field evidence is a documented follow-on validation requirement, not claimed here).
 
 ## Not Started
 
@@ -103,7 +114,7 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Run the recorded Phase 4 real-data QC validation (`scripts/run_gnss_qc.py dataset` against the canonical 2024 manifest under `${NLGCP_DATA_ROOT}`) and record the evidence; do not mark Phase 4 Complete on code existence alone. Do not begin Phase 5 automatically.
+Continue Phase 5 offline network RTK work (separate worktree `~/NLGCP-phase5`) using Phase 4 ACCEPT-only admission: ACCEPT sessions auto-admitted, WARN requires review, REJECT and BLOCKED excluded. Do not claim Phase 5 scientific success here.
 
 ## Consolidation Record (2026-09-07)
 
@@ -115,7 +126,7 @@ Run the recorded Phase 4 real-data QC validation (`scripts/run_gnss_qc.py datase
 
 ## Last Verified Commit
 
-`main` merge `de40037` (Phase 4 GNSS QC and station health); `make check` green (Ruff, mypy 58 files strict, pytest 120 passed, Go, CTest, ESLint, tsc, Next.js build).
+`main` Phase 4 validation closure (see `git log --oneline -5` for the closure hash; prior merge `de40037`, Phase 4 engine commits `fdf7ab6`/`b18b814`); `make check` green (Ruff, mypy strict, pytest, Go, CTest, ESLint, tsc, Next.js build).
 
 ## Last Updated
 

@@ -453,11 +453,48 @@ def _svg_start(width: int, height: int, title: str) -> str:
     )
 
 
+def _provenance_limitation_sentence(products: list[dict[str, Any]]) -> str:
+    """Evidence-based Known Limitations wording derived from the product inventory.
+
+    The sentence reflects the catalogued external-product inventory instead of
+    asserting a fixed provenance state. Missing provenance stays explicit: no
+    provenance value is invented here.
+    """
+
+    if not products:
+        return (
+            "Only catalogued external navigation is counted; no external "
+            "navigation products are currently catalogued, so acquisition "
+            "provenance cannot be assessed from the inventory."
+        )
+    missing = sum(1 for product in products if not product.get("acquisition_provenance"))
+    if missing == 0:
+        if len(products) == 1:
+            return (
+                "Only catalogued external navigation is counted. Acquisition "
+                "provenance and product hashes are recorded for the currently "
+                "catalogued broadcast-navigation product."
+            )
+        return (
+            f"Only catalogued external navigation is counted. Acquisition "
+            f"provenance and product hashes are recorded for all {len(products)} "
+            f"currently catalogued broadcast-navigation products."
+        )
+    return (
+        f"Only catalogued external navigation is counted. Product hashes are "
+        f"recorded; missing acquisition provenance remains explicit for "
+        f"{missing} of {len(products)} catalogued product(s)."
+    )
+
+
 def _report(summary: dict[str, Any], results: list[dict[str, Any]]) -> str:
     counts = summary["classification_counts"]
     stations = summary["stations_processed"]
     windows = summary["network_overlap_windows"]
     longest = next((row for row in windows if row["minimum_station_count"] == 4), None)
+    provenance_sentence = _provenance_limitation_sentence(
+        summary.get("external_product_inventory", [])
+    )
     observation_types = sorted(
         {
             value
@@ -521,7 +558,7 @@ Rejected and blocked sessions are enumerated in separate machine-readable tables
 
 - Scientific profile thresholds remain provisional pending Level 3 review/calibration.
 - Coordinate eligibility is limited to the explicitly admitted Phase 3 coordinate epoch; no effective interval is invented.
-- Only catalogued external navigation is counted, and acquisition provenance is not currently recorded for the available product.
+- {provenance_sentence}
 - LLI events are continuity indicators, not independently validated cycle-slip detections.
 - This phase performs QC only; no NRTK, atmospheric interpolation, VRS, RTCM, NTRIP, or accuracy claim is implemented.
 
