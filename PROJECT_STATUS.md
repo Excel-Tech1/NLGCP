@@ -8,7 +8,7 @@ Allowed statuses: Not Started, Planning, In Progress, Blocked, Testing, Validati
 | Phase 1 — Engineering Foundation | Complete | Engineering foundation verified: toolchains, Compose services, health checks, GNSS tool provenance, and project-wide quality gates pass |
 | Phase 2 — Data Acquisition & Station Registry | In Progress | Approved data acquisition and authoritative station metadata; P2-S1 metadata import foundation, P2-S2 RINEX inventory, and P2-S3 file manifest complete |
 | Phase 3 — Single-Base RTK Baseline | Validation | Reproducible offline single-base RTK baseline; real scientific execution completed for DOY 2024/026 (ABFC base, 3 float-only baselines) plus a shorter-baseline control experiment (EKAK-PHRI 105.553 km, also FLOAT-only, horiz RMSE 0.968 m) with recorded evidence, figures, tables, and validation report; fixed-ambiguity demonstration is a documented follow-on |
-| Phase 4 — GNSS Quality-Control Engine | Not Started | Observation and station QC |
+| Phase 4 — GNSS Quality-Control Engine | Validation | Observation and station QC engine merged to main (`research/gnss_qc`, `scripts/run_gnss_qc.py`); full `make check` green; recorded real-data QC validation run pending before Complete |
 | Phase 5 — Offline NRTK Engine | Not Started | Network processing research |
 | Phase 6 — Atmospheric & Spatial Error Model | Not Started | Validated error models |
 | Phase 7 — VRS Generator | Not Started | Validated virtual observations |

@@ -73,7 +73,8 @@ Validation
 
 ## In Progress
 
-- Phase 3 follow-on validation push and closure on `phase3/single-base-scaffold`.
+- Phase 4 GNSS QC and station-health validation on `main` (engine merged; recorded real-data QC validation run still pending).
+- Phase 3 follow-on validation push and closure (historical reference on `phase3/single-base-scaffold`; content preserved in `main` via the Phase 4 line).
 
 ## Not Started
 
@@ -102,12 +103,20 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Close out the Phase 3 follow-on: commit the control implementation, deliverables, and handoff; push `phase3/single-base-scaffold`; do not merge into main. The FLOAT-only outcome at 105 km (shortest verified baseline) reinforces the documented limitation and the network-RTK/VRS rationale for Phase 4.
+Run the recorded Phase 4 real-data QC validation (`scripts/run_gnss_qc.py dataset` against the canonical 2024 manifest under `${NLGCP_DATA_ROOT}`) and record the evidence; do not mark Phase 4 Complete on code existence alone. Do not begin Phase 5 automatically.
+
+## Consolidation Record (2026-09-07)
+
+- Aborted a stale in-progress merge of historical `phase3/single-base-scaffold` (`4ab8d26`) into `main`; verified byte-identical Phase 3 preservation in the Phase 4 line (`git diff 4ab8d26 26c7d25` empty for `research/single_base_rtk/`, `scripts/run_single_base_rtk.py`, `validation/`, `pyproject.toml`; only Phase 2 additions + doc headers differ).
+- Merged only `phase4/gnss-qc-station-health` into `main` with `git merge --no-ff` (zero conflicts): `main` now contains Phase 1 + Phase 2 + Phase 3 + Phase 4 code on one authoritative line.
+- Historical `phase3/single-base-scaffold` retained as reference; `phase4/gnss-qc-station-health` retained as merge source. Old worktrees `~/NLGCP-phase3`, `~/NLGCP-phase4` pending removal approval.
+- Phase 4 milestone commits on the merged line: `fdf7ab6` (QC + station-health engine) and `b18b814` (parallel/resumable dataset QC).
+- `main` `.venv` synced via declared deps only (`.venv/bin/python -m pip install -e '.[dev]'`); `pyproject.toml` already declared `numpy`/`matplotlib`, no new packages added to silence errors.
 
 ## Last Verified Commit
 
-On `phase3/single-base-scaffold`: milestone `43c87ba` complete, long-baseline benchmark; follow-on control (EKAK->PHRI 105 km, FLOAT-only, horiz RMSE 0.968 m) run and analysed; `make check` Python portion green (Ruff, mypy 32 files, pytest 50 passed). Pending the final follow-on commit + push.
+`main` merge `de40037` (Phase 4 GNSS QC and station health); `make check` green (Ruff, mypy 58 files strict, pytest 120 passed, Go, CTest, ESLint, tsc, Next.js build).
 
 ## Last Updated
 
-2026-09-04
+2026-09-07
