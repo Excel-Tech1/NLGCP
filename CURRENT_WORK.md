@@ -2,15 +2,55 @@
 
 ## Active Phase
 
-Phase 4 — GNSS QC and Station Health (validation closure; engineering + 2024 dataset validation COMPLETE, profile calibration PROVISIONAL)
+Phase 5 — Offline Network RTK Engine (`phase5/offline-network-rtk`)
 
 ## Current Milestone
 
-Phase 4 GNSS QC Dataset Validation Closure
+Phase 5 Offline Network RTK Framework and Real-Data Pilot (DOY 2024/026)
 
 ## Status
 
-Complete (engineering milestone and 2024 dataset validation run; scientific profile calibration remains provisional)
+Validation (Phase 4 engineering + 2024 dataset validation COMPLETE with
+provisional calibration; Phase 5 framework + real pilot COMPLETE on branch,
+merge to `main` pending)
+
+## Completed (Phase 5)
+
+- Offline network RTK package added under `research/network_rtk`
+  (`nlgcp_network_rtk`: models, admission, geometry, overlap, baselines,
+  residuals, metrics, runner, summarize, io) reusing Phase 3 RTKLIB/solution
+  infrastructure and Phase 4 QC outputs without duplication.
+- Fail-closed admission requires Phase 4 `network_rtk` ACCEPT (diagnostic
+  runs explicitly labelled); records station, DOY, paths, QC profile/status,
+  reject/block reasons, hashes, Phase 4 fingerprints, metadata provenance,
+  equipment, sampling interval, and time coverage.
+- Network minimum documented and enforced: 3 admitted reference stations
+  (triangle/polygon floor for later Phase 6 modelling); geometry adequacy
+  assessed separately.
+- Deterministic geometry (baseline matrix, centroid, ref-to-rover distances,
+  nearest/farthest/mean, extent, triangle area) from verified coordinates only.
+- Common-epoch overlap from actual first/last epochs (no whole-day assumption).
+- Per-baseline RTKLIB execution (`rnx2rtkp v2.4.2-p13`, recorded SHA) labelled
+  as network INPUT/baseline solutions; residual dataset with unavailable
+  satellite fields documented as null; aggregate metrics labelled NOT VRS.
+- CLI `scripts/run_network_rtk.py` (`discover`, `plan`, `validate`, `run`,
+  `summarize`) with dry-run support and machine-readable output.
+- Fingerprint-gated resumability; bounded (≤8) parallel workers with
+  order-deterministic outputs; unexpected failures isolated from
+  REJECT/BLOCKED science states.
+- 44 synthetic-only Phase 5 tests (admission, geometry, overlap, metrics,
+  runner, determinism, reproducibility); `pyproject.toml` registers the new
+  package, tests, and script for Ruff/mypy/pytest.
+- Real-data discovery: only DOY 026 admits ≥3 `network_rtk` sessions
+  (ABFC/EKAK/MGBO/PHRI); all other 2024 days BLOCKED with reasons.
+- Real pilot `net-2024d026-phri-rover` executed: 3/3 baselines COMPLETE,
+  100% availability, 8640 epochs (ABFC→PHRI FLOAT-only 1.093/1.664 m
+  reproducing Phase 3; EKAK→PHRI FLOAT-only 0.968/1.130 m reproducing the
+  control; MGBO→PHRI 1029 km with 2 isolated FIX epochs, effectively
+  FLOAT-only 1.802/2.598 m). Nearest single reference outperforms the
+  network-input mean: no improvement claimed. Evidence summary in
+  `research/network_rtk/PILOT_EVIDENCE.md`; full outputs under
+  `${NLGCP_DATA_ROOT}/processed/network-rtk/` (outside Git).
 
 ## Completed
 
@@ -73,7 +113,10 @@ Complete (engineering milestone and 2024 dataset validation run; scientific prof
 
 ## In Progress
 
-- Phase 5 offline network RTK work, developed separately (worktree `~/NLGCP-phase5`, branch `phase5/offline-network-rtk`); it must continue to honor Phase 4 admission gates (ACCEPT auto-admitted, WARN requires review, REJECT/BLOCKED excluded).
+- Phase 5 integration: latest `main` (Phase 4 closure `345646d`) merged into
+  `phase5/offline-network-rtk`; re-verify tests and `make check`, then merge
+  Phase 5 into `main`. Phase 6 readiness assessment (residual dataset
+  available, no atmospheric modelling started).
 
 ## Phase 4 Validation Closure (2026-09-07)
 
@@ -87,9 +130,19 @@ Complete (engineering milestone and 2024 dataset validation run; scientific prof
 - Regenerated all three profile summaries; canonical report at `/home/excellence/nlgcp-data/validation/reports/phase4-gnss-qc-validation-report.md` with per-profile tables (9 CSVs) and figures (4 SVGs) under `/home/excellence/nlgcp-data/processed/qc/profiles/<profile>/{tables,figures}`.
 - Phase 4 engineering milestone: COMPLETE. Phase 4 real 2024 QC run: COMPLETE. Phase 4 profile calibration status: PROVISIONAL (thresholds version 1.0; calibration against reviewed Nigerian field evidence is a documented follow-on validation requirement, not claimed here).
 
+## Phase 5 Integration Record (2026-09-07)
+
+- Merged latest `main` (Phase 4 closure `345646d`) into
+  `phase5/offline-network-rtk`: Phase 4 closure code (`aggregate.py`
+  provenance fix, 5 aggregation tests), README, and closure evidence rows
+  preserved; Phase 5 implementation, pilot definition, and pilot evidence
+  preserved; status docs reconciled to carry both lines.
+
 ## Not Started
 
 - Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry; the 105 km control remains FLOAT-only, confirming the reference-geometry constraint on this dataset).
+- Phase 6 atmospheric/spatial error interpolation; Phase 7 VRS generation;
+  live RTCM/NTRIP work (explicitly out of scope for Phase 5).
 
 ## Blocked
 
@@ -114,7 +167,11 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Continue Phase 5 offline network RTK work (separate worktree `~/NLGCP-phase5`) using Phase 4 ACCEPT-only admission: ACCEPT sessions auto-admitted, WARN requires review, REJECT and BLOCKED excluded. Do not claim Phase 5 scientific success here.
+Re-verify the integrated branch (`make check` on
+`phase5/offline-network-rtk`), then merge Phase 5 into `main` with
+`git merge --no-ff`. Do not begin Phase 6 atmospheric modelling or VRS
+generation. Phase 5 admission stays ACCEPT-only (WARN requires review;
+REJECT/BLOCKED excluded).
 
 ## Consolidation Record (2026-09-07)
 
@@ -126,8 +183,11 @@ Continue Phase 5 offline network RTK work (separate worktree `~/NLGCP-phase5`) u
 
 ## Last Verified Commit
 
-`main` Phase 4 validation closure (see `git log --oneline -5` for the closure hash; prior merge `de40037`, Phase 4 engine commits `fdf7ab6`/`b18b814`); `make check` green (Ruff, mypy strict, pytest, Go, CTest, ESLint, tsc, Next.js build).
+Integrated `main` Phase 4 closure `345646d` into `phase5/offline-network-rtk`
+(Phase 5 commit `8976de3` retained unamended); pilot
+`net-2024d026-phri-rover` outputs preserved; post-integration `make check`
+pending at time of writing (see Next Action).
 
 ## Last Updated
 
-2026-09-07
+2026-09-07 (Phase 5 implementation sprint)

@@ -30,6 +30,7 @@ packages = [
   "apps/api/src/nlgcp_api",
   "research/gnss_qc/src/nlgcp_gnss_qc",
   "research/single_base_rtk/src/nlgcp_single_base",
+  "research/network_rtk/src/nlgcp_network_rtk",
 ]
 
 [tool.pytest.ini_options]
@@ -37,6 +38,7 @@ testpaths = [
   "apps/api/tests",
   "research/gnss_qc/tests",
   "research/single_base_rtk/tests",
+  "research/network_rtk/tests",
 ]
 
 [tool.ruff]
@@ -60,6 +62,9 @@ files = [
   "research/gnss_qc/tests",
   "research/single_base_rtk/src",
   "research/single_base_rtk/tests",
+  "research/network_rtk/src",
+  "research/network_rtk/tests",
   "scripts/run_gnss_qc.py",
   "scripts/run_single_base_rtk.py",
+  "scripts/run_network_rtk.py",
 ]
