@@ -68,3 +68,23 @@ Only observed results belong here. Commands are reproducible from the repository
 | 2026-09-07 | 6 | Phase 6 real fit + validate | `run_atmospheric_model.py fit` then `validate` | COMPLETE: fit 21 656 predictions / 21 095 fitted; LOOCV on 17 768 identical samples — zero RMSE 2.984 m beats IDW 3.546, nearest 4.004, planar 15.300; decorrelation slope +0.59 mm/km (corr 0.48, 6 pairs, pilot-only); tables + 3 figures + summary CSVs generated under `${NLGCP_DATA_ROOT}/processed/atmospheric-model/` |
 | 2026-09-07 | 6 | Phase 6 defect record | Real-pilot debugging (parser alignment, stride-aware arcs, gap/LLI rules, fit leakage, datum anchoring, identical-sample ranking) | RECORDED: 6 defects fixed with regression tests; buggy-run products deleted and regenerated under new fingerprints; evidence in `research/atmospheric_spatial_model/PILOT_EVIDENCE.md` |
 | 2026-09-07 | 6 | Phase 6 branch quality gate | `make check` on `phase6/atmospheric-spatial-error-model` (fresh `npm install`, generated `tsbuildinfo` restored) | PASS: EXIT 0 — Ruff, mypy Success (98 files, strict), pytest 245 passed (169 existing + 76 new), Go vet/tests, CTest (1), ESLint, tsc, Next.js production build |
+
+## Phase 7 — Offline VRS Generator (2026-09-08)
+
+| Contribution | Evidence | Observed result |
+|---|---|---|
+| Worktree and baseline | `git branch --show-current`, `git log -1`, initial `git status --short` | `phase7/vrs-generator` in `/home/excellence/NLGCP-phase7`, clean start at Phase 6 merge `f9e7341`; main worktree untouched |
+| Scientific model gate | `research/vrs_generator/src/nlgcp_vrs/models.py`; `docs/phase7-vrs-generator.md` | Phase 6 recorded zero/IDW/nearest/planar RMSE 2.984/3.546/4.004/15.300 m preserved; ZERO selected; no promotion criteria invented; candidate observation translation explicitly BLOCKED |
+| Upstream geometry audit | Phase 6 `satellite_geometry.py` and RINEX GPS headers versus IGS specification and pinned RTKLIB source; documented in `docs/phase7-vrs-generator.md` | RINEX angles unnecessarily multiplied by pi; GPS calendar labels receive a UTC leap-offset conversion in Phase 6. Upstream outputs preserved, not re-certified. Phase 7 uses pinned RTKLIB directly; independent Level 3 review/reprocessing required |
+| Phase 7 focused tests | `RTKLIB_SOURCE=/home/excellence/RTKLIB .venv/bin/python -m pytest research/vrs_generator/tests -q` | PASS: 74 tests, including six native geometry checks against labelled synthetic analytic orbits. Covers definitions, coordinates, admission, target aliases/leakage, codes/epochs/satellites, ephemeris exclusions, code/phase signs/units, clock/ambiguity datums, malformed RINEX, output identity, fingerprints, dry runs and resumability |
+| Four real held-out rotations | Checked-in `research/vrs_generator/config/{phri,abfc,ekak,mgbo}.json`; CLI generate/validate/summarize; `research/vrs_generator/PILOT_EVIDENCE.{json,md}` | COMPLETE: PHRI 24,556; ABFC 17,764; EKAK 17,847; MGBO 17,893 observations (78,060 total), each 480/480 scheduled 180-second epochs and 30 GPS satellites. ZERO spatial correction in every run |
+| PHRI held-out diagnostics | `processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/validation.json` | EKAK anchor 105.553 km. C1/P2 clock-adjusted SD RMSE 0.597/0.768 m (4,471/4,422 residuals); L1/L2 180-second time-differenced DD RMSE 2.087/3.202 m (3,843/3,809 residuals). PHRI P1 has zero matches and null metrics. Not positioning errors; no accuracy gain claimed |
+| Real resumability | Repeat PHRI `generate`; `build/vrs/phri-resume.json` | PASS: matching material and output hashes, `reused=true`, 24,556 observations; no regenerated measurements |
+| Full repository quality gate | `RTKLIB_SOURCE=/home/excellence/RTKLIB make check`; `build/vrs/make-check-final.log` | PASS: Ruff, mypy (108 files), pytest (319), Go format/vet/tests, CMake/CTest, ESLint, TypeScript and Next.js production build with existing WASM configuration |
+| Scientific and phase boundary | `docs/phase7-vrs-generator.md`, Phase 7 provenance and correction-model outputs | No promoted interpolator, RINEX VRS, positioning solution, integer ambiguity fixing, measured atmosphere, RTCM/NTRIP/live service or Phase 8 implementation. Engineering and pilot complete; independent Level 3 review pending |
+
+Authoritative outputs: `${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-{phri,abfc,ekak,mgbo}-geometry-v2/`.
+Raw observations were not modified. Preliminary unversioned/v1 derived outputs
+remain outside Git and are superseded by v2. Runtime provenance records base
+commit `f9e7341`, dirty=true and exact algorithm/source hashes corresponding to
+the committed Phase 7 tree; evidence JSON contains artifact SHA-256s.

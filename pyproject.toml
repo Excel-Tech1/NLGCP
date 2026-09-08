@@ -32,6 +32,7 @@ packages = [
   "research/single_base_rtk/src/nlgcp_single_base",
   "research/network_rtk/src/nlgcp_network_rtk",
   "research/atmospheric_spatial_model/src/nlgcp_atmospheric_model",
+  "research/vrs_generator/src/nlgcp_vrs",
 ]
 
 [tool.pytest.ini_options]
@@ -41,6 +42,7 @@ testpaths = [
   "research/single_base_rtk/tests",
   "research/network_rtk/tests",
   "research/atmospheric_spatial_model/tests",
+  "research/vrs_generator/tests",
 ]
 
 [tool.ruff]
@@ -69,9 +71,12 @@ files = [
   "research/network_rtk/src",
   "research/network_rtk/tests",
   "research/atmospheric_spatial_model/src",
+  "research/vrs_generator/src",
   "research/atmospheric_spatial_model/tests",
+  "research/vrs_generator/tests",
   "scripts/run_gnss_qc.py",
   "scripts/run_single_base_rtk.py",
   "scripts/run_network_rtk.py",
   "scripts/run_atmospheric_model.py",
+  "scripts/run_vrs_generator.py",
 ]

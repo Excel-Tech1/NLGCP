@@ -2,18 +2,43 @@
 
 ## Active Phase
 
-Phase 6 — Atmospheric & Spatial Error Model (implemented on
-`phase6/atmospheric-spatial-error-model`; real DOY 026 pilot COMPLETE)
+Phase 7 — Offline VRS Generator (`phase7/vrs-generator`; engineering and real held-out pilot complete; independent Level 3 review pending)
 
 ## Current Milestone
 
-Phase 6 Implementation and Real-Data Pilot
+Phase 7 Geometry-Only Synthesis and Held-Out Validation
 
 ## Status
 
-Engineering + real pilot COMPLETE (Phase 4 engineering + 2024 dataset
+Phase 7 engineering + real pilot COMPLETE; scientific status VALIDATION pending independent Level 3 review. Prior engineering + real pilot COMPLETE (Phase 4 engineering + 2024 dataset
 validation COMPLETE with provisional calibration; Phase 5 engineering +
 real pilot COMPLETE; scientific scope representative DOY 026 only)
+
+## Phase 7 handoff (2026-09-08)
+
+- Worktree `/home/excellence/NLGCP-phase7`, branch `phase7/vrs-generator`,
+  based on Phase 6 merge `f9e7341`. Main worktree remains untouched.
+- Structured geometry-only synthesis, deterministic anchor, strict RINEX 2.11
+  adapter, pinned RTKLIB satellite geometry, zero-only promotion gate, CLI,
+  provenance, resumability and held-out clock/ambiguity-aware diagnostics added.
+- Phase 6 radians and GPST handling concerns found during review; recorded
+  outputs preserved, no numeric field applied, no model promotion. See
+  `docs/phase7-vrs-generator.md` for the audit and Level 3 review requirements.
+- PHRI generated 24,556 observations at all 480 planned epochs (180-second
+  sampling), EKAK anchor 105.553 km; code C1/P2 clock-adjusted residual RMSE
+  0.597/0.768 m; L1/L2 180-second time-differenced double-difference RMSE
+  2.087/3.202 m. These are diagnostics, not positioning errors.
+- Four final rotations generated 78,060 observations total; every target has
+  480/480 scheduled epochs and 30 GPS satellites. All use ZERO spatial correction.
+  Final experiment IDs end in `-geometry-v2`; initial/v1 development outputs
+  are superseded. Full metrics/hashes: `research/vrs_generator/PILOT_EVIDENCE.json`.
+- 74 Phase 7 tests pass, including six native RTKLIB adapter checks with labelled
+  synthetic orbits. `RTKLIB_SOURCE=/home/excellence/RTKLIB make check` PASS:
+  Ruff, mypy (108 source files), pytest (319), Go, CMake/CTest, ESLint,
+  TypeScript and Next.js production build. PHRI hash-gated resume verified.
+- Runtime provenance records base commit `f9e7341`, dirty=true and exact per-file
+  source hashes; the committed Phase 7 source reproduces the same fingerprints.
+- Optional RINEX export/positioning validation deferred. No Phase 8 work.
 
 ## Completed (Phase 6)
 
@@ -176,8 +201,9 @@ real pilot COMPLETE; scientific scope representative DOY 026 only)
 
 ## In Progress
 
-- Phase 6 branch verification (`make check`) and merge preparation. Do
-  not begin VRS generation (Phase 7) in this task.
+- Independent Level 3 review of Phase 7 scientific assumptions and evidence.
+- Upstream Phase 6 radians/GPST audit requires repair and regeneration before
+  model promotion; no Phase 6 code or outputs were modified here.
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -217,7 +243,7 @@ real pilot COMPLETE; scientific scope representative DOY 026 only)
 ## Not Started
 
 - Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry; the 105 km control remains FLOAT-only, confirming the reference-geometry constraint on this dataset).
-- Phase 7 VRS generation; live RTCM/NTRIP work (explicitly out of scope for Phase 6).
+- Phase 8 and later phases; live RTCM/NTRIP delivery remains out of scope.
 
 ## Blocked
 
@@ -242,8 +268,9 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Run `make check` on the Phase 6 branch, then merge to `main`. Do not
-begin VRS generation (Phase 7) in this task.
+Review the completed Phase 7 branch and evidence at Level 3; repair/regenerate
+Phase 6 geometry evidence and acquire denser multi-day observations. Merge only
+after review. Do not begin Phase 8 in this sprint.
 
 ## Consolidation Record (2026-09-07)
 
@@ -253,13 +280,15 @@ begin VRS generation (Phase 7) in this task.
 - Phase 4 milestone commits on the merged line: `fdf7ab6` (QC + station-health engine) and `b18b814` (parallel/resumable dataset QC).
 - `main` `.venv` synced via declared deps only (`.venv/bin/python -m pip install -e '.[dev]'`); `pyproject.toml` already declared `numpy`/`matplotlib`, no new packages added to silence errors.
 
-## Last Verified Commit
+## Last Verified State
 
-`main` merge `9a2d870` (Merge Phase 5 offline network RTK) atop Phase 4
-closure `345646d` and Phase 5 commits `8976de3` + integration `9c47203`;
-pilot `net-2024d026-phri-rover` outputs preserved; post-merge `make check`
-green (see EVIDENCE_INDEX).
+Phase 7 branch source and all four `-geometry-v2` pilot outputs verified on
+2026-09-08. Full `make check` PASS (319 Python tests, including 74 Phase 7).
+Baseline commit `f9e7341` merged Phase 6; this handoff is committed with the
+Phase 7 implementation/evidence. Earlier Phase 1–6 results are preserved.
+Independent scientific review and correction-model promotion remain separate,
+uncompleted scientific acceptance steps.
 
 ## Last Updated
 
-2026-09-07 (Phase 6 implementation sprint)
+2026-09-08 (Phase 7 implementation sprint)

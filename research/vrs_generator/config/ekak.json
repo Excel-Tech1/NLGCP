@@ -1,0 +1,19 @@
+{
+  "experiment_id": "vrs-2024d026-ekak-geometry-v2",
+  "year": 2024,
+  "day_of_year": 26,
+  "target_station": "EKAK00NGA",
+  "reference_stations": [
+    "ABFC00NGA",
+    "MGBO00NGA",
+    "PHRI00NGA"
+  ],
+  "source_network_experiment": "net-2024d026-phri-rover",
+  "source_phase6_experiment": "atm-2024d026-phri-target",
+  "coordinate_frame": "IGS20",
+  "coordinate_epoch": "2024-01-26T11:59:42Z",
+  "start_time": "2024-01-26T00:00:00",
+  "end_time": "2024-01-26T23:59:30",
+  "sampling_interval": 180.0,
+  "correction_model": "auto"
+}
