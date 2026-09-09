@@ -13,6 +13,7 @@ have ambiguous band mappings. Exclusions always carry explicit reasons.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -44,12 +45,14 @@ class Rinex2Header:
     interval_s: float | None
     time_of_first_obs: str | None
     approx_xyz_m: tuple[float, float, float] | None
+    time_system: str = "GPS"
 
 
 @dataclass(slots=True)
 class SatObs:
     """One satellite's raw observables at one epoch."""
 
+    epoch_flag: int = 0
     values: dict[str, float | None] = field(default_factory=dict)
     lli: dict[str, int | None] = field(default_factory=dict)
 
@@ -77,10 +80,7 @@ def _full_year(yy: int) -> int:
 def epoch_iso(year: int, month: int, day: int, hour: int, minute: int, sec: float) -> str:
     whole = int(sec)
     micro = int(round((sec - whole) * 1_000_000))
-    return (
-        f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{whole:02d}"
-        f".{micro:06d}+00:00"
-    )
+    return f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{whole:02d}.{micro:06d}"
 
 
 def parse_rinex2_header(path: Path) -> Rinex2Header:
@@ -89,6 +89,7 @@ def parse_rinex2_header(path: Path) -> Rinex2Header:
     interval: float | None = None
     first_obs: str | None = None
     approx: tuple[float, float, float] | None = None
+    time_system = ""
     with path.open(encoding="utf-8", errors="replace") as handle:
         for line in handle:
             if pending_count > 0:
@@ -119,6 +120,7 @@ def parse_rinex2_header(path: Path) -> Rinex2Header:
                 except ValueError:
                     interval = None
             elif "TIME OF FIRST OBS" in label:
+                time_system = line[48:51].strip()
                 try:
                     first_obs = epoch_iso(
                         _full_year(int(line[0:6])),
@@ -147,6 +149,7 @@ def parse_rinex2_header(path: Path) -> Rinex2Header:
         interval_s=interval,
         time_of_first_obs=first_obs,
         approx_xyz_m=approx,
+        time_system=time_system,
     )
 
 
@@ -179,6 +182,8 @@ def _parse_obs_value(field16: str) -> tuple[float | None, int | None]:
     if text:
         try:
             value = float(text)
+            if not math.isfinite(value):
+                raise ValueError("non-finite RINEX observation")
         except ValueError:
             value = None
     lli: int | None = None
@@ -190,9 +195,7 @@ def _parse_obs_value(field16: str) -> tuple[float | None, int | None]:
     return value, lli
 
 
-def read_rinex2_observations(
-    path: Path, station_id: str, *, stride: int = 1
-) -> StationDataset:
+def read_rinex2_observations(path: Path, station_id: str, *, stride: int = 1) -> StationDataset:
     """Parse a RINEX 2 observation file into a station dataset.
 
     ``stride`` keeps every Nth epoch (deterministic decimation for expensive
@@ -207,6 +210,8 @@ def read_rinex2_observations(
     if ntypes == 0:
         dataset.skip_reasons["no observation types in header"] = 1
         return dataset
+    if header.time_system != "GPS":
+        raise ValueError("explicit GPS observation time system required")
     lines_per_sat = (ntypes + 4) // 5
     epoch_index = 0
     with path.open(encoding="utf-8", errors="replace") as handle:
@@ -242,6 +247,12 @@ def read_rinex2_observations(
             note_skip("malformed epoch line")
             continue
         iso, flag, sats = parsed
+        if flag in (2, 3, 5):
+            note_skip(f"epoch flag {flag} excluded")
+            pos += int(line[29:32])  # event count is special records, NOT satellites
+            continue
+        if flag not in (0, 1):
+            raise ValueError(f"unsupported RINEX header/slip event {flag}")
         # Satellite-id continuation lines (more than 12 satellites listed).
         for _ in range(_satellite_overflow_count(line)):
             if pos >= total:
@@ -258,7 +269,7 @@ def read_rinex2_observations(
             # next epoch record starts at the correct line.
             pos += len(sats) * lines_per_sat
             continue
-        keep = (epoch_index % stride == 0)
+        keep = epoch_index % stride == 0
         epoch_index += 1
         truncated = False
         for sat_id in sats:
@@ -268,7 +279,7 @@ def read_rinex2_observations(
                 pos = total
                 break
             pos += lines_per_sat
-            obs = SatObs()
+            obs = SatObs(epoch_flag=flag)
             for idx, code in enumerate(header.obs_types):
                 row = idx // 5
                 col = idx % 5
@@ -339,9 +350,10 @@ def discover_observables(datasets: dict[str, StationDataset]) -> dict[str, Any]:
         "stations": stations,
         "common_observation_codes": sorted(common_codes or []),
         "gps_l1_l2_compatible": bool(gps_dual),
-        "gps_only_gf_reason": None if gps_dual else (
-            "L1 and L2 not simultaneously present in every station header; "
-            + GPS_ONLY_GF_REASON
+        "gps_only_gf_reason": None
+        if gps_dual
+        else (
+            "L1 and L2 not simultaneously present in every station header; " + GPS_ONLY_GF_REASON
             if gps_dual is False and common_codes is not None and {"L1", "L2"} & common_codes
             else GPS_ONLY_GF_REASON
         ),
@@ -371,9 +383,7 @@ def common_satellites(
     via :func:`common_satellite_summary`.
     """
     wanted = stations or sorted(datasets)
-    per_station = {
-        name: datasets[name].data.get(epoch_iso_value, {}) for name in wanted
-    }
+    per_station = {name: datasets[name].data.get(epoch_iso_value, {}) for name in wanted}
     candidates: set[str] | None = None
     for sats in per_station.values():
         keys = set(sats)
@@ -386,18 +396,12 @@ def common_satellites(
             ok = True
             for name in wanted:
                 obs = per_station[name].get(sat)
-                if (
-                    obs is None
-                    or obs.values.get("L1") is None
-                    or obs.values.get("L2") is None
-                ):
+                if obs is None or obs.values.get("L1") is None or obs.values.get("L2") is None:
                     ok = False
                     break
             if not ok:
                 continue
-        result[sat] = [
-            name for name in wanted if sat in per_station.get(name, {})
-        ]
+        result[sat] = [name for name in wanted if sat in per_station.get(name, {})]
     return result
 
 

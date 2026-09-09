@@ -74,17 +74,47 @@ Only observed results belong here. Commands are reproducible from the repository
 | Contribution | Evidence | Observed result |
 |---|---|---|
 | Worktree and baseline | `git branch --show-current`, `git log -1`, initial `git status --short` | `phase7/vrs-generator` in `/home/excellence/NLGCP-phase7`, clean start at Phase 6 merge `f9e7341`; main worktree untouched |
-| Scientific model gate | `research/vrs_generator/src/nlgcp_vrs/models.py`; `docs/phase7-vrs-generator.md` | Phase 6 recorded zero/IDW/nearest/planar RMSE 2.984/3.546/4.004/15.300 m preserved; ZERO selected; no promotion criteria invented; candidate observation translation explicitly BLOCKED |
-| Upstream geometry audit | Phase 6 `satellite_geometry.py` and RINEX GPS headers versus IGS specification and pinned RTKLIB source; documented in `docs/phase7-vrs-generator.md` | RINEX angles unnecessarily multiplied by pi; GPS calendar labels receive a UTC leap-offset conversion in Phase 6. Upstream outputs preserved, not re-certified. Phase 7 uses pinned RTKLIB directly; independent Level 3 review/reprocessing required |
-| Phase 7 focused tests | `RTKLIB_SOURCE=/home/excellence/RTKLIB .venv/bin/python -m pytest research/vrs_generator/tests -q` | PASS: 74 tests, including six native geometry checks against labelled synthetic analytic orbits. Covers definitions, coordinates, admission, target aliases/leakage, codes/epochs/satellites, ephemeris exclusions, code/phase signs/units, clock/ambiguity datums, malformed RINEX, output identity, fingerprints, dry runs and resumability |
+| Scientific model gate | `research/vrs_generator/src/nlgcp_vrs/models.py`; `docs/phase7-vrs-generator.md` | Corrected Phase 6 ranking zero/IDW/nearest/planar RMSE 3.076/3.352/3.757/14.373 m (n=15948, geometry-v3) applied; ZERO selected; no promotion criteria invented; candidate observation translation explicitly BLOCKED. Older figures (2.984/3.546/4.004/15.300 m) SUPERSEDED |
+| Upstream geometry audit | Phase 6 `satellite_geometry.py` and RINEX GPS headers versus IGS specification and pinned RTKLIB source; corrected in the validation sprint (`docs/phase6-7-scientific-validation.md`) | RINEX angles were multiplied by pi; GPS calendar labels received a UTC leap-offset conversion in Phase 6. Both (plus 11 further defects) CORRECTED and affected evidence regenerated as geometry-v3. Phase 7 uses pinned RTKLIB directly; review verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS |
+| Phase 7 focused tests | `RTKLIB_SOURCE=/home/excellence/RTKLIB .venv/bin/python -m pytest research/vrs_generator/tests -q` | PASS: 79 tests (74 + 5 leakage-exclusion), including six native geometry checks against labelled synthetic analytic orbits. Covers definitions, coordinates, admission, target aliases/leakage, codes/epochs/satellites, ephemeris exclusions, code/phase signs/units, clock/ambiguity datums, malformed RINEX, output identity, fingerprints, dry runs and resumability |
 | Four real held-out rotations | Checked-in `research/vrs_generator/config/{phri,abfc,ekak,mgbo}.json`; CLI generate/validate/summarize; `research/vrs_generator/PILOT_EVIDENCE.{json,md}` | COMPLETE: PHRI 24,556; ABFC 17,764; EKAK 17,847; MGBO 17,893 observations (78,060 total), each 480/480 scheduled 180-second epochs and 30 GPS satellites. ZERO spatial correction in every run |
-| PHRI held-out diagnostics | `processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/validation.json` | EKAK anchor 105.553 km. C1/P2 clock-adjusted SD RMSE 0.597/0.768 m (4,471/4,422 residuals); L1/L2 180-second time-differenced DD RMSE 2.087/3.202 m (3,843/3,809 residuals). PHRI P1 has zero matches and null metrics. Not positioning errors; no accuracy gain claimed |
+| PHRI held-out diagnostics | `processed/vrs/experiments/vrs-2024d026-phri-geometry-v3/validation.json` | EKAK anchor 105.553 km. C1/P2 clock-adjusted SD RMSE 0.597/0.768 m (4,471/4,422 residuals); L1/L2 180-second time-differenced DD RMSE 2.087/3.202 m (3,843/3,809 residuals). PHRI P1 has zero matches and null metrics. Not positioning errors; no accuracy gain claimed |
 | Real resumability | Repeat PHRI `generate`; `build/vrs/phri-resume.json` | PASS: matching material and output hashes, `reused=true`, 24,556 observations; no regenerated measurements |
 | Full repository quality gate | `RTKLIB_SOURCE=/home/excellence/RTKLIB make check`; `build/vrs/make-check-final.log` | PASS: Ruff, mypy (108 files), pytest (319), Go format/vet/tests, CMake/CTest, ESLint, TypeScript and Next.js production build with existing WASM configuration |
-| Scientific and phase boundary | `docs/phase7-vrs-generator.md`, Phase 7 provenance and correction-model outputs | No promoted interpolator, RINEX VRS, positioning solution, integer ambiguity fixing, measured atmosphere, RTCM/NTRIP/live service or Phase 8 implementation. Engineering and pilot complete; independent Level 3 review pending |
+| Scientific and phase boundary | `docs/phase7-vrs-generator.md`, Phase 7 provenance and correction-model outputs | No promoted interpolator, RINEX VRS, positioning solution, integer ambiguity fixing, measured atmosphere, RTCM/NTRIP/live service or Phase 8 implementation. Engineering and pilot complete; scientific review COMPLETE with verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS |
 
-Authoritative outputs: `${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-{phri,abfc,ekak,mgbo}-geometry-v2/`.
+Authoritative outputs: `${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-{phri,abfc,ekak,mgbo}-geometry-v3/`.
 Raw observations were not modified. Preliminary unversioned/v1 derived outputs
-remain outside Git and are superseded by v2. Runtime provenance records base
+remain outside Git and are superseded by v3 (v1/v2 identifiers retired;
+v2 observation/geometry numerics verified identical to v3). Runtime provenance records base
 commit `f9e7341`, dirty=true and exact algorithm/source hashes corresponding to
 the committed Phase 7 tree; evidence JSON contains artifact SHA-256s.
+
+## Phase 6/7 Scientific Validation & Geometry Hardening (2026-09-09)
+
+Branch `phase67/scientific-validation-geometry-hardening` from `phase7/vrs-generator` @ `59c986a`.
+Full record: `docs/phase6-7-scientific-validation.md`; equation traceability:
+`docs/phase6-7-equation-traceability.md`; machine evidence:
+`research/scientific_validation/evidence/{before-review,geometry-audit,corrected-results}.json`
+plus `old-vs-corrected.csv`.
+
+| Contribution | Evidence | Observed result |
+|---|---|---|
+| Before-review freeze inventory | `research/scientific_validation/evidence/before-review.json`; `git status`, `git rev-parse HEAD` (`59c986a`), `git log` | RECORDED: HEAD `59c986a`; frozen SHA-256s for all Phase 6/7 generated products; data root `/home/excellence/nlgcp-data` |
+| Coordinate provenance audit | `geometry-audit.json` stations; `load_station_coordinates` hash re-verification | VERIFIED: 4/4 IGS20 @ 2024-01-26T11:59:42Z, PRIDE solutions, pos-file SHA-256 match; RINEX approx coords never admitted |
+| Independent geometry verification | `geometry-audit.json` baselines (`math.dist` vs NumPy norm vs PROJ `geod`); native RTKLIB `ecef2pos`/`eph2pos`/`nmf` cross-checks | VERIFIED: 6/6 chords agree with Phase 5 history to ≤1.2e-10 m (unchanged); ECEF→geodetic <1e-8 deg vs RTKLIB; 16 orbit checks <6.4e-8 m; 48 Niell checks <1e-12 |
+| 13 geometry/science bugs fixed | `git diff 59c986a` over `research/atmospheric_spatial_model`, `research/single_base_rtk`; `test_geometry_hardening.py` (14), `test_scientific_review.py` (11) | CORRECTED: Earth-rate factor-100, RINEX-radians π-scaling, +18 s GPST offset, toe_week, ephemeris health/age, nav spare parsing, geocentric→geodetic ENU, circle→triangle containment, SVD plane, GF sign, Niell tables, fold-local datum, epoch-flag/LLI rules |
+| Phase 6 evidence regeneration | CLI `inspect/plan/derive/fit/validate/summarize` under `atm-2024d026-phri-target-geometry-v3` + fresh replay; `build/scientific-validation/logs/phase6-*.json` | COMPLETE: n=15948 (all 4 folds evaluable); zero 3.076 m still best (IDW 3.352, nearest 3.757, planar 14.373); replay 7/7 files bit-identical; all folds proven EXTRAPOLATION |
+| Phase 7 regeneration (4 rotations) | CLI `generate/validate/summarize` for phri/abfc/ekak/mgbo `*-geometry-v3`; `collect_evidence.py` v2-vs-v3 column audit | COMPLETE: 78,060 virtual obs (24556/17764/17847/17893), 480/480 epochs, 30 sats each; observation/geometry columns identical v2→v3; metrics exactly equal; leakage=false ×4; ZERO retained |
+| PHRI corrected diagnostics | `processed/vrs/experiments/vrs-2024d026-phri-geometry-v3/validation.json` | C1 0.597 m / P2 0.768 m clock-adjusted RMSE; L1 2.087 m / L2 3.202 m TD-DD RMSE. Diagnostic residuals, not positioning errors |
+| Provenance incident | `corrected-results.json` `historical_preservation`; `before-review.json` hashes | RECORDED: old pilot dir re-run under its own ID post-freeze (2026-09-08 ~14:10 local); frozen hashes authoritative; `PILOT_EVIDENCE.md` figures (zero 2.984, n=17768) match no artifact — SUPERSEDED |
+| Full repository quality gate | `RTKLIB_SOURCE=/home/excellence/RTKLIB make check` | PASS: EXIT 0 — Ruff, mypy strict, pytest 355 (was 319; +36, none weakened), Go, CTest, ESLint, tsc, Next.js build |
+| Merge decision | `docs/phase6-7-scientific-validation.md` §13 | APPROVED_WITH_PROVISIONAL_LIMITATIONS: merge only after PILOT_EVIDENCE rewrite, old-ID supersede marking, v1/v2 ID retirement. Positioning validation NOT PERFORMED; Phase 8 NOT STARTED |
+
+## Phase 6/7 Review Closure (2026-09-09)
+
+| Contribution | Evidence | Observed result |
+|---|---|---|
+| Merge condition 1 — geometry-v3 pilot evidence | `research/vrs_generator/PILOT_EVIDENCE.{md,json}` regenerated/copied from `*-geometry-v3` artifacts; `research/atmospheric_spatial_model/PILOT_EVIDENCE.md` rewritten (n=15948, zero 3.076 m, all folds extrapolation) | PASS: 4 rotations, 78,060 obs, 480 epochs/rotation, 30 sats, ZERO/VRS_GEOMETRY_ONLY, no promotion, leakage PASS ×4, PHRI + all-rotation diagnostics, no positioning, RINEX uncertified, no accuracy claim. Old 2.984 m figures only as labelled SUPERSEDED history |
+| Merge condition 2 — old Phase 6 pilot superseded | Phase 6 `PILOT_EVIDENCE.md` supersession notice; `EVIDENCE_INDEX.md`; `before-review.json` frozen hashes | PASS: `atm-2024d026-phri-target` SUPERSEDED by `atm-2024d026-phri-target-geometry-v3` (13 defects, corrected values recorded, review reference `docs/phase6-7-scientific-validation.md`); Git history untouched |
+| Merge condition 3 — v1/v2 retired | `research/vrs_generator/config/*.json` (`*-geometry-v3` IDs); CLI `plan` fingerprint check; docs/evidence index | PASS: four default configs fingerprint-match recorded v3 outputs exactly (`ee67402f…`, `a3ad1329…`, `c647824e…`, `89bd6116…`); v1/v2 SUPERSEDED / NON-AUTHORITATIVE; no v2 defaults remain in code |

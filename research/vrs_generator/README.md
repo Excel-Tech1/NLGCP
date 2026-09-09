@@ -4,8 +4,11 @@ Phase 7 produces traceable geometry-only virtual observations at verified
 held-out station coordinates. **NO VALIDATED INTERPOLATION GAIN**.
 
 See [theory, gates, validation and limitations](../../docs/phase7-vrs-generator.md)
-and [real pilot evidence](PILOT_EVIDENCE.md). Independent Level 3 review remains
-required. No RTCM, NTRIP, live delivery or Phase 8 implementation is included.
+and [real pilot evidence](PILOT_EVIDENCE.md). Independent scientific review is
+COMPLETE (APPROVED_WITH_PROVISIONAL_LIMITATIONS;
+`docs/phase6-7-scientific-validation.md`). Authoritative experiments are
+`vrs-2024d026-<target>-geometry-v3`; v1/v2 identifiers are SUPERSEDED.
+No RTCM, NTRIP, live delivery or Phase 8 implementation is included.
 
 ## Dependencies and commands
 

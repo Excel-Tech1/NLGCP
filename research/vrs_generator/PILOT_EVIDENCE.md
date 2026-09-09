@@ -1,11 +1,18 @@
-# Phase 7 — DOY 026 held-out pilot evidence
+# Phase 7 — DOY 026 held-out pilot evidence (AUTHORITATIVE: geometry-v3)
 
-Engineering synthesis and all four held-out diagnostic runs completed. Independent
-Level 3 scientific review remains pending. **NO VALIDATED INTERPOLATION GAIN**.
+Engineering synthesis and all four held-out diagnostic runs completed.
+Independent scientific review is COMPLETE with verdict
+**APPROVED_WITH_PROVISIONAL_LIMITATIONS**
+(see `docs/phase6-7-scientific-validation.md`).
+**NO VALIDATED INTERPOLATION GAIN. No spatial model promoted.**
 
-Final configurations use `vrs-2024d026-<target>-geometry-v2` and explicit
-180-second GPST sampling of the 30-second real reference observations.
-All four runs used ZERO spatial correction; no candidate was promoted.
+Authoritative configurations use `vrs-2024d026-<target>-geometry-v3` with
+explicit 180-second GPST sampling of the 30-second real reference observations.
+All four runs used **ZERO spatial correction** (`ZERO / VRS_GEOMETRY_ONLY`);
+no candidate was promoted. Earlier `geometry`, `geometry-v1` and `geometry-v2`
+identifiers are **SUPERSEDED / NON-AUTHORITATIVE** (their observation/geometry
+numerics were verified identical to v3; only virtual IDs/provenance differ —
+see `research/scientific_validation/evidence/corrected-results.json`).
 
 | Held-out target | References | Anchor | Anchor km | Observations | Epochs | GPS satellites |
 |---|---|---|---:|---:|---:|---:|
@@ -23,7 +30,9 @@ All four runs used ZERO spatial correction; no candidate was promoted.
 Code values below remove one mean receiver-clock/code offset per epoch/code.
 Phase values are time-differenced double differences over 180 s with a
 common pivot and continuity gates. They are **not positioning errors**,
-undifferenced phase RMSE or estimates of fixed-ambiguity accuracy.
+undifferenced phase RMSE or estimates of fixed-ambiguity accuracy. Values are
+copied from the geometry-v3 `validation.json` artifacts (see
+[PILOT_EVIDENCE.json](PILOT_EVIDENCE.json)).
 
 | Target | Code | Diagnostic | Compared residuals | Matched/generated | RMSE m | MAE m | Bias m | Std m |
 |---|---|---|---:|---:|---:|---:|---:|---:|
@@ -55,18 +64,27 @@ remain; large phase residuals are retained rather than filtered to improve RMSE.
 
 ## Controls, limitations and provenance
 
-- Phase 6 recorded comparison remains zero 2.984 m, IDW 3.546 m, nearest 4.004 m,
-  planar 15.300 m. These are Phase 6 proxy metrics, not Phase 7 VRS residual metrics.
+- Corrected Phase 6 comparison (identical-sample LOOCV, n = 15,948, experiment
+  `atm-2024d026-phri-target-geometry-v3`): zero 3.076 m, IDW 3.352 m,
+  nearest 3.757 m, planar 14.373 m. **No spatial interpolator beats the zero
+  control; nothing was promoted.** All four held-out rotations are
+  extrapolation cases. These are Phase 6 proxy metrics, not Phase 7 VRS
+  residual metrics. Older Phase 6 figures (zero 2.984 m, n = 17,768) are
+  SUPERSEDED and match no stored artifact.
 - No corrected candidate VRS was generated. Diagnostic requests block because
   the arc-detrended GF proxy lacks validated observation-datum translation.
-- The upstream Phase 6 navigation radians/GPST audit is unresolved. Its recorded
-  ranking is retained as a conservative veto, not re-certified or silently replaced.
+- The upstream Phase 6 navigation radians/GPST defects found during review were
+  corrected and the affected evidence regenerated; the corrected ranking above
+  is the conservative veto. VRS synthesis uses pinned RTKLIB directly and its
+  observation/geometry numerics were verified identical across versions.
+- Target leakage: PASS in all four rotations
+  (`held_out_observations_used_in_synthesis=false`). Target observation bodies
+  are excluded from synthesis. Only verified target coordinates and upstream
+  validation metadata are consumed. Source-file aliases are rejected;
+  validation loads target observations separately.
 - No absolute atmosphere, measured meteorology, integer ambiguity, centimetre
   positioning, network-RTK improvement or accuracy gain is claimed.
-- RINEX export and RTKLIB positioning validation were not performed.
-- Target observation bodies are excluded from synthesis. Only verified target
-  coordinates and upstream validation metadata are consumed. Source-file aliases
-  are rejected; validation loads target observations separately.
+- RINEX export is uncertified and RTKLIB positioning validation was NOT PERFORMED.
 - IGS20 station coordinates and GPS broadcast WGS84 realization limitations,
   inherited antenna/hardware/clock effects and uncorrected atmosphere remain explicit.
 - PHRI generation re-run verified matching material/output hashes and returned
@@ -75,20 +93,19 @@ remain; large phase residuals are retained rather than filtered to improve RMSE.
 Full outputs are outside Git:
 
 ```text
-${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/
-${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/
-${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/
-${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/
+${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-phri-geometry-v3/
+${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-abfc-geometry-v3/
+${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-ekak-geometry-v3/
+${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v3/
 ```
 
 Exact metrics, material fingerprints and artifact SHA-256s are copied from
 validated machine output into [PILOT_EVIDENCE.json](PILOT_EVIDENCE.json).
-Runtime provenance records base commit `f9e7341` with `git_dirty=true` plus
-the exact per-file source hashes subsequently committed on the Phase 7 branch.
-The fingerprint excludes Git commit/timestamp metadata so the committed identical
-algorithm can reuse and verify these records. Preliminary unversioned/v1 outputs
-are retained outside Git; v2 is authoritative and removes an irrelevant inherited
-tolerance label while enforcing complete Phase 5 context.
+Runtime provenance records the base commit plus the exact per-file source
+hashes of the reviewed tree. The fingerprint excludes Git commit/timestamp
+metadata so the committed identical algorithm can reuse and verify these
+records. Unversioned/v1/v2 outputs are retained outside Git and are
+SUPERSEDED / NON-AUTHORITATIVE.
 
 Reproduce using the checked-in configurations and the CLI commands in
 [README.md](README.md). Changing scientific inputs requires a new experiment ID.
@@ -96,12 +113,12 @@ The reference observations and raw dataset were not modified.
 
 ## Checks and review
 
-74 Phase 7 tests pass, including six native RTKLIB tests using labelled synthetic
-orbits; 319 total repository Python tests pass. Final `make check` PASS: Ruff,
-mypy (108 files), pytest, Go format/vet/tests, CMake/CTest, ESLint, TypeScript
-and Next.js production build. See `EVIDENCE_INDEX.md` and the local log at
-`build/vrs/make-check-final.log`.
+79 Phase 7 tests pass (including leakage-exclusion tests and six native RTKLIB
+tests using labelled synthetic orbits); 355 total repository Python tests pass.
+Final `make check` PASS: Ruff, mypy strict, pytest, Go format/vet/tests,
+CMake/CTest, ESLint, TypeScript and Next.js production build.
+See `EVIDENCE_INDEX.md` and `docs/phase6-7-scientific-validation.md`.
 
-Next: independent Level 3 review, repair/regenerate the affected Phase 6 evidence,
-and acquire denser multi-day observations. Phase 8 has an offline file interface
-available but no approved VRS correction model. Phase 8 implementation has not begun.
+Next: merge the reviewed branch into main under the recorded conditions, then
+acquire denser multi-day observations. Correction mode stays
+ZERO / VRS_GEOMETRY_ONLY. Phase 8 implementation has not begun.

@@ -1,5 +1,10 @@
 # Phase 7 — Offline Virtual Reference Observation Generator
 
+> Review update (2026-09-09): historical v2 results below remain traceable,
+> but corrected Phase 6 evidence and new VRS v3 runs are authoritative for this
+> sprint. See [scientific review](phase6-7-scientific-validation.md) and
+> [equation traceability](phase6-7-equation-traceability.md). No model is promoted.
+
 ## Scope and scientific status
 
 This is an offline **VRS_GEOMETRY_ONLY** technical control. It transforms
@@ -98,10 +103,12 @@ Sagnac. Low-elevation observations remain diagnostics, not service admission.
 
 ## Phase 6 audit and fail-closed selection
 
-The recorded DOY 026 validation is preserved: zero 2.984 m, IDW 3.546 m,
-nearest 4.004 m, planar 15.300 m on the recorded identical comparison samples.
-No interpolator beats zero in that record. Phase 7 verifies the experiment
-context, inputs, completion, metric finiteness, sample counts and declared
+The corrected DOY 026 validation (experiment
+`atm-2024d026-phri-target-geometry-v3`, identical-sample LOOCV n = 15,948) is:
+zero 3.076 m, IDW 3.352 m, nearest 3.757 m, planar 14.373 m.
+No interpolator beats zero in that record. Earlier recorded figures (zero
+2.984 m, IDW 3.546 m, nearest 4.004 m, planar 15.300 m) are SUPERSEDED and
+match no stored artifact. Phase 7 verifies the experiment context, inputs, completion, metric finiteness, sample counts and declared
 winner, then selects zero. Missing or contradictory validation blocks even
 geometry-only generation.
 
@@ -114,10 +121,12 @@ During Phase 7 source review, two upstream geometry concerns were identified:
   geometry path adds 18 seconds to them; the real pilot headers declare GPS
   time. Phase 7 keeps GPST labels explicitly and adds no UTC leap offset.
 
-Phase 6 code and outputs were not changed in this sprint. Its recorded ranking
-is consumed as a veto, **not re-certified as scientifically valid**. The affected
-satellite geometry, troposphere and combined-field validation require an
-upstream correction, regeneration and review before any promotion. Phase 7
+Phase 6 code and outputs were corrected in the Phase 6/7 scientific-validation
+sprint (see `docs/phase6-7-scientific-validation.md`): the satellite-geometry,
+troposphere and combined-field defects found during this audit are fixed and the
+affected evidence regenerated as `atm-2024d026-phri-target-geometry-v3`.
+Its corrected ranking above is consumed as a veto, with zero validated as the
+winner and nothing promoted. Phase 7
 uses RTKLIB directly and tests nonzero orbital radians, GPST, dynamic transmit
 positions and Sagnac against an independent analytic circular orbit.
 
@@ -137,7 +146,9 @@ A numerical candidate can only be considered for `APPROVED_FOR_VRS` after:
   temporal/satellite dependence rather than treating every row as independent;
 - reviewed station geometry and extrapolation criteria pass without pathology;
 - proxy-to-code/phase units, signs, datum and ambiguity translation are validated;
-- upstream geometry findings are resolved and Level 3 evidence is reviewed.
+- upstream geometry findings are resolved and reviewed evidence recorded
+  (`docs/phase6-7-scientific-validation.md`, verdict
+  APPROVED_WITH_PROVISIONAL_LIMITATIONS);
 
 Only the first comparison can currently be evaluated numerically. The repository
 has no approved empirical bounds for the other conditions, and Phase 7 does not

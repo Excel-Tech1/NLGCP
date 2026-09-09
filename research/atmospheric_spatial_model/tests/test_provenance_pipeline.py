@@ -61,9 +61,11 @@ def make_definition(**overrides: Any) -> ModelExperimentDefinition:
 
 
 def test_definition_validation_catches_problems() -> None:
-    bad = make_definition(reference_stations=["A00NGA", "A00NGA"],
-                          target_station="A00NGA",
-                          minimum_reference_station_count=9)
+    bad = make_definition(
+        reference_stations=["A00NGA", "A00NGA"],
+        target_station="A00NGA",
+        minimum_reference_station_count=9,
+    )
     problems = bad.validate()
     assert any("duplicates" in p for p in problems)
     assert any("must not be listed" in p for p in problems)
@@ -77,8 +79,11 @@ def test_fingerprint_determinism_and_invalidation() -> None:
 
 def test_provenance_record_verifies() -> None:
     record = provenance_record(
-        inputs={"x": "y"}, algorithm="algo", parameters={},
-        code_fingerprint_value="cf", git_commit="abc",
+        inputs={"x": "y"},
+        algorithm="algo",
+        parameters={},
+        code_fingerprint_value="cf",
+        git_commit="abc",
     )
     assert fingerprint_matches(record) is True
     tampered = dict(record, inputs={"x": "z"})
@@ -115,23 +120,38 @@ def make_data_root(tmp_path: Path, *, with_nav: bool = False) -> Path:
         obs = root / "obs" / f"{station}.24O"
         obs.parent.mkdir(parents=True, exist_ok=True)
         write_rinex2(obs, epochs=6, l1_base=1_000_000.0 + index * 100.0)
-        admitted.append({
-            "station_id": station,
-            "qc_status": "ACCEPT",
-            "observation_path": str(obs),
-            "navigation_path": "external-products/brdc.nav"
-            if with_nav
-            else "external-products/missing.nav",
-            "navigation_sha256": "synthetic" if with_nav else None,
-        })
+        admitted.append(
+            {
+                "station_id": station,
+                "qc_status": "ACCEPT",
+                "observation_path": str(obs),
+                "converted_sha256": sha256_file(obs),
+                "navigation_path": "external-products/brdc.nav"
+                if with_nav
+                else "external-products/missing.nav",
+                "navigation_sha256": __import__("hashlib")
+                .sha256(synthetic_nav_text().encode())
+                .hexdigest()
+                if with_nav
+                else None,
+            }
+        )
     exp = root / "processed" / "network-rtk" / "experiments" / "net-synth"
     exp.mkdir(parents=True, exist_ok=True)
     (exp / "admission.json").write_text(json.dumps({"admitted": admitted}), encoding="utf-8")
     (exp / "geometry.json").write_text(json.dumps({}), encoding="utf-8")
-    coords = {
+    coords: dict[str, Any] = {
         "stations": {
             station: {
-                "ecef": {"x_m": 6_378_137.0 + i * 50_000.0, "y_m": 100_000.0, "z_m": 200_000.0},
+                # Non-collinear layout (quadratic z stagger): every 3-station
+                # subset spans a genuine triangle so the planar candidate is
+                # fittable. A previous collinear layout (constant y/z) made
+                # the reference triangle degenerate (area zero).
+                "ecef": {
+                    "x_m": 6_378_137.0 + i * 50_000.0,
+                    "y_m": 100_000.0 + i * 30_000.0,
+                    "z_m": 200_000.0 + i * i * 5_000.0,
+                },
                 "reference_frame": "IGS20",
                 "coordinate_epoch": "2024-01-26T00:00:00Z",
             }
@@ -140,6 +160,14 @@ def make_data_root(tmp_path: Path, *, with_nav: bool = False) -> Path:
     }
     single = root / "processed" / "single-base"
     single.mkdir(parents=True, exist_ok=True)
+    source = single / "synthetic-pride.pos"
+    source.write_text("SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS")
+    for entry in coords["stations"].values():
+        entry.update(
+            scientifically_valid=True,
+            pos_file_path=str(source),
+            pos_file_sha256=sha256_file(source),
+        )
     (single / "derived-coordinates.json").write_text(json.dumps(coords), encoding="utf-8")
     if with_nav:
         nav = root / "external-products" / "brdc.nav"
@@ -266,13 +294,16 @@ def make_spread_data_root(tmp_path: Path) -> Path:
         obs = root / "obs" / f"{station}.24O"
         obs.parent.mkdir(parents=True, exist_ok=True)
         write_rinex2(obs, epochs=6, l1_base=1_000_000.0 + index * 100.0)
-        admitted.append({
-            "station_id": station,
-            "qc_status": "ACCEPT",
-            "observation_path": str(obs),
-            "navigation_path": "external-products/missing.nav",
-            "navigation_sha256": None,
-        })
+        admitted.append(
+            {
+                "station_id": station,
+                "qc_status": "ACCEPT",
+                "observation_path": str(obs),
+                "converted_sha256": sha256_file(obs),
+                "navigation_path": "external-products/missing.nav",
+                "navigation_sha256": None,
+            }
+        )
     exp = root / "processed" / "network-rtk" / "experiments" / "net-synth"
     exp.mkdir(parents=True, exist_ok=True)
     (exp / "admission.json").write_text(json.dumps({"admitted": admitted}), encoding="utf-8")
@@ -287,6 +318,14 @@ def make_spread_data_root(tmp_path: Path) -> Path:
         }
     single = root / "processed" / "single-base"
     single.mkdir(parents=True, exist_ok=True)
+    source = single / "synthetic-pride.pos"
+    source.write_text("SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS")
+    for entry in coords["stations"].values():
+        entry.update(
+            scientifically_valid=True,
+            pos_file_path=str(source),
+            pos_file_sha256=sha256_file(source),
+        )
     (single / "derived-coordinates.json").write_text(json.dumps(coords), encoding="utf-8")
     return root
 
@@ -301,8 +340,13 @@ def test_datum_zero_records_anchor_loocv(tmp_path: Path) -> None:
     assert derived["status"] == "PARTIAL"  # no nav: troposphere BLOCKED
 
     records_path = (
-        root / "processed" / "atmospheric-model" / "experiments"
-        / "atm-spread" / "residuals" / "spatial-records.csv"
+        root
+        / "processed"
+        / "atmospheric-model"
+        / "experiments"
+        / "atm-spread"
+        / "residuals"
+        / "spatial-records.csv"
     )
     groups: dict[tuple[str, str], dict[str, float]] = {}
     with records_path.open(encoding="utf-8") as handle:
@@ -319,8 +363,13 @@ def test_datum_zero_records_anchor_loocv(tmp_path: Path) -> None:
     fitted = fit_experiment(root, definition, REPO_ROOT)
     assert fitted["status"] == "COMPLETE"
     models_path = (
-        root / "processed" / "atmospheric-model" / "experiments"
-        / "atm-spread" / "models" / "target-predictions.csv"
+        root
+        / "processed"
+        / "atmospheric-model"
+        / "experiments"
+        / "atm-spread"
+        / "models"
+        / "target-predictions.csv"
     )
     coord_lookup = {
         "A00NGA": (6_378_137.0, 0.0, 0.0),
@@ -341,18 +390,18 @@ def test_datum_zero_records_anchor_loocv(tmp_path: Path) -> None:
             )
             # No leakage: nearest predicts the nearest *reference* value,
             # never the target station's own observed value.
-            assert float(row["predicted_m"]) == pytest.approx(
-                observed_values[nearest_ref]
-            )
+            assert float(row["predicted_m"]) == pytest.approx(observed_values[nearest_ref])
             checked += 1
     assert checked > 0
 
     validated = validate_experiment(root, definition, REPO_ROOT)
     assert validated["status"] == "COMPLETE"
-    # Every rotation is evaluable, including the datum-target fold.
+    # Every fold now has independent station evidence and a reference-only datum.
     assert len(validated["loocv"]["folds"]) == 4
     for fold in validated["loocv"]["folds"]:
         assert fold["admissible"] is True
         assert fold["evaluated"] > 0, fold
+        assert fold["datum"] in fold["references"]
+        assert fold["datum"] != fold["target"]
     assert validated["loocv"]["models"]["planar"]["count"] > 0
     assert validated["loocv"]["best_model"] in {"zero", "nearest", "idw", "planar"}

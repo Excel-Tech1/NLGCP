@@ -1,16 +1,27 @@
 {
-  "independent_level3_review": "PENDING",
+  "authoritative_ids": [
+    "vrs-2024d026-phri-geometry-v3",
+    "vrs-2024d026-abfc-geometry-v3",
+    "vrs-2024d026-ekak-geometry-v3",
+    "vrs-2024d026-mgbo-geometry-v3"
+  ],
+  "independent_level3_review": "COMPLETE \u2014 APPROVED_WITH_PROVISIONAL_LIMITATIONS; see docs/phase6-7-scientific-validation.md",
   "records": [
     {
-      "artifact_root": "/home/excellence/nlgcp-data/processed/vrs/experiments/vrs-2024d026-phri-geometry-v2",
+      "artifact_root": "/home/excellence/nlgcp-data/processed/vrs/experiments/vrs-2024d026-phri-geometry-v3",
       "artifact_sha256": {
-        "completion.json": "04556768d1689125aa6da87f23b337b55899efb882772c71e91f68c062005839",
-        "definition.json": "8122c36f199e1cfd5a9702c396ffd883ce2b4a8aee72041a53dbe3e83c084c86",
-        "metrics.json": "1c479002e70b49049cfae2b73bac68e3c705aa65732ead6fbe4a201a7b50bdfa",
-        "provenance.json": "c4565b3437a5c364bfedde24c9cb1357eccaf62ca91fc2c5ce87e8d4b64e0671",
+        "admission.json": "88f3baba20457f542402068cdd16c0f2ff97ec5af31cd4b33489f519519c6998",
+        "anchor.json": "8d34677b395766b18f1f61190d5eb9129e36ea0b180b80c1792d4926a5c20910",
+        "completion.json": "eee17e7c69fbcede873de697f6587a4326db9e15798fc2727ad7149e0d5652fc",
+        "correction-model.json": "b38520a3d8e65760e5b927baafea18e746f2b09bd07dc50dfb46122e66d15fdb",
+        "definition.json": "ee21fdc55b2da54bca61969a99cef5b82643d624c4a42626d25cc7a85892dfd0",
+        "exclusions.json": "f0ec7978e06fbee518624c47420dd71097e9a293be71668f5a3a14c6eb7697ec",
+        "metrics.json": "d45d0592357712bdf240b13028d797249a78f299484f5c37098d16e13710a43f",
+        "provenance.json": "3710d150661ad46264799bae5f2dd242f2e75ebb8336c8453df2fb4a4257d00c",
+        "target.json": "3b60ace3b4adff72640d3553285d6b67d3f6b65c28ae4cb5344bfdaeb3bb7292",
         "validation-residuals.csv": "1b13ae85521ca6230ea296f2e65e0bd2cb95669f053f88b431b91840b751a4fd",
-        "validation.json": "c5d4d772357df90f9602eab1e7b13a0ccd2cbf3ecfdda736f83a4acfb070a568",
-        "virtual-observations.csv": "0a8bc284a821782626a574418817b662551310d292b3562b3724965d8ef7c794"
+        "validation.json": "c9a4729295903ba5830bdbda4057060c3b134b23aabdbfd1c24255664ea66572",
+        "virtual-observations.csv": "b229e6488420deb198c6e25b402ffd6b80ac3a35d7320ca313830e2ad038050b"
       },
       "generation": {
         "anchor": {
@@ -24,8 +35,8 @@
         "epoch_count": 480,
         "epoch_coverage": 1.0,
         "expected_epoch_count": 480,
-        "experiment_id": "vrs-2024d026-phri-geometry-v2",
-        "fingerprint": "dfebab0e61ef0bd3d90876a93d663c4fd32a8b7b82cc6e200d26b0ba0cbc74ab",
+        "experiment_id": "vrs-2024d026-phri-geometry-v3",
+        "fingerprint": "ee67402f946d04fa7b3f02d7f0a3d4bee2b05f5e27d3351777fac69443dc1100",
         "first_epoch_gpst": "2024-01-26T00:00:00.000000",
         "last_epoch_gpst": "2024-01-26T23:57:00.000000",
         "observation_codes": {
@@ -76,8 +87,8 @@
         "watermark": "NO VALIDATED INTERPOLATION GAIN"
       },
       "validation": {
-        "execution_timestamp": "2026-09-08T12:22:26.914725+00:00",
-        "fingerprint": "79aedfd75d5cfa5b14ea4bd9f50c5faf8d31e720a0cd87eef36c7ffbc52310ff",
+        "execution_timestamp": "2026-09-09T00:43:03.733603+00:00",
+        "fingerprint": "6dd9a2f99cc05ac701ebbe98304d7b63f0817b4f26b2d290679cd591cb2f3c99",
         "held_out_observations_used_in_synthesis": false,
         "limitations": [
           "diagnostic residuals, not positioning errors",
@@ -156,12 +167,12 @@
         },
         "positioning_validation": "NOT_PERFORMED; RINEX export deferred",
         "provenance": {
-          "generation_fingerprint": "dfebab0e61ef0bd3d90876a93d663c4fd32a8b7b82cc6e200d26b0ba0cbc74ab",
+          "generation_fingerprint": "ee67402f946d04fa7b3f02d7f0a3d4bee2b05f5e27d3351777fac69443dc1100",
           "target_observation_path": "/home/excellence/nlgcp-data/working/qc-converted/2024/PHRI00NGA/026/PHRI0260.24O",
           "target_qc_path": "/home/excellence/nlgcp-data/processed/qc/profiles/network_rtk/sessions/2024/PHRI00NGA/026/qc-result.json",
           "target_qc_sha256": "a6b915c986c84a4df458e8a22fa8d296b28dc88e584cfc7b55f1f5ed93441e03",
           "target_sha256": "a2bae005e8973aedd9a920540a8a96c77ffda4c12d1d1630d37c8610a43f24b6",
-          "virtual_observations_sha256": "0a8bc284a821782626a574418817b662551310d292b3562b3724965d8ef7c794"
+          "virtual_observations_sha256": "b229e6488420deb198c6e25b402ffd6b80ac3a35d7320ca313830e2ad038050b"
         },
         "residuals_sha256": "1b13ae85521ca6230ea296f2e65e0bd2cb95669f053f88b431b91840b751a4fd",
         "status": "COMPLETE",
@@ -169,15 +180,20 @@
       }
     },
     {
-      "artifact_root": "/home/excellence/nlgcp-data/processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2",
+      "artifact_root": "/home/excellence/nlgcp-data/processed/vrs/experiments/vrs-2024d026-abfc-geometry-v3",
       "artifact_sha256": {
-        "completion.json": "f7e1362d27da7270eef0d0bd11434b10015ae508720d18db7c6b232d7bc4c26e",
-        "definition.json": "90e855328fe53e9012a487bd4bf0ccc5597d09579a26240d95c5d4ba68e5e90c",
-        "metrics.json": "80e3719f392281101527c98e122918837b1ef3ba4725e09e68f4bdcc7b95e2cc",
-        "provenance.json": "1771008527b2d09cfd2c8be938782e4d6c78dce999b5070195d64f37507a53f6",
+        "admission.json": "431709c3dd81197bf35e58e5072046a47519d0357abbbdfe4c86d5748b892d55",
+        "anchor.json": "4260132c40deb6c9b525ee51a087c3e673486ad70d6b2d22ac544db322bff610",
+        "completion.json": "7c14ba50d9fa186dbfa92d7657f0cb3aa9f598d9afa19a22ef6f33f37c3adef9",
+        "correction-model.json": "b38520a3d8e65760e5b927baafea18e746f2b09bd07dc50dfb46122e66d15fdb",
+        "definition.json": "5c859e3dbe31021947d515f95e5abc31494efa8475c66a85ce959c2519b8f937",
+        "exclusions.json": "ed9cad97c5cbcf62fb3f4c6d3112dbc12fe49bac910218de502343048363c3e9",
+        "metrics.json": "66bf11cf1b2e4d3047e7df1d317834c5497582c955b0a8975b0f2181cc6751e7",
+        "provenance.json": "99653801395b093173c613da618544d0cf613d2b6cbf9669d5dfb7f00bea5057",
+        "target.json": "8cc10e9bfb4af5fc4466ee8009097a855d59dac4a056082e20b03691f9be3b83",
         "validation-residuals.csv": "e444180aa3eeb0fcca6925689c02793d19321ab24d43a1dc53c83cd869deeb3f",
-        "validation.json": "5d99a111c72ef0a1fb69883f20bd31acda916c4fb18d0dc1f81a347fc34c6a25",
-        "virtual-observations.csv": "ae9baedb662e3158f54fb8f995a851f205ef363093d8d5d871664899acadd894"
+        "validation.json": "092e3df48cfa576e3beafefaeb7eb35953005432ee824ae819ebe62718304a4f",
+        "virtual-observations.csv": "2508c6e51cdad21f223ed3da710b3c7a3655c52ad7c906d6738844ef013d023f"
       },
       "generation": {
         "anchor": {
@@ -191,8 +207,8 @@
         "epoch_count": 480,
         "epoch_coverage": 1.0,
         "expected_epoch_count": 480,
-        "experiment_id": "vrs-2024d026-abfc-geometry-v2",
-        "fingerprint": "7a71be452f10ebf690835b0a6ac584745f3b9d640a9bfd4fd7093211ba992536",
+        "experiment_id": "vrs-2024d026-abfc-geometry-v3",
+        "fingerprint": "a3ad1329b1fa5f37708cbadafd4c528b362acb3e81a01ffdd1e3feab31650e82",
         "first_epoch_gpst": "2024-01-26T00:00:00.000000",
         "last_epoch_gpst": "2024-01-26T23:57:00.000000",
         "observation_codes": {
@@ -242,8 +258,8 @@
         "watermark": "NO VALIDATED INTERPOLATION GAIN"
       },
       "validation": {
-        "execution_timestamp": "2026-09-08T12:23:10.178469+00:00",
-        "fingerprint": "52599b3136c63e30fad8d77c81d247a5e4b06b164366f6c76da43316946b288a",
+        "execution_timestamp": "2026-09-09T00:44:07.113687+00:00",
+        "fingerprint": "18c1b0c564a90b30005698b608eac4fbcd8cc378924aa17f467cb0382eea1999",
         "held_out_observations_used_in_synthesis": false,
         "limitations": [
           "diagnostic residuals, not positioning errors",
@@ -309,12 +325,12 @@
         },
         "positioning_validation": "NOT_PERFORMED; RINEX export deferred",
         "provenance": {
-          "generation_fingerprint": "7a71be452f10ebf690835b0a6ac584745f3b9d640a9bfd4fd7093211ba992536",
+          "generation_fingerprint": "a3ad1329b1fa5f37708cbadafd4c528b362acb3e81a01ffdd1e3feab31650e82",
           "target_observation_path": "/home/excellence/nlgcp-data/working/qc-converted/2024/ABFC00NGA/026/ABFC0260.24O",
           "target_qc_path": "/home/excellence/nlgcp-data/processed/qc/profiles/network_rtk/sessions/2024/ABFC00NGA/026/qc-result.json",
           "target_qc_sha256": "14429835242f0fbc3fdfae129aeab6c5cd0003843e662b1ff7b27d6ad6be52e2",
           "target_sha256": "953df3cdbab882c7a1d0c747dcc93fab6bd8b3a68bbdce5d95642a9704bd91c7",
-          "virtual_observations_sha256": "ae9baedb662e3158f54fb8f995a851f205ef363093d8d5d871664899acadd894"
+          "virtual_observations_sha256": "2508c6e51cdad21f223ed3da710b3c7a3655c52ad7c906d6738844ef013d023f"
         },
         "residuals_sha256": "e444180aa3eeb0fcca6925689c02793d19321ab24d43a1dc53c83cd869deeb3f",
         "status": "COMPLETE",
@@ -322,15 +338,20 @@
       }
     },
     {
-      "artifact_root": "/home/excellence/nlgcp-data/processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2",
+      "artifact_root": "/home/excellence/nlgcp-data/processed/vrs/experiments/vrs-2024d026-ekak-geometry-v3",
       "artifact_sha256": {
-        "completion.json": "1313bc8ca99a3686eb27bf33fa247655820d3dd691fb035b827c2a124034ae54",
-        "definition.json": "a964fd9ad11c624e5108cedbc07e1382f6d052e056e12cf42228c8d36440e9ba",
-        "metrics.json": "f18a9acf040d4a1bf3079c0180d34e30d46ad11be06a3da10a7a66812492ba81",
-        "provenance.json": "830a997779375ae980531961dcfbc07acb78e9bdab95d72c2a619f742f93728f",
+        "admission.json": "73634dbb604507402027ff6a4b5a8484e617a82c2f310b477ddaac92945bd3f0",
+        "anchor.json": "0ffa8ffa260e26c59374c6ba2881a330837a9a69641bfcbcf2d62e2b8a861b63",
+        "completion.json": "c718b9c7233463e90291989c26933fd07e1231c0dba72b26e7a30a9bd4f0e9cb",
+        "correction-model.json": "b38520a3d8e65760e5b927baafea18e746f2b09bd07dc50dfb46122e66d15fdb",
+        "definition.json": "2c5ae75e11e028ec14dba7e112a7982d2cd5e3abae917686a822f3051c76bec0",
+        "exclusions.json": "d03aea139a6bba0350e2d32fdd7cfb28f5ed8ff266e9ba30bd39b9410d1ad384",
+        "metrics.json": "cb768889a2f300720548671a7bf83d79b030ea7eb9b965feea7b792a7b90a585",
+        "provenance.json": "8e8cffcbcc5c37d3738b6646fb124b3c2e389e1eef87bf928e0c0cd9b3b0511f",
+        "target.json": "b92660956f7fd56508a1ce48d4622811af97e596a82c86dea4165a7c6b629232",
         "validation-residuals.csv": "b71074994183a9da1e1e844202542a395f44241b070776ff63b2f7b3cc654d59",
-        "validation.json": "888d4ba9786ede035f6af10c335dae70e21857aaecc41f01c414bf50f8a28966",
-        "virtual-observations.csv": "9c5de33f5bd45d7f7ad48f84b563a7b8a8aa7b29e482f97a4da5b6b7407eca5d"
+        "validation.json": "44bafa5c3d292ff713058b4ce9d86a88aa36205d460cd9eae3efdb80afd86d1c",
+        "virtual-observations.csv": "12b9819a3fa83683a09f8201ebc585d284856e6b468db8d0f58e9de668de46ef"
       },
       "generation": {
         "anchor": {
@@ -344,8 +365,8 @@
         "epoch_count": 480,
         "epoch_coverage": 1.0,
         "expected_epoch_count": 480,
-        "experiment_id": "vrs-2024d026-ekak-geometry-v2",
-        "fingerprint": "5c70b29e3470f3041a524cd2ce77a0da5c790755671bc2358461b5efcffc84ce",
+        "experiment_id": "vrs-2024d026-ekak-geometry-v3",
+        "fingerprint": "c647824eb00a64c954d737203deffceb9ad4a909bbda9eae1c024476e9da8ee4",
         "first_epoch_gpst": "2024-01-26T00:00:00.000000",
         "last_epoch_gpst": "2024-01-26T23:57:00.000000",
         "observation_codes": {
@@ -395,8 +416,8 @@
         "watermark": "NO VALIDATED INTERPOLATION GAIN"
       },
       "validation": {
-        "execution_timestamp": "2026-09-08T12:24:20.085697+00:00",
-        "fingerprint": "7f6a6c9b5f4461573399cb7d8ebf4802231b97529c8b1d924aceba4f848b51a9",
+        "execution_timestamp": "2026-09-09T00:45:09.904937+00:00",
+        "fingerprint": "b373631b61e6acb336d3bc59a247f158d2707cb2e16b1de457fdeedd58f46eb5",
         "held_out_observations_used_in_synthesis": false,
         "limitations": [
           "diagnostic residuals, not positioning errors",
@@ -462,12 +483,12 @@
         },
         "positioning_validation": "NOT_PERFORMED; RINEX export deferred",
         "provenance": {
-          "generation_fingerprint": "5c70b29e3470f3041a524cd2ce77a0da5c790755671bc2358461b5efcffc84ce",
+          "generation_fingerprint": "c647824eb00a64c954d737203deffceb9ad4a909bbda9eae1c024476e9da8ee4",
           "target_observation_path": "/home/excellence/nlgcp-data/working/qc-converted/2024/EKAK00NGA/026/EKAK0260.24O",
           "target_qc_path": "/home/excellence/nlgcp-data/processed/qc/profiles/network_rtk/sessions/2024/EKAK00NGA/026/qc-result.json",
           "target_qc_sha256": "afb1f5599038f14c33a355450f9212ecb11d87feb21e968c020d1c0916e4c77c",
           "target_sha256": "57e1917af8ad784227ec1e2c30b5ccf5a684284d2b0a4c886ceb41c15aabb9fc",
-          "virtual_observations_sha256": "9c5de33f5bd45d7f7ad48f84b563a7b8a8aa7b29e482f97a4da5b6b7407eca5d"
+          "virtual_observations_sha256": "12b9819a3fa83683a09f8201ebc585d284856e6b468db8d0f58e9de668de46ef"
         },
         "residuals_sha256": "b71074994183a9da1e1e844202542a395f44241b070776ff63b2f7b3cc654d59",
         "status": "COMPLETE",
@@ -475,15 +496,20 @@
       }
     },
     {
-      "artifact_root": "/home/excellence/nlgcp-data/processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2",
+      "artifact_root": "/home/excellence/nlgcp-data/processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v3",
       "artifact_sha256": {
-        "completion.json": "be46337f418fc1902fc0a486d4c446e3ca2e216446d01d4b77585b69e8133ca3",
-        "definition.json": "fc2fa03f04902c4870203d362ba6f30620bb912333d035eed72de50aba42c833",
-        "metrics.json": "544061fd7b62cf53631f61b60aa189a6f45502cdb61cc86348d7f050922b963b",
-        "provenance.json": "70adc8155916ccdbac998cb80de2ce1fc0b1661636091b0b28b25b88619e9ff0",
+        "admission.json": "cf09a15d2362094498c351646f6381ae5d3bf380d3edfe24730803b85d9a2ddc",
+        "anchor.json": "2b00976a85a583a8912671a3d588ecb31dd697701722a3c49bb75c94308066ca",
+        "completion.json": "92002eeff346fb4291e2ca3ae341199aa5237fd983635dbc42585130f1e5b5f8",
+        "correction-model.json": "b38520a3d8e65760e5b927baafea18e746f2b09bd07dc50dfb46122e66d15fdb",
+        "definition.json": "355401072726659c79a868b9edeec9b1b4055e85e915e039c6c05a13522dafce",
+        "exclusions.json": "450680fe2286718b1852604c7b88fb3470f1d2b8f10a1f35c3cef58f9ee83265",
+        "metrics.json": "113bfb6553f6b4fa07a89ad582a3794aefc2b20555f82d219dc92f16a2e36d00",
+        "provenance.json": "0ee9fdef90ab5d9387612c5f1279870a6159c6395767677a2df92b6cff76bdef",
+        "target.json": "e9674c10dd41fc6ae909cc59c0f40439df05530707dbdc2aa3c72532ee67dda5",
         "validation-residuals.csv": "ba47511622564023a6ed982addebd5d217a13c66ecca9e66e948ad612ec8a01f",
-        "validation.json": "5a57e2a7dfe69243adbb3594a69e0c53a4c7f65da94a5be885bba9d5273b36a6",
-        "virtual-observations.csv": "003e1b0f61085bedcdb71292e35654a274581a84c4a05b7762d3a3ff17c86f48"
+        "validation.json": "870227de03c5f261e72146b9a16354de71f7a14d6843b80ff3f9520c66648b37",
+        "virtual-observations.csv": "64d9eb1510c312deeb9dc08ee6b31127bce69dc55fa33a961f0949b075595dd1"
       },
       "generation": {
         "anchor": {
@@ -497,8 +523,8 @@
         "epoch_count": 480,
         "epoch_coverage": 1.0,
         "expected_epoch_count": 480,
-        "experiment_id": "vrs-2024d026-mgbo-geometry-v2",
-        "fingerprint": "73eefe87ecb0236bb20e892bdc9d2f23e01bd39be9d5295dd71be0f289390abe",
+        "experiment_id": "vrs-2024d026-mgbo-geometry-v3",
+        "fingerprint": "89bd6116d7ac9445c5649690f91798d71c42fedb556feb2c20c7f7ca41337817",
         "first_epoch_gpst": "2024-01-26T00:00:00.000000",
         "last_epoch_gpst": "2024-01-26T23:57:00.000000",
         "observation_codes": {
@@ -548,8 +574,8 @@
         "watermark": "NO VALIDATED INTERPOLATION GAIN"
       },
       "validation": {
-        "execution_timestamp": "2026-09-08T12:25:34.068986+00:00",
-        "fingerprint": "5f579cdb46097459b07ebe707c245f060dcd6bafc389761d3d33e1c0d910e65a",
+        "execution_timestamp": "2026-09-09T00:46:07.524234+00:00",
+        "fingerprint": "620024e13a5a971573208a3ee4af86aa70112cfbc21e018477fa9c6a365f523d",
         "held_out_observations_used_in_synthesis": false,
         "limitations": [
           "diagnostic residuals, not positioning errors",
@@ -615,12 +641,12 @@
         },
         "positioning_validation": "NOT_PERFORMED; RINEX export deferred",
         "provenance": {
-          "generation_fingerprint": "73eefe87ecb0236bb20e892bdc9d2f23e01bd39be9d5295dd71be0f289390abe",
+          "generation_fingerprint": "89bd6116d7ac9445c5649690f91798d71c42fedb556feb2c20c7f7ca41337817",
           "target_observation_path": "/home/excellence/nlgcp-data/working/qc-converted/2024/MGBO00NGA/026/MGBO0260.24O",
           "target_qc_path": "/home/excellence/nlgcp-data/processed/qc/profiles/network_rtk/sessions/2024/MGBO00NGA/026/qc-result.json",
           "target_qc_sha256": "878bc8d038543709842918bba8e447cfe6be1be0563e938966d7c3a049b2b804",
           "target_sha256": "be679f146a5664f7116f8d9d6e079be867dc32fba607fb1b81d6f9e8832f1327",
-          "virtual_observations_sha256": "003e1b0f61085bedcdb71292e35654a274581a84c4a05b7762d3a3ff17c86f48"
+          "virtual_observations_sha256": "64d9eb1510c312deeb9dc08ee6b31127bce69dc55fa33a961f0949b075595dd1"
         },
         "residuals_sha256": "ba47511622564023a6ed982addebd5d217a13c66ecca9e66e948ad612ec8a01f",
         "status": "COMPLETE",
@@ -628,7 +654,20 @@
       }
     }
   ],
+  "review_verdict": "APPROVED_WITH_PROVISIONAL_LIMITATIONS",
   "status": "VALIDATION",
+  "superseded_ids": [
+    "vrs-2024d026-phri-geometry-v1",
+    "vrs-2024d026-abfc-geometry-v1",
+    "vrs-2024d026-ekak-geometry-v1",
+    "vrs-2024d026-mgbo-geometry-v1",
+    "vrs-2024d026-phri-geometry",
+    "vrs-2024d026-phri-geometry-v1",
+    "vrs-2024d026-phri-geometry-v2",
+    "vrs-2024d026-abfc-geometry-v2",
+    "vrs-2024d026-ekak-geometry-v2",
+    "vrs-2024d026-mgbo-geometry-v2"
+  ],
   "total_virtual_observations": 78060,
   "watermark": "NO VALIDATED INTERPOLATION GAIN"
 }

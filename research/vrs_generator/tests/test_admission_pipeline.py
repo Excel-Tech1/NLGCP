@@ -251,3 +251,51 @@ def test_incomplete_phase5_blocks(enclave: tuple[Path, Definition, Path]) -> Non
     write_json(path, {"verdict": "BLOCKED"})
     with pytest.raises(Blocked, match="Phase 5 network validation incomplete"):
         plan(root, d, repo, root)
+
+
+@pytest.mark.parametrize("target", ["A", "B", "C", "D"])
+def test_all_rotations_generate_without_target_body(
+    enclave: tuple[Path, Definition, Path], monkeypatch: pytest.MonkeyPatch, target: str
+) -> None:
+    import nlgcp_vrs.pipeline as pipeline
+
+    root, original, repo = enclave
+    d = original.model_copy(
+        update={
+            "target_station": target,
+            "reference_stations": tuple(s for s in ("A", "B", "C", "D") if s != target),
+        }
+    )
+    (root / (target + ".24o")).unlink()
+    monkeypatch.setattr(
+        pipeline, "build_adapter", lambda *_: (root / "synthetic-adapter", {"synthetic": True})
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "geometry_batch",
+        lambda *args: [
+            {"geometric_transformation_m": 10.0, "satellite_clock_translation_m": 0.0}
+            for _ in args[4]
+        ],
+    )
+    result = generate(root, d, repo, root)
+    assert result["virtual_observation_count"] == 2
+    assert (
+        read_json(Path(result["outputs"]) / "provenance.json")["held_out_observations_used"]
+        is False
+    )
+
+
+def test_phase6_derivative_change_changes_vrs_fingerprint(
+    enclave: tuple[Path, Definition, Path],
+) -> None:
+    root, d, repo = enclave
+    first = plan(root, d, repo, root)["fingerprint"]
+    path = (
+        root
+        / "processed/atmospheric-model/experiments"
+        / d.source_phase6_experiment
+        / "models/target-predictions.csv"
+    )
+    path.write_text("SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS; changed derivative\n")
+    assert plan(root, d, repo, root)["fingerprint"] != first
