@@ -154,6 +154,33 @@ def pre_review_spatial() -> SpatialCorrectionAssessment:
     )
 
 
+def reviewed_spatial() -> SpatialCorrectionAssessment:
+    """Reviewed Phase 6 geometry-v3: zero wins, no interpolator promoted.
+
+    SYNTHETIC wrapper around observed values — NOT VALID FOR SCIENTIFIC
+    RESULTS beyond the recorded reviewed evidence (zero 3.076 m,
+    n=15948, all folds EXTRAPOLATION).
+    """
+    return SpatialCorrectionAssessment(
+        model_name="zero",
+        validation_status=SpatialModelStatus.REJECTED,
+        validation_metric=3.076,
+        control_metric=3.076,
+        beats_zero_control=False,
+        beats_nearest_control=True,
+        sample_count=15948,
+        geometry_status="EXTRAPOLATION",
+        extrapolation=True,
+        fingerprint="phase6-reviewed-geometry-v3-zero-3076-n15948",
+        provenance=(
+            "Reviewed Phase 6 atm-2024d026-phri-target-geometry-v3; "
+            "best model zero RMSE 3.076 m (IDW 3.352 / nearest 3.757 / "
+            "planar 14.373 m, n=15948); all folds EXTRAPOLATION; "
+            "no spatial model promoted"
+        ),
+    )
+
+
 def approved_vrs() -> VRSCapabilityAssessment:
     return VRSCapabilityAssessment(
         status=VRSStatus.APPROVED,
@@ -185,6 +212,35 @@ def pre_review_vrs() -> VRSCapabilityAssessment:
         target_leakage_status="",
         fingerprint="phase7-pre-review-not-validated",
         provenance="Phase 6/7 scientific review pending",
+    )
+
+
+def reviewed_vrs() -> VRSCapabilityAssessment:
+    """Reviewed Phase 7 geometry-v3: synthesis reviewed, operational blocked.
+
+    SYNTHETIC wrapper around observed reviewed values — NOT VALID FOR
+    SCIENTIFIC RESULTS beyond the recorded evidence.  Review verdict
+    APPROVED_WITH_PROVISIONAL_LIMITATIONS lives in validation_status;
+    operational status stays BLOCKED (geometry-only diagnostic only).
+    """
+    return VRSCapabilityAssessment(
+        status=VRSStatus.BLOCKED,
+        experiment_id="vrs-2024d026-phri-geometry-v3",
+        target="PHRI00NGA",
+        reference_stations=("ABFC00NGA", "EKAK00NGA", "MGBO00NGA"),
+        anchor="EKAK00NGA",
+        correction_mode="ZERO / VRS_GEOMETRY_ONLY",
+        model_status=SpatialModelStatus.REJECTED,
+        observation_coverage="480/480 epochs; 30 GPS sats",
+        validation_status="APPROVED_WITH_PROVISIONAL_LIMITATIONS",
+        target_leakage_status="PASS",
+        fingerprint="phase7-reviewed-geometry-v3-phri-24556",
+        provenance=(
+            "Reviewed Phase 7 vrs-2024d026-phri-geometry-v3; synthesis "
+            "reviewed APPROVED_WITH_PROVISIONAL_LIMITATIONS; mode "
+            "ZERO / VRS_GEOMETRY_ONLY; promoted model NONE; operational "
+            "corrected VRS NOT APPROVED; leakage PASS"
+        ),
     )
 
 

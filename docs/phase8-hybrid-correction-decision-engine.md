@@ -28,24 +28,34 @@ single-base candidates (deterministic QC-first ranking)
 decision → VRS | SINGLE_BASE | NO_CORRECTION
 ```
 
-## 3. Parallel-development constraint
+## 3. Parallel-development constraint (review COMPLETE)
 
-The Phase 6/7 scientific validation and geometry hardening review runs
-independently of this work. Phase 8 therefore depends only on two
-stable interfaces, never on unreviewed Phase 7 implementation details:
+The Phase 6/7 scientific validation and geometry hardening review ran
+independently and is now COMPLETE
+(`APPROVED_WITH_PROVISIONAL_LIMITATIONS`, merged). Phase 8 therefore
+depends only on two stable interfaces, never on unreviewed Phase 7
+implementation details (now populated against reviewed geometry-v3
+evidence):
 
 - `SpatialCorrectionAssessment` with `SpatialModelStatus` (`APPROVED`,
   `PROVISIONAL`, `REJECTED`, `BLOCKED`, `UNAVAILABLE`).
 - `VRSCapabilityAssessment` with `VRSStatus` (`APPROVED`,
   `PROVISIONAL`, `NOT_VALIDATED`, `BLOCKED`, `UNAVAILABLE`).
 
-Pre-review defaults represent Phase 6 as `UNAVAILABLE` (no interpolator
-promoted — Phase 6 LOOCV: zero 2.984 m beat IDW 3.546 m, nearest
-4.004 m, planar 15.300 m) and Phase 7 as `NOT_VALIDATED`
-(`ZERO / VRS_GEOMETRY_ONLY`), so automatic VRS remains fail-closed.
-Reviewed evidence is integrated later as JSON assessments with no
-Phase 8 code change; changed fingerprints invalidate old decisions
-(see §11).
+Reviewed defaults (Phase 6/7 review COMPLETE) represent Phase 6 as
+`REJECTED` for correction purposes — best model `zero` RMSE 3.076 m
+beats IDW 3.352 / nearest 3.757 / planar 14.373 m (n=15948 identical
+samples, all folds EXTRAPOLATION); BEST MODEL = ZERO; no interpolator
+promoted; zero wins as the control and is NOT a promotable spatial
+correction model — and Phase 7 as `BLOCKED` for operational corrected
+service (synthesis reviewed `APPROVED_WITH_PROVISIONAL_LIMITATIONS`,
+mode `ZERO / VRS_GEOMETRY_ONLY`, promoted model NONE, leakage PASS;
+geometry-only diagnostic available, operational corrected VRS NOT
+APPROVED), so automatic corrected VRS remains fail-closed. Historical
+pre-review defaults (Phase 6 `UNAVAILABLE` 2.984 m n=17768 / Phase 7
+`NOT_VALIDATED`) are SUPERSEDED. Reviewed evidence is integrated as the
+CLI defaults plus optional JSON assessments with no further Phase 8 code
+change; changed fingerprints invalidate pre-review decisions (see §11).
 
 ## 4. Decision priority and approval rules
 
@@ -142,23 +152,36 @@ become operational admission.
 triangle minimum (scientifically validated); distance bands and the
 common-interval floor are labelled `PROVISIONAL` / `ENGINEERING_DEFAULT`.
 
-## 10. Current real-data behaviour (DOY 026 pilot)
+## 10. Current real-data behaviour (DOY 026 pilot, reviewed)
 
 Only DOY 026 provides a four-station ACCEPT overlap
-(ABFC/EKAK/MGBO/PHRI). Under pre-review defaults the engine derives:
+(ABFC/EKAK/MGBO/PHRI). Under reviewed defaults the engine derives:
 `AUTO` at PHRI → `SINGLE_BASE`/`OK` via EKAK00NGA (105.553 km,
-fallback, `VRS_UPSTREAM_REVIEW_PENDING`); `VRS_ONLY` → `NO_CORRECTION`/
-`BLOCKED`; `SINGLE_BASE_ONLY` → `SINGLE_BASE` via EKAK00NGA.
-Held-out AUTO probes: ABFC → PHRI 470.870 km `DEGRADED`; EKAK → PHRI
-105.553 km `OK`; MGBO → ABFC 689.687 km `DEGRADED`. Full evidence in
+fallback, `VRS_MODEL_NOT_VALIDATED`: Phase 6 `REJECTED`, Phase 7
+`BLOCKED` operational, geometry `EXTRAPOLATION`); `VRS_ONLY` →
+`NO_CORRECTION`/`BLOCKED` (`VRS_MODEL_NOT_VALIDATED`; no fallback);
+`SINGLE_BASE_ONLY` → `SINGLE_BASE` via EKAK00NGA. `OK` means admission
+gates passed, not centimetre accuracy: every decision states `no
+centimetre accuracy claimed`; the 105.553 km EKAK–PHRI baseline is the
+nearest admitted fallback under PROVISIONAL policy, not a proven ideal
+RTK distance (Phase 3: FLOAT-only, horiz RMSE 0.968 m). Pre-review
+behaviour (`VRS_UPSTREAM_REVIEW_PENDING`, fingerprints
+`phase6-pre-review…` / `phase7-pre-review…`) is SUPERSEDED/STALE.
+Held-out AUTO probes (pre-review reference): ABFC → PHRI 470.870 km
+`DEGRADED`; EKAK → PHRI 105.553 km `OK`; MGBO → ABFC 689.687 km
+`DEGRADED`. Full evidence in
 `research/hybrid_decision_engine/PILOT_EVIDENCE.md`; outputs under
 `${NLGCP_DATA_ROOT}/processed/hybrid-decisions/` (outside Git).
 
 ## 11. Phase 6/7 review integration and Phase 9 interface
 
-Reviewed Phase 6/7 evidence enters as `--spatial` / `--vrs` JSON
-assessments (or by replacing the pre-review defaults after the review
-merges). Later replay/streaming phases consume only
+Reviewed Phase 6/7 evidence is integrated as the CLI defaults plus
+optional `--spatial` / `--vrs` JSON assessments. Pre-review decisions
+are fingerprint-invalidated (Phase 6 `phase6-pre-review…` != reviewed
+`phase6-reviewed-geometry-v3-zero-3076-n15948`; Phase 7
+`phase7-pre-review…` != reviewed
+`phase7-reviewed-geometry-v3-phri-24556`). Later replay/streaming phases
+consume only
 `CorrectionDecisionPhase9` (`mode`, `source`, `reference_station`,
 `virtual_station`, `correction_artifact`, `status`, `valid_from`,
 `valid_until`, `provenance`) via `phase9-handoff.json`.

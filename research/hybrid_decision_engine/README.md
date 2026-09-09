@@ -79,11 +79,22 @@ stable assessment records:
   `validation_status`, `target_leakage_status`, `fingerprint`,
   `provenance`.
 
-Until the Phase 6/7 scientific review is merged, the real-data default
-represents Phase 6 as `UNAVAILABLE` (no interpolator promoted) and
-Phase 7 as `NOT_VALIDATED`, so automatic VRS stays fail-closed. Custom
-assessments may be supplied as JSON (`--spatial`, `--vrs`) to exercise
-the approved path synthetically.
+Phase 6/7 scientific review is COMPLETE and merged. The real-data default
+now represents reviewed evidence: Phase 6 as `REJECTED` for correction
+purposes (best model `zero` RMSE 3.076 m beats IDW 3.352 / nearest 3.757 /
+planar 14.373 m, n=15948 identical samples, all folds EXTRAPOLATION; no
+interpolator promoted — zero wins as the control and is NOT a promotable
+spatial correction model) and Phase 7 as `BLOCKED` for operational
+corrected service (synthesis reviewed
+`APPROVED_WITH_PROVISIONAL_LIMITATIONS`, mode `ZERO / VRS_GEOMETRY_ONLY`,
+promoted model NONE, leakage PASS; geometry-only diagnostic available,
+operational corrected VRS NOT APPROVED), so automatic corrected VRS stays
+fail-closed. Custom assessments may be supplied as JSON (`--spatial`,
+`--vrs`) to exercise the approved path synthetically. Historical
+pre-review defaults (Phase 6 `UNAVAILABLE` 2.984 m n=17768 / Phase 7
+`NOT_VALIDATED`) are SUPERSEDED; their fingerprints
+(`phase6-pre-review-no-promoted-model` /
+`phase7-pre-review-not-validated`) invalidate old decisions.
 
 ## VRS approval rule
 
@@ -182,30 +193,55 @@ requests/<request-id>/{request,candidate-stations,network-assessment,
 summaries/{decisions,blockers,fallback-usage}.csv
 ```
 
+## Status semantics (`OK` vs positioning performance)
+
+`OK` / `DEGRADED` / `BLOCKED` qualify admission integrity only: `OK`
+means all decision-engine admission gates passed for the selected mode.
+It does NOT claim centimetre positioning accuracy. Every `SINGLE_BASE`
+decision states `no centimetre accuracy claimed` and carries the
+PROVISIONAL distance band; the 105.553 km EKAK–PHRI baseline is the
+nearest admitted fallback under provisional policy, not a scientifically
+proven ideal RTK distance (Phase 3 found it remained FLOAT-only,
+horiz RMSE 0.968 m). Integrity `PASS` (admission) is reported separately
+from expected positioning performance (`PROVISIONAL` / `DEGRADED`).
+
 ## Tests
 
-52 synthetic-only tests (`SYNTHETIC TEST DATA — NOT VALID FOR
+59 synthetic-only tests (`SYNTHETIC TEST DATA — NOT VALID FOR
 SCIENTIFIC RESULTS`): mode routing, VRS approval/blocking, network
 gates, single-base ranking (QC beats distance), WARN handling,
 fallback on/off, diagnostic watermarking, provisional policy,
 fingerprints and cache invalidation on target/Phase 6/Phase 7/QC/policy
-change, Phase 9 handoff shape, malformed input, determinism.
+change, Phase 9 handoff shape, malformed input, determinism, plus
+reviewed-integration tests (Phase 6 zero winner, reviewed Phase 7 but no
+promoted model, geometry-only VRS cannot become operational, reviewed
+fingerprints, stale pre-review invalidation,
+APPROVED_WITH_PROVISIONAL_LIMITATIONS semantics, AUTO fallback after
+review).
 
 ## Real-data pilot
 
 See `PILOT_EVIDENCE.md`: 2024 DOY 026 at PHRI (plus ABFC/EKAK/MGBO
-scientific test targets). Pre-review state keeps automatic VRS blocked;
-`AUTO` falls back to `SINGLE_BASE` via `EKAK00NGA` (105.553 km),
-`VRS_ONLY` returns `NO_CORRECTION`/`VRS_UPSTREAM_REVIEW_PENDING`.
+scientific test targets). Reviewed state keeps automatic corrected VRS
+blocked (`VRS_MODEL_NOT_VALIDATED`: Phase 6 `REJECTED`, Phase 7 `BLOCKED`
+operational, geometry `EXTRAPOLATION`); `AUTO` falls back to
+`SINGLE_BASE` via `EKAK00NGA` (105.553 km, preferred PROVISIONAL,
+FLOAT-only history, no centimetre claim), `VRS_ONLY` returns
+`NO_CORRECTION`/`BLOCKED`, `SINGLE_BASE_ONLY` returns `SINGLE_BASE` via
+EKAK00NGA.
 
 ## Phase 6/7 review handoff
 
-Reviewed evidence enters Phase 8 as JSON assessments (`--spatial`,
-`--vrs`) or by replacing the pre-review defaults once the review
-merges. Fingerprints (`phase6_assessment_fingerprint`,
+Reviewed evidence is integrated as the CLI defaults plus optional JSON
+assessments (`--spatial`, `--vrs`). Fingerprints
+(`phase6_assessment_fingerprint`,
 `phase7_assessment_fingerprint`, `policy_fingerprint`,
-`decision_fingerprint`) invalidate old decisions automatically. No
-Phase 8 code change is needed to consume approved evidence.
+`decision_fingerprint`) invalidate pre-review decisions automatically
+(old Phase 6 `phase6-pre-review-no-promoted-model` != reviewed
+`phase6-reviewed-geometry-v3-zero-3076-n15948`; old Phase 7
+`phase7-pre-review-not-validated` != reviewed
+`phase7-reviewed-geometry-v3-phri-24556`). No further Phase 8 code change
+is needed to consume the reviewed evidence.
 
 ## What Phase 8 is not
 

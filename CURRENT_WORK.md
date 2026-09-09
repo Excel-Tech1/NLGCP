@@ -6,12 +6,15 @@ Phase 8 — Hybrid Correction Decision Engine
 
 ## Current Milestone
 
-Reviewed Phase 6/7 Integration + Phase 8 Validation
+Reviewed Phase 6/7 Integration + Phase 8 Validation (COMPLETE)
 
 ## Status
 
-Integration / Validation (reviewed Phase 6/7 merged into Phase 8;
-Phase 8 real DOY 026 decision re-validation active; Phase 9 NOT STARTED)
+Phase 8 closure: engineering COMPLETE, real DOY 026 decision validation
+COMPLETE (reviewed Phase 6/7 merged into Phase 8; pilot regenerated;
+all tests + `make check` PASS); operational corrected VRS remains
+BLOCKED / NOT APPROVED; single-base fallback AVAILABLE under provisional
+policy; Phase 9 handoff READY; Phase 9 NOT STARTED
 
 Reviewed science (authoritative, from `main` @ `cabcfbb`):
 
@@ -35,16 +38,21 @@ Reviewed science (authoritative, from `main` @ `cabcfbb`):
   main). Full record: `docs/phase6-7-scientific-validation.md`.
 
 Phase 8 engineering (preserved from `phase8/hybrid-correction-decision-engine`
-@ `f28e185`): decision request/response models, VRS / single-base /
-no-correction paths, fail-closed gates, reason codes, versioned policy
-`v1.0`, provenance/fingerprints, traces, CLI, and Phase 9 handoff
-implemented with 52 synthetic-only tests and a derived-from-evidence
-DOY 026 pilot. Pre-review pilot used Phase 6 `UNAVAILABLE` / Phase 7
-`NOT_VALIDATED` defaults and is now STALE; reviewed pilot regeneration
-with reviewed Phase 6/7 assessments is the active integration task.
-Automatic corrected VRS stays BLOCKED (fail-closed) under reviewed
-evidence; single-base fallback remains the admitted path under
-PROVISIONAL policy.
+@ `f28e185`, merged with reviewed `main` @ `cabcfbb` in `1b6132c`):
+decision request/response models, VRS / single-base / no-correction
+paths, fail-closed gates, reason codes, versioned policy `v1.0`,
+provenance/fingerprints, traces, CLI, and Phase 9 handoff implemented
+with 59 synthetic-only tests (52 + 7 reviewed-integration) and a
+derived-from-evidence reviewed DOY 026 pilot. Pre-review pilot used
+Phase 6 `UNAVAILABLE` / Phase 7 `NOT_VALIDATED` defaults and is STALE
+(fingerprint-invalidated); reviewed pilot regenerated with reviewed
+Phase 6/7 assessments (`phase6-reviewed-geometry-v3-zero-3076-n15948` /
+`phase7-reviewed-geometry-v3-phri-24556`): `AUTO` → `SINGLE_BASE`/`OK`
+via EKAK00NGA 105.553 km (fallback, `VRS_MODEL_NOT_VALIDATED`); `VRS_ONLY`
+→ `NO_CORRECTION`/`BLOCKED`; `SINGLE_BASE_ONLY` → `SINGLE_BASE` via
+EKAK00NGA. Automatic corrected VRS stays BLOCKED (fail-closed) under
+reviewed evidence; single-base fallback remains the admitted path under
+PROVISIONAL policy (FLOAT-only history, no centimetre claim).
 
 ## Completed (Phase 8)
 
@@ -295,15 +303,10 @@ scientific scope representative DOY 026 only).
 
 ## In Progress
 
-- Reviewed Phase 6/7 integration into Phase 8 (populate/test
-  `SpatialCorrectionAssessment` / `VRSCapabilityAssessment` against
-  geometry-v3 evidence; regenerate real DOY 026 pilot
-  `pilot-d026-phri-{auto,vrs-only,single-base-only}`; verify
-  fingerprints invalidate pre-review decisions; update Phase 8 docs).
-  Phase 7 merge conditions from the validation review already satisfied
-  and merged (geometry-v3 PILOT_EVIDENCE, old-ID supersession, v1/v2
-  retirement). Do not begin Phase 9 (recorded RTCM replay, live
-  ingestion, RTCM generation, NTRIP) in this task.
+- Phase 8 merge into authoritative `main` and push (branch clean and
+  green: 59 Phase 8 tests, pytest 408 passed, `make check` PASS;
+  reviewed pilot regenerated). Do not begin Phase 9 (recorded RTCM
+  replay, live ingestion, RTCM generation, NTRIP) in this task.
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -384,13 +387,17 @@ spatial-model promotion claim. Do not begin Phase 9 in this sprint.
 
 ## Last Verified State
 
-Reviewed `main` @ `cabcfbb` (Phase 6 scientific hardening + reviewed Phase 7
-VRS generator + geometry-v3 evidence + corrected Phase 6 model ranking +
-Phase 6/7 validation/closure) merged into Phase 8 branch; Phase 8
-implementation @ `f28e185` preserved. Scientific review verdict
-APPROVED_WITH_PROVISIONAL_LIMITATIONS; no spatial model promoted; no
-promoted corrected VRS; Phase 8 integration-validation active.
+Phase 8 closure on `phase8/hybrid-correction-decision-engine`: reviewed
+`main` @ `cabcfbb` merged (`1b6132c`); Phase 8 implementation @ `f28e185`
+preserved; reviewed CLI defaults + fixtures + 7 new integration tests;
+real DOY 026 pilot regenerated (AUTO SINGLE_BASE/OK via EKAK 105.553 km;
+VRS_ONLY NO_CORRECTION/BLOCKED; SINGLE_BASE_ONLY SINGLE_BASE/OK;
+fingerprints reviewed, pre-review stale invalidated); pytest 408 passed,
+6 skipped; `make check` PASS. Scientific review verdict
+APPROVED_WITH_PROVISIONAL_LIMITATIONS; BEST MODEL = ZERO; no spatial
+model promoted; operational corrected VRS BLOCKED; Phase 9 handoff READY;
+Phase 9 NOT STARTED.
 
 ## Last Updated
 
-2026-09-09 (Phase 8 reviewed-integration sprint)
+2026-09-09 (Phase 8 reviewed-integration closure)

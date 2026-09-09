@@ -45,10 +45,62 @@ DEFAULT_POLICY_PATH = (
     / "hybrid-decision-policy-v1.json"
 )
 
-# Pre-review real-data defaults: Phase 6 has promoted no interpolator and
-# Phase 7 supports ZERO / VRS_GEOMETRY_ONLY.  Both assessments therefore
-# default to NOT_VALIDATED/UNAVAILABLE-ish states so automatic VRS stays
-# fail-closed until reviewed evidence is integrated.
+# Reviewed real-data defaults (Phase 6/7 scientific review COMPLETE).
+# Phase 6 reviewed: best model ZERO (3.076 m beats IDW 3.352 / nearest
+# 3.757 / planar 14.373 m, n=15948 identical samples, all folds
+# EXTRAPOLATION); no non-zero interpolator promoted.  Represented as
+# REJECTED for correction purposes: zero wins as the control and is NOT
+# a promotable spatial correction model suitable for corrected VRS.
+# Phase 7 reviewed: APPROVED_WITH_PROVISIONAL_LIMITATIONS for
+# geometry-only synthesis (ZERO / VRS_GEOMETRY_ONLY, leakage PASS),
+# but operational corrected VRS remains NOT APPROVED (fail-closed).
+# Both assessments therefore block automatic corrected VRS while
+# carrying reviewed fingerprints that invalidate pre-review decisions.
+# Historical pre-review defaults used Phase 6 UNAVAILABLE (2.984 m,
+# n=17768) / Phase 7 NOT_VALIDATED with fingerprints
+# `phase6-pre-review-no-promoted-model` /
+# `phase7-pre-review-not-validated` (SUPERSEDED).
+DEFAULT_SPATIAL_REVIEWED = {
+    "model_name": "zero",
+    "validation_status": "REJECTED",
+    "validation_metric": 3.076,
+    "control_metric": 3.076,
+    "beats_zero_control": False,
+    "beats_nearest_control": True,
+    "sample_count": 15948,
+    "geometry_status": "EXTRAPOLATION",
+    "extrapolation": True,
+    "fingerprint": "phase6-reviewed-geometry-v3-zero-3076-n15948",
+    "provenance": (
+        "Reviewed Phase 6 atm-2024d026-phri-target-geometry-v3; "
+        "best model zero RMSE 3.076 m (IDW 3.352 / nearest 3.757 / "
+        "planar 14.373 m, n=15948 identical samples); all four folds "
+        "EXTRAPOLATION; no spatial interpolation model promoted"
+    ),
+}
+
+DEFAULT_VRS_REVIEWED = {
+    "status": "BLOCKED",
+    "experiment_id": "vrs-2024d026-phri-geometry-v3",
+    "target": "",
+    "reference_stations": ["ABFC00NGA", "EKAK00NGA", "MGBO00NGA"],
+    "anchor": "EKAK00NGA",
+    "correction_mode": "ZERO / VRS_GEOMETRY_ONLY",
+    "model_status": "REJECTED",
+    "observation_coverage": "480/480 epochs; 30 GPS sats",
+    "validation_status": "APPROVED_WITH_PROVISIONAL_LIMITATIONS",
+    "target_leakage_status": "PASS",
+    "fingerprint": "phase7-reviewed-geometry-v3-phri-24556",
+    "provenance": (
+        "Reviewed Phase 7 vrs-2024d026-phri-geometry-v3; VRS synthesis "
+        "reviewed APPROVED_WITH_PROVISIONAL_LIMITATIONS; mode "
+        "ZERO / VRS_GEOMETRY_ONLY; promoted spatial model NONE; "
+        "operational corrected VRS NOT APPROVED; target leakage PASS"
+    ),
+}
+
+# Historical pre-review defaults (SUPERSEDED; retained for fingerprint-
+# invalidation tests only).  Do NOT use for new decisions.
 DEFAULT_SPATIAL_PRE_REVIEW = {
     "model_name": "none-promoted",
     "validation_status": "UNAVAILABLE",
@@ -300,14 +352,14 @@ def load_spatial(path: Path | None) -> SpatialCorrectionAssessment:
     if path is not None:
         payload: dict[str, Any] = json.loads(Path(path).read_text(encoding="utf-8"))
         return spatial_assessment_from_dict(payload)
-    return spatial_assessment_from_dict(dict(DEFAULT_SPATIAL_PRE_REVIEW))
+    return spatial_assessment_from_dict(dict(DEFAULT_SPATIAL_REVIEWED))
 
 
 def load_vrs_assessment(path: Path | None, *, target: str) -> VRSCapabilityAssessment:
     if path is not None:
         payload: dict[str, Any] = json.loads(Path(path).read_text(encoding="utf-8"))
         return vrs_assessment_from_dict(payload)
-    payload = dict(DEFAULT_VRS_PRE_REVIEW)
+    payload = dict(DEFAULT_VRS_REVIEWED)
     payload["target"] = target
     return vrs_assessment_from_dict(payload)
 
