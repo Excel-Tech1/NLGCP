@@ -2,18 +2,62 @@
 
 ## Active Phase
 
-Phase 6 — Atmospheric & Spatial Error Model (implemented on
-`phase6/atmospheric-spatial-error-model`; real DOY 026 pilot COMPLETE)
+Phase 8 — Hybrid Correction Decision Engine (implemented on
+`phase8/hybrid-correction-decision-engine`; real DOY 026 pilot COMPLETE;
+automatic VRS remains BLOCKED pending the independent Phase 6/7
+scientific review)
 
 ## Current Milestone
 
-Phase 6 Implementation and Real-Data Pilot
+Phase 8 Implementation and Real-Data Pilot
 
 ## Status
 
-Engineering + real pilot COMPLETE (Phase 4 engineering + 2024 dataset
-validation COMPLETE with provisional calibration; Phase 5 engineering +
-real pilot COMPLETE; scientific scope representative DOY 026 only)
+Engineering + real pilot COMPLETE (Phase 8 decision request/response
+models, VRS/single-base/no-correction paths, fail-closed gates, reason
+codes, versioned policy, provenance/fingerprints, traces, CLI, and
+Phase 9 handoff implemented with 52 synthetic-only tests and a
+derived-from-evidence DOY 026 pilot)
+
+## Completed (Phase 8)
+
+- Hybrid decision package added under
+  `research/hybrid_decision_engine` (`nlgcp_hybrid_decision`:
+  models, policy, discovery, network, single_base, vrs, integrity,
+  provenance, decision, reporting) consuming Phase 4 QC, verified
+  coordinates, and navigation evidence without duplicating Phase 4/5/6
+  functionality; stable `SpatialCorrectionAssessment` / Phase 7
+  `VRSCapabilityAssessment` contracts isolate Phase 8 from the
+  parallel unreviewed Phase 7 implementation.
+- Fail-closed hierarchy validated-VRS → single-base fallback → no
+  correction with `AUTO` / `VRS_ONLY` / `SINGLE_BASE_ONLY` routing,
+  stable reason codes, transparent `PASS`/`DEGRADED`/`BLOCKED`
+  integrity (no numeric scores), watermarked `DIAGNOSTIC_ONLY` mode,
+  versioned policy `v1.0` (3-reference floor; PROVISIONAL distance
+  bands: preferred ≤150 km, degraded ≤500 km, maximum ≤1100 km),
+  full provenance and decision fingerprinting, human-readable traces,
+  machine-readable outputs plus `CorrectionDecisionPhase9` handoff,
+  and CLI `scripts/run_hybrid_decision.py`
+  (`inspect`/`plan`/`decide`/`explain`/`summarize`, `--dry-run`).
+- 52 synthetic-only Phase 8 tests
+  (`SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS`);
+  `pyproject.toml` registers the new package, tests, and script.
+- Real pilot 2024 DOY 026 at PHRI00NGA (pre-review defaults: Phase 6
+  `UNAVAILABLE`, Phase 7 `NOT_VALIDATED`): `AUTO` → `SINGLE_BASE`/`OK`
+  via EKAK00NGA (105.553 km, fallback, `SINGLE_BASE_SELECTED`,
+  VRS blocked `VRS_UPSTREAM_REVIEW_PENDING`); `VRS_ONLY` →
+  `NO_CORRECTION`/`BLOCKED`; `SINGLE_BASE_ONLY` → `SINGLE_BASE` via
+  EKAK00NGA. Held-out AUTO probes: ABFC → PHRI 470.870 km `DEGRADED`,
+  EKAK → PHRI 105.553 km `OK`, MGBO → ABFC 689.687 km `DEGRADED`.
+  Outcomes derived by the engine from observed evidence, not
+  hard-coded. Evidence in
+  `research/hybrid_decision_engine/PILOT_EVIDENCE.md`; outputs under
+  `${NLGCP_DATA_ROOT}/processed/hybrid-decisions/` (outside Git).
+- No scientific validity manufactured: no VRS-superiority,
+  centimetre-accuracy, validated-network-model, fixed-ambiguity, or
+  production-availability claims. Automatic VRS stays BLOCKED until
+  reviewed Phase 6/7 evidence is integrated (JSON assessments,
+  fingerprint-invalidated).
 
 ## Completed (Phase 6)
 
@@ -176,8 +220,10 @@ real pilot COMPLETE; scientific scope representative DOY 026 only)
 
 ## In Progress
 
-- Phase 6 branch verification (`make check`) and merge preparation. Do
-  not begin VRS generation (Phase 7) in this task.
+- Phase 8 branch verification (`make check`) and merge preparation. Do
+  not begin Phase 9 (recorded RTCM replay, live ingestion, RTCM
+  generation, NTRIP) in this task. Do not merge unreviewed Phase 7 or
+  the Phase 6/7 review branch.
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -242,8 +288,9 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Run `make check` on the Phase 6 branch, then merge to `main`. Do not
-begin VRS generation (Phase 7) in this task.
+Run `make check` on the Phase 8 branch, then merge to `main`. Then wait
+for Phase 6/7 scientific validation, integrate reviewed upstream
+evidence, and proceed to Phase 9.
 
 ## Consolidation Record (2026-09-07)
 
@@ -262,4 +309,4 @@ green (see EVIDENCE_INDEX).
 
 ## Last Updated
 
-2026-09-07 (Phase 6 implementation sprint)
+2026-09-09 (Phase 8 implementation sprint)

@@ -1,0 +1,28 @@
+{
+  "policy_version": "v1.0",
+  "schema_version": "1.0",
+  "minimum_network_reference_count": 3,
+  "minimum_network_reference_count_calibration": "SCIENTIFICALLY_VALIDATED",
+  "allow_extrapolation": false,
+  "single_base_fallback_enabled": true,
+  "require_approved_spatial_model_for_vrs": true,
+  "require_approved_vrs_for_vrs": true,
+  "warn_on_qc_warn": true,
+  "qc_warn_blocks_automatic": true,
+  "diagnostic_preview_enabled": true,
+  "minimum_common_interval_seconds": 3600.0,
+  "minimum_common_interval_calibration": "ENGINEERING_DEFAULT",
+  "distance": {
+    "preferred_max_m": 150000.0,
+    "degraded_max_m": 500000.0,
+    "maximum_allowed_m": 1100000.0,
+    "calibration": "PROVISIONAL",
+    "note": "Distance bands are PROVISIONAL engineering defaults, not empirically calibrated for Nigeria. Distance never overrides a failed science gate. Long baselines may yield FLOAT-only metre-level results; decisions communicate degraded expectations without claiming guaranteed accuracy."
+  },
+  "notes": [
+    "VRS automatic selection requires Phase 6 APPROVED + Phase 7 APPROVED.",
+    "Phase 4 WARN never auto-converts to ACCEPT.",
+    "Pre-review default: Phase 7 real-data capability is NOT_VALIDATED, so automatic VRS stays fail-closed.",
+    "Phase 4 QC profile calibration itself is PROVISIONAL (thresholds v1.0)."
+  ]
+}
