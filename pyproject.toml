@@ -35,6 +35,7 @@ packages = [
   "research/vrs_generator/src/nlgcp_vrs",
   "research/hybrid_decision_engine/src/nlgcp_hybrid_decision",
   "research/rtcm_replay/src/nlgcp_rtcm_replay",
+  "research/ntrip_ingestion/src/nlgcp_ntrip_ingest",
 ]
 
 [tool.pytest.ini_options]
@@ -47,6 +48,7 @@ testpaths = [
   "research/vrs_generator/tests",
   "research/hybrid_decision_engine/tests",
   "research/rtcm_replay/tests",
+  "research/ntrip_ingestion/tests",
 ]
 
 [tool.ruff]
@@ -82,6 +84,8 @@ files = [
   "research/hybrid_decision_engine/tests",
   "research/rtcm_replay/src",
   "research/rtcm_replay/tests",
+  "research/ntrip_ingestion/src",
+  "research/ntrip_ingestion/tests",
   "scripts/run_gnss_qc.py",
   "scripts/run_single_base_rtk.py",
   "scripts/run_network_rtk.py",
@@ -89,4 +93,5 @@ files = [
   "scripts/run_vrs_generator.py",
   "scripts/run_hybrid_decision.py",
   "scripts/run_rtcm_replay.py",
+  "scripts/run_ntrip_ingest.py",
 ]
