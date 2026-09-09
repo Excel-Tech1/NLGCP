@@ -1,0 +1,17 @@
+{
+  "source_id": "syn-valid-001",
+  "source_type": "SYNTHETIC_TEST_FIXTURE",
+  "source_path": "SYNTHETIC TEST DATA — replaced at runtime with the fixture path",
+  "station_id": "SYN00TST",
+  "mountpoint": "SYNTHETIC",
+  "start_time": "2026-01-01T00:00:00Z",
+  "end_time": "2026-01-01T00:00:08Z",
+  "byte_size": 0,
+  "sha256": "replaced-at-runtime",
+  "capture_method": "synthetic-fixture-builder",
+  "capture_provenance": "SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS",
+  "rtcm_version": "3.x",
+  "message_types": ["1005", "1006", "1077", "1087", "1230"],
+  "timestamp_source": "capture",
+  "verified": true
+}

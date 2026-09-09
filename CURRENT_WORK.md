@@ -2,19 +2,25 @@
 
 ## Active Phase
 
-Phase 8 — Hybrid Correction Decision Engine
+Phase 9 — Recorded RTCM Replay
 
 ## Current Milestone
 
-Reviewed Phase 6/7 Integration + Phase 8 Validation (COMPLETE)
+Phase 9 engineering + synthetic framework pilot (COMPLETE);
+real recorded RTCM pilot BLOCKED (no authentic capture)
 
 ## Status
 
-Phase 8 closure: engineering COMPLETE, real DOY 026 decision validation
-COMPLETE (reviewed Phase 6/7 merged into Phase 8; pilot regenerated;
-all tests + `make check` PASS); operational corrected VRS remains
-BLOCKED / NOT APPROVED; single-base fallback AVAILABLE under provisional
-policy; Phase 9 handoff READY; Phase 9 NOT STARTED
+Phase 9 closure: engineering COMPLETE, synthetic framework pilot
+COMPLETE (scenarios A–E, all CLI ops, 74 synthetic-only tests,
+`RTKLIB_SOURCE=/home/excellence/RTKLIB make check` PASS: 488 passed);
+REAL RECORDED RTCM PILOT = BLOCKED — no authentic recorded RTCM
+exists under `${NLGCP_DATA_ROOT}` (zero manifest references;
+miranet/nignet endpoint checks are connectivity only, not captures);
+Phase 8 handoff consumed without recalculation (real DOY 026 AUTO →
+SINGLE_BASE/EKAK replays BLOCKED
+`SELECTED_CORRECTION_SOURCE_UNAVAILABLE`; real VRS_ONLY →
+`NO_CORRECTION`, zero frames); Phase 10 NOT STARTED
 
 Reviewed science (authoritative, from `main` @ `cabcfbb`):
 
@@ -53,6 +59,49 @@ via EKAK00NGA 105.553 km (fallback, `VRS_MODEL_NOT_VALIDATED`); `VRS_ONLY`
 EKAK00NGA. Automatic corrected VRS stays BLOCKED (fail-closed) under
 reviewed evidence; single-base fallback remains the admitted path under
 PROVISIONAL policy (FLOAT-only history, no centimetre claim).
+
+## Completed (Phase 9)
+
+- Recorded-RTCM replay package added under `research/rtcm_replay`
+  (`nlgcp_rtcm_replay`: models, crc, framing, fixtures, inventory,
+  timing, clock, replay, buffer, checkpoint, admission, handoff,
+  provenance, metrics, subjects, reporting) consuming the Phase 8
+  `CorrectionDecisionPhase9` handoff without recalculating science;
+  RTCM 3.x framing (preamble `0xD3`, 10-bit length, CRC-24Q over
+  preamble+header+payload), fail-closed admission
+  (ACCEPT/WARN/REJECT/BLOCKED + SHA-256), observed-only message
+  inventory, honest timing classification
+  (EXACT/EPOCH-DERIVED/APPROXIMATE/UNAVAILABLE), deterministic
+  timelines, paced playback (1x/accelerated/max-throughput) with
+  FakeClock tests, pause/resume/stop, fingerprint-gated checkpoints,
+  range/filter/loop replay, bounded buffering with explicit
+  BLOCK/BACKPRESSURE/DROP_NEWEST_EXPLICIT backpressure, synthetic-only
+  fault injection, `CorrectionFrame` consumer contract with
+  `correction.replay.*` subjects (Phase 10 interface, no transport
+  attached), strict-JSON provenance/metrics bundles, and CLI
+  `scripts/run_rtcm_replay.py`
+  (`inspect`/`validate`/`index`/`plan`/`replay`/`resume`/`summarize`,
+  `--dry-run`).
+- 74 synthetic-only Phase 9 tests
+  (`SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS`);
+  `pyproject.toml` registers the new package, tests, and script.
+- Real-source audit: zero RTCM/NTRIP references in data-root
+  manifests; raw tree holds RINEX only; endpoint checks are not
+  captures; home-directory `cors-*.rtcm3` files lack capture
+  provenance and were NOT admitted. REAL PILOT = BLOCKED (accepted
+  exit state); acquisition template recorded for Phase 10 prep; no
+  live ingestion started.
+- Synthetic framework pilot (deterministic fixtures, valid CRC):
+  Scenario A 8/8 no loss; B corrupt frame quarantined (WARN, 7
+  emitted); C truncate→resume exact continuation (checkpoint
+  `last_emitted_sequence=7`); D capacity-1 bounded buffer 8/8 zero
+  silent loss; E real AUTO→BLOCKED (no EKAK recording, no
+  substitution) + real NO_CORRECTION→zero frames. Evidence in
+  `research/rtcm_replay/PILOT_EVIDENCE.md`; outputs under
+  `${NLGCP_DATA_ROOT}/processed/rtcm-replay/` (outside Git).
+- No scientific validity manufactured: no accuracy, ambiguity,
+  VRS-improvement, live-service, or real-pilot claims. Transport
+  success ≠ positioning success recorded on every run.
 
 ## Completed (Phase 8)
 
@@ -303,10 +352,11 @@ scientific scope representative DOY 026 only).
 
 ## In Progress
 
-- Phase 8 merge into authoritative `main` and push (branch clean and
-  green: 59 Phase 8 tests, pytest 408 passed, `make check` PASS;
-  reviewed pilot regenerated). Do not begin Phase 9 (recorded RTCM
-  replay, live ingestion, RTCM generation, NTRIP) in this task.
+- Phase 9 merge into authoritative `main` and push (branch clean and
+  green: 74 Phase 9 tests, pytest 488 passed, `make check` PASS;
+  synthetic pilot complete; real pilot BLOCKED pending authorised
+  RTCM capture). Do not begin Phase 10 (live NTRIP, CORS subscriber,
+  continuous capture, production reconnection) in this task.
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -371,11 +421,10 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Regenerate the real DOY 026 Phase 8 pilot from reviewed Phase 6/7 inputs,
-run all Phase 8 tests plus full `make check`, commit the Phase 8
-integration, merge Phase 8 into authoritative `main`, validate `main`,
-and push. Acquire denser multi-day observations for any future
-spatial-model promotion claim. Do not begin Phase 9 in this sprint.
+Merge Phase 9 into authoritative `main`, validate `main`, and push.
+Acquire an authorised RTCM capture (per
+`research/rtcm_replay/config/future-capture-template.md`) before any
+real-pilot claim. Do not begin Phase 10 in this sprint.
 
 ## Consolidation Record (2026-09-07)
 
@@ -387,17 +436,16 @@ spatial-model promotion claim. Do not begin Phase 9 in this sprint.
 
 ## Last Verified State
 
-Phase 8 closure on `phase8/hybrid-correction-decision-engine`: reviewed
-`main` @ `cabcfbb` merged (`1b6132c`); Phase 8 implementation @ `f28e185`
-preserved; reviewed CLI defaults + fixtures + 7 new integration tests;
-real DOY 026 pilot regenerated (AUTO SINGLE_BASE/OK via EKAK 105.553 km;
-VRS_ONLY NO_CORRECTION/BLOCKED; SINGLE_BASE_ONLY SINGLE_BASE/OK;
-fingerprints reviewed, pre-review stale invalidated); pytest 408 passed,
-6 skipped; `make check` PASS. Scientific review verdict
-APPROVED_WITH_PROVISIONAL_LIMITATIONS; BEST MODEL = ZERO; no spatial
-model promoted; operational corrected VRS BLOCKED; Phase 9 handoff READY;
-Phase 9 NOT STARTED.
+Phase 9 closure on `phase9/recorded-rtcm-replay`: replay package +
+CLI + 74 tests; synthetic pilot scenarios A–E complete (A 8/8, B 7
+emitted quarantined, C resume to seq 7, D bounded 8/8, E real AUTO
+BLOCKED + real NO_CORRECTION zero frames); real recorded RTCM audit
+BLOCKED (zero manifest references); pytest 488 passed (RTKLIB_SOURCE
+set, no skips); `make check` PASS. Phase 8 record preserved
+(AUTO SINGLE_BASE/OK via EKAK 105.553 km; VRS BLOCKED; handoff
+fingerprints `737e0f0a…` / `4d990325…` consumed, not recalculated).
+Phase 10 NOT STARTED.
 
 ## Last Updated
 
-2026-09-09 (Phase 8 reviewed-integration closure)
+2026-09-09 (Phase 9 engineering + synthetic pilot closure)

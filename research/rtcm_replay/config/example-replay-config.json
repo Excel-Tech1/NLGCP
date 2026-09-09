@@ -1,0 +1,13 @@
+{
+  "speed": 0.0,
+  "start_sequence": null,
+  "end_sequence": null,
+  "start_time": null,
+  "end_time": null,
+  "message_filter": [],
+  "loop_cycles": 1,
+  "buffer_capacity": 16,
+  "backpressure_policy": "BLOCK",
+  "max_frame_length": 1023,
+  "max_events": 100000
+}
