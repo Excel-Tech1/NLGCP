@@ -2,16 +2,102 @@
 
 ## Active Phase
 
-Phase 6/7 scientific validation & geometry hardening
-(`phase67/scientific-validation-geometry-hardening`, from `phase7/vrs-generator`
-@ `59c986a`; review sprint COMPLETE, verdict recorded below; Phase 7 merge
-conditional, Phase 8 NOT STARTED)
+Phase 8 — Hybrid Correction Decision Engine
 
 ## Current Milestone
 
-Phase 7 merge-readiness decision after corrected geometry and regenerated evidence
+Reviewed Phase 6/7 Integration + Phase 8 Validation (COMPLETE)
 
 ## Status
+
+Phase 8 closure: engineering COMPLETE, real DOY 026 decision validation
+COMPLETE (reviewed Phase 6/7 merged into Phase 8; pilot regenerated;
+all tests + `make check` PASS); operational corrected VRS remains
+BLOCKED / NOT APPROVED; single-base fallback AVAILABLE under provisional
+policy; Phase 9 handoff READY; Phase 9 NOT STARTED
+
+Reviewed science (authoritative, from `main` @ `cabcfbb`):
+
+- Phase 6 corrected ranking (identical-sample LOOCV, n=15948):
+  zero RMSE 3.076 m beats IDW 3.352 / nearest 3.757 / planar
+  14.373 m; BEST MODEL = ZERO; no spatial interpolation model
+  promoted. All four held-out rotations are EXTRAPOLATION, not
+  interpolation. Historical figures (zero 2.984 / IDW 3.546 /
+  nearest 4.004 / planar 15.300 m, n=17768) are SUPERSEDED.
+- Phase 7 scientific review COMPLETE with verdict
+  APPROVED_WITH_PROVISIONAL_LIMITATIONS; authoritative mode
+  ZERO / VRS_GEOMETRY_ONLY; promoted spatial model NONE; target
+  leakage PASS. Authoritative experiments
+  `vrs-2024d026-{phri,abfc,ekak,mgbo}-geometry-v3` (78,060 virtual
+  observations, 480/480 epochs, 30 GPS sats/rotation, ZERO retained,
+  numerics identical to v2). Old v1/v2 VRS IDs are SUPERSEDED /
+  NON-AUTHORITATIVE. Operational corrected VRS remains NOT APPROVED.
+- Phase 6/7 validation sprint COMPLETE: 13 Phase 6 geometry/science
+  bugs fixed with regression tests; evidence regenerated as
+  `*-geometry-v3`; `make check` PASS (355 Python tests on reviewed
+  main). Full record: `docs/phase6-7-scientific-validation.md`.
+
+Phase 8 engineering (preserved from `phase8/hybrid-correction-decision-engine`
+@ `f28e185`, merged with reviewed `main` @ `cabcfbb` in `1b6132c`):
+decision request/response models, VRS / single-base / no-correction
+paths, fail-closed gates, reason codes, versioned policy `v1.0`,
+provenance/fingerprints, traces, CLI, and Phase 9 handoff implemented
+with 59 synthetic-only tests (52 + 7 reviewed-integration) and a
+derived-from-evidence reviewed DOY 026 pilot. Pre-review pilot used
+Phase 6 `UNAVAILABLE` / Phase 7 `NOT_VALIDATED` defaults and is STALE
+(fingerprint-invalidated); reviewed pilot regenerated with reviewed
+Phase 6/7 assessments (`phase6-reviewed-geometry-v3-zero-3076-n15948` /
+`phase7-reviewed-geometry-v3-phri-24556`): `AUTO` → `SINGLE_BASE`/`OK`
+via EKAK00NGA 105.553 km (fallback, `VRS_MODEL_NOT_VALIDATED`); `VRS_ONLY`
+→ `NO_CORRECTION`/`BLOCKED`; `SINGLE_BASE_ONLY` → `SINGLE_BASE` via
+EKAK00NGA. Automatic corrected VRS stays BLOCKED (fail-closed) under
+reviewed evidence; single-base fallback remains the admitted path under
+PROVISIONAL policy (FLOAT-only history, no centimetre claim).
+
+## Completed (Phase 8)
+
+- Hybrid decision package added under
+  `research/hybrid_decision_engine` (`nlgcp_hybrid_decision`:
+  models, policy, discovery, network, single_base, vrs, integrity,
+  provenance, decision, reporting) consuming Phase 4 QC, verified
+  coordinates, and navigation evidence without duplicating Phase 4/5/6
+  functionality; stable `SpatialCorrectionAssessment` / Phase 7
+  `VRSCapabilityAssessment` contracts isolate Phase 8 from upstream
+  science (now populated against reviewed Phase 6/7 evidence, not the
+  parallel unreviewed implementation).
+- Fail-closed hierarchy validated-VRS → single-base fallback → no
+  correction with `AUTO` / `VRS_ONLY` / `SINGLE_BASE_ONLY` routing,
+  stable reason codes, transparent `PASS`/`DEGRADED`/`BLOCKED`
+  integrity (no numeric scores), watermarked `DIAGNOSTIC_ONLY` mode,
+  versioned policy `v1.0` (3-reference floor; PROVISIONAL distance
+  bands: preferred ≤150 km, degraded ≤500 km, maximum ≤1100 km),
+  full provenance and decision fingerprinting, human-readable traces,
+  machine-readable outputs plus `CorrectionDecisionPhase9` handoff,
+  and CLI `scripts/run_hybrid_decision.py`
+  (`inspect`/`plan`/`decide`/`explain`/`summarize`, `--dry-run`).
+- 52 synthetic-only Phase 8 tests
+  (`SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS`);
+  `pyproject.toml` registers the new package, tests, and script.
+- Real pilot 2024 DOY 026 at PHRI00NGA (pre-review defaults: Phase 6
+  `UNAVAILABLE`, Phase 7 `NOT_VALIDATED`): `AUTO` → `SINGLE_BASE`/`OK`
+  via EKAK00NGA (105.553 km, fallback, `SINGLE_BASE_SELECTED`,
+  VRS blocked `VRS_UPSTREAM_REVIEW_PENDING`); `VRS_ONLY` →
+  `NO_CORRECTION`/`BLOCKED`; `SINGLE_BASE_ONLY` → `SINGLE_BASE` via
+  EKAK00NGA. Held-out AUTO probes: ABFC → PHRI 470.870 km `DEGRADED`,
+  EKAK → PHRI 105.553 km `OK`, MGBO → ABFC 689.687 km `DEGRADED`.
+  Outcomes derived by the engine from observed evidence, not
+  hard-coded. Evidence in
+  `research/hybrid_decision_engine/PILOT_EVIDENCE.md`; outputs under
+  `${NLGCP_DATA_ROOT}/processed/hybrid-decisions/` (outside Git).
+  Pre-review decisions are STALE once reviewed fingerprints land
+  (fingerprint-invalidated).
+- No scientific validity manufactured: no VRS-superiority,
+  centimetre-accuracy, validated-network-model, fixed-ambiguity, or
+  production-availability claims. Automatic corrected VRS stays BLOCKED
+  under reviewed Phase 6/7 evidence (no promoted interpolator;
+  geometry-only VRS diagnostic-only).
+
+## Phase 6/7 review record (merged from reviewed `main`)
 
 Validation sprint COMPLETE with verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS:
 13 Phase 6 geometry/science bugs found and fixed with regression tests; Phase 6
@@ -19,21 +105,15 @@ evidence regenerated as `atm-2024d026-phri-target-geometry-v3` (zero still wins:
 3.076 m vs IDW 3.352 / nearest 3.757 / planar 14.373 m, n=15948; all four folds
 proven EXTRAPOLATION); all four VRS rotations regenerated as `*-geometry-v3`
 (78,060 virtual observations, numerics identical to v2, leakage excluded, ZERO
-retained); `make check` PASS (355 Python tests). Merge requires three documented
-conditions (PILOT_EVIDENCE rewrite, old-ID supersede marking, v1/v2 retirement).
-Full record: `docs/phase6-7-scientific-validation.md`.
-
-## Current Milestone
-
-Phase 7 Geometry-Only Synthesis and Held-Out Validation
-
-## Status
+retained); `make check` PASS (355 Python tests). Merge conditions
+(PILOT_EVIDENCE rewrite, old-ID supersede marking, v1/v2 retirement) satisfied
+and merged. Full record: `docs/phase6-7-scientific-validation.md`.
 
 Phase 7 engineering + real pilot COMPLETE; scientific review COMPLETE with
-verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS (merge conditional, see §13 of
-`docs/phase6-7-scientific-validation.md`). Prior engineering + real pilot COMPLETE (Phase 4 engineering + 2024 dataset
-validation COMPLETE with provisional calibration; Phase 5 engineering +
-real pilot COMPLETE; scientific scope representative DOY 026 only)
+verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS. Prior engineering + real pilot
+COMPLETE (Phase 4 engineering + 2024 dataset validation COMPLETE with
+provisional calibration; Phase 5 engineering + real pilot COMPLETE;
+scientific scope representative DOY 026 only).
 
 ## Phase 7 handoff (2026-09-08)
 
@@ -223,9 +303,10 @@ real pilot COMPLETE; scientific scope representative DOY 026 only)
 
 ## In Progress
 
-- Phase 7 merge conditions from the validation review (PILOT_EVIDENCE rewrite
-  from geometry-v3, old pilot-ID supersede marking, VRS v1/v2 ID retirement).
-  No further scientific revalidation required beyond those three conditions.
+- Phase 8 merge into authoritative `main` and push (branch clean and
+  green: 59 Phase 8 tests, pytest 408 passed, `make check` PASS;
+  reviewed pilot regenerated). Do not begin Phase 9 (recorded RTCM
+  replay, live ingestion, RTCM generation, NTRIP) in this task.
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -265,7 +346,7 @@ real pilot COMPLETE; scientific scope representative DOY 026 only)
 ## Not Started
 
 - Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry; the 105 km control remains FLOAT-only, confirming the reference-geometry constraint on this dataset).
-- Phase 8 and later phases; live RTCM/NTRIP delivery remains out of scope.
+- Phase 9 and later phases; live RTCM/NTRIP delivery remains out of scope. Phase 8 engineering is COMPLETE; integration-validation is active.
 
 ## Blocked
 
@@ -290,9 +371,11 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Satisfy the three merge conditions in `docs/phase6-7-scientific-validation.md`
-§13, then merge Phase 7. Acquire denser multi-day observations for any future
-spatial-model promotion claim. Do not begin Phase 8 in this sprint.
+Regenerate the real DOY 026 Phase 8 pilot from reviewed Phase 6/7 inputs,
+run all Phase 8 tests plus full `make check`, commit the Phase 8
+integration, merge Phase 8 into authoritative `main`, validate `main`,
+and push. Acquire denser multi-day observations for any future
+spatial-model promotion claim. Do not begin Phase 9 in this sprint.
 
 ## Consolidation Record (2026-09-07)
 
@@ -304,13 +387,17 @@ spatial-model promotion claim. Do not begin Phase 8 in this sprint.
 
 ## Last Verified State
 
-Phase 6/7 review-branch source, corrected Phase 6 `*-geometry-v3` evidence and
-all four VRS `-geometry-v3` pilot outputs verified on 2026-09-09. Full
-`make check` PASS (355 Python tests, including 79 Phase 7). Scientific review
-verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS; merge conditions recorded in
-`docs/phase6-7-scientific-validation.md` §13. Earlier Phase 1–6 results are
-preserved. No spatial model promoted; no Phase 8 work.
+Phase 8 closure on `phase8/hybrid-correction-decision-engine`: reviewed
+`main` @ `cabcfbb` merged (`1b6132c`); Phase 8 implementation @ `f28e185`
+preserved; reviewed CLI defaults + fixtures + 7 new integration tests;
+real DOY 026 pilot regenerated (AUTO SINGLE_BASE/OK via EKAK 105.553 km;
+VRS_ONLY NO_CORRECTION/BLOCKED; SINGLE_BASE_ONLY SINGLE_BASE/OK;
+fingerprints reviewed, pre-review stale invalidated); pytest 408 passed,
+6 skipped; `make check` PASS. Scientific review verdict
+APPROVED_WITH_PROVISIONAL_LIMITATIONS; BEST MODEL = ZERO; no spatial
+model promoted; operational corrected VRS BLOCKED; Phase 9 handoff READY;
+Phase 9 NOT STARTED.
 
 ## Last Updated
 
-2026-09-09 (Phase 6/7 review closure sprint)
+2026-09-09 (Phase 8 reviewed-integration closure)
