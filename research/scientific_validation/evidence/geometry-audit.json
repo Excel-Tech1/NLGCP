@@ -1,0 +1,724 @@
+{
+  "status": "VERIFIED",
+  "reference_provenance": {
+    "commit": "71db0ffa0d9735697c6adfd06fdf766d0e5ce807",
+    "source_sha256": {
+      "rtkcmn.c": "c1d7e9af54518733dc874fc64523114b4a77a45e80895d0bb8ff4fcecfea65c7",
+      "rinex.c": "4f1eca0b17ca38feb132f6137bcbdbbc309bfd88c67e23497c1d937fca118d82",
+      "ephemeris.c": "c0e5aa04b1dc2f098f2ac3399c43410323ad44f8122f52f806f122a3ac52c626",
+      "preceph.c": "31c679db2c353fc73e1d2f3d9a1d8ea959f3701b9318c137c0826994207d229e",
+      "sbas.c": "73eeed8538cc78112d0addc2ca9c86a381ce497a9657cf220ff2362f9cfa64e2",
+      "qzslex.c": "c26e314b62e6fd623524f348fbbe6316d9696b702bcfd29b4a1ddfbaa9675654",
+      "rtklib.h": "5b61545cb703c781b206497040194efdc8b8a23cdac4c627283efd1260693653"
+    },
+    "compiler": "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "flags": "-O2 -ffunction-sections -fdata-sections -Wl,--gc-sections -DENAGLO -DENAQZS -DENAGAL -DNFREQ=3 -lm -lrt",
+    "adapter_sha256": "e1776a3bbb2d1a8f0ab844115ae4337195c9c436a05a1e32137120211b1f906d",
+    "executable_sha256": "c32a80bc81bb59f195ad52da24acce3de2a80d3e93e9a36150bec1d002b7a927",
+    "command": [
+      "cc",
+      "-O2",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "-Wl,--gc-sections",
+      "-DENAGLO",
+      "-DENAQZS",
+      "-DENAGAL",
+      "-DNFREQ=3",
+      "-I",
+      "/home/excellence/RTKLIB/src",
+      "/home/excellence/NLGCP-phase67-review/research/scientific_validation/native/reference.c",
+      "/home/excellence/RTKLIB/src/rtkcmn.c",
+      "/home/excellence/RTKLIB/src/rinex.c",
+      "/home/excellence/RTKLIB/src/ephemeris.c",
+      "/home/excellence/RTKLIB/src/preceph.c",
+      "/home/excellence/RTKLIB/src/sbas.c",
+      "/home/excellence/RTKLIB/src/qzslex.c",
+      "-lm",
+      "-lrt",
+      "-o",
+      "/home/excellence/NLGCP-phase67-review/build/scientific-validation/reference"
+    ]
+  },
+  "navigation_sha256": "a64183872be90e6052bd2d8e6aed43b59b897abd81a5636a36911c24c1aa7b2b",
+  "stations": [
+    {
+      "station": "ABFC00NGA",
+      "antex_table": "IGS20_2290                                                  TABLE ANTEX",
+      "coordinate_epoch": "2024-01-26T11:59:42Z",
+      "ecef": {
+        "x_m": 6246471.17131,
+        "y_m": 820849.02064,
+        "z_m": 994268.16646
+      },
+      "mjd": 60335.4998,
+      "pos_file_path": "/home/excellence/nlgcp-data/working/pride-test/2024/026/pos_2024026_abfc",
+      "pos_file_sha256": "516f0ea9373900327102586f18281fa9942f451cc9f9208958d7c87c083d2b7b",
+      "pride_product": "WUM0MGXRAP_20240260000_01D_05M_ORB.SP3                      SAT ORBIT",
+      "reference_frame": "IGS20",
+      "scientifically_valid": true,
+      "site": "abfc",
+      "geodetic_deg_deg_m": [
+        9.027668044220217,
+        7.486344398407632,
+        532.6335745342076
+      ],
+      "difference_vs_rtklib_deg_deg_m": [
+        7.069900220812997e-13,
+        1.7763568394002505e-15,
+        9.315499482909217e-10
+      ],
+      "eligibility": "VERIFIED"
+    },
+    {
+      "station": "EKAK00NGA",
+      "antex_table": "IGS20_2290                                                  TABLE ANTEX",
+      "coordinate_epoch": "2024-01-26T11:59:42Z",
+      "ecef": {
+        "x_m": 6296841.32517,
+        "y_m": 875621.00415,
+        "z_m": 512343.12428
+      },
+      "mjd": 60335.4998,
+      "pos_file_path": "/home/excellence/nlgcp-data/working/pride/run-EKAK00NGA/2024/026/pos_2024026_ekak",
+      "pos_file_sha256": "6d1380ea135a4198939680110671d195d471b3b516037dd424f1b2ec1216b30e",
+      "pride_product": "WUM0MGXRAP_20240260000_01D_05M_ORB.SP3                      SAT ORBIT",
+      "reference_frame": "IGS20",
+      "scientifically_valid": true,
+      "site": "ekak",
+      "geodetic_deg_deg_m": [
+        4.638406409559121,
+        7.916622432535107,
+        43.568902120925486
+      ],
+      "difference_vs_rtklib_deg_deg_m": [
+        4.005684672847565e-13,
+        -3.552713678800501e-15,
+        -9.313154691881209e-10
+      ],
+      "eligibility": "VERIFIED"
+    },
+    {
+      "station": "MGBO00NGA",
+      "antex_table": "IGS20_2290                                                  TABLE ANTEX",
+      "coordinate_epoch": "2024-01-26T11:59:42Z",
+      "ecef": {
+        "x_m": 6080985.75299,
+        "y_m": 1416995.42834,
+        "z_m": 1299050.34795
+      },
+      "mjd": 60335.4998,
+      "pos_file_path": "/home/excellence/nlgcp-data/working/pride/run-MGBO00NGA/2024/026/pos_2024026_mgbo",
+      "pos_file_sha256": "d9ff2de5e874e2dc0d60fcb2257880d1af4d7275966685cf65b00b3efaa5a6de",
+      "pride_product": "WUM0MGXRAP_20240260000_01D_05M_ORB.SP3                      SAT ORBIT",
+      "reference_frame": "IGS20",
+      "scientifically_valid": true,
+      "site": "mgbo",
+      "geodetic_deg_deg_m": [
+        11.829772921810795,
+        13.117032297653012,
+        355.6162314135581
+      ],
+      "difference_vs_rtklib_deg_deg_m": [
+        7.958078640513122e-13,
+        1.2434497875801753e-14,
+        -9.30867827264592e-10
+      ],
+      "eligibility": "VERIFIED"
+    },
+    {
+      "station": "PHRI00NGA",
+      "antex_table": "IGS20_2290                                                  TABLE ANTEX",
+      "coordinate_epoch": "2024-01-26T11:59:42Z",
+      "ecef": {
+        "x_m": 6308877.98392,
+        "y_m": 772269.10256,
+        "z_m": 530087.60603
+      },
+      "mjd": 60335.4998,
+      "pos_file_path": "/home/excellence/nlgcp-data/working/pride/run-PHRI00NGA/2024/026/pos_2024026_phri",
+      "pos_file_sha256": "7f62d2466fe9cf2df8acff390a97f4d85a8e456b27ba2b7b3bc9c6dafdc5965f",
+      "pride_product": "WUM0MGXRAP_20240260000_01D_05M_ORB.SP3                      SAT ORBIT",
+      "reference_frame": "IGS20",
+      "scientifically_valid": true,
+      "site": "phri",
+      "geodetic_deg_deg_m": [
+        4.799413510725385,
+        6.978851193259699,
+        46.72182808816433
+      ],
+      "difference_vs_rtklib_deg_deg_m": [
+        4.147793219999585e-13,
+        -1.7763568394002505e-15,
+        2.842170943040401e-14
+      ],
+      "eligibility": "VERIFIED"
+    }
+  ],
+  "baselines": [
+    {
+      "pair": "ABFC00NGA-EKAK00NGA",
+      "ecef_chord_m": 487636.00037086534,
+      "numpy_chord_m": 487636.0003708653,
+      "geodesic_surface_m": 487733.972,
+      "historical_m": 487636.0003708653,
+      "difference_m": 5.820766091346741e-11
+    },
+    {
+      "pair": "ABFC00NGA-MGBO00NGA",
+      "ecef_chord_m": 689686.987874908,
+      "numpy_chord_m": 689686.987874908,
+      "geodesic_surface_m": 689976.085,
+      "historical_m": 689686.987874908,
+      "difference_m": 0.0
+    },
+    {
+      "pair": "ABFC00NGA-PHRI00NGA",
+      "ecef_chord_m": 470869.6331065616,
+      "numpy_chord_m": 470869.6331065616,
+      "geodesic_surface_m": 470956.237,
+      "historical_m": 470869.6331065616,
+      "difference_m": 0.0
+    },
+    {
+      "pair": "EKAK00NGA-MGBO00NGA",
+      "ecef_chord_m": 979075.1508350975,
+      "numpy_chord_m": 979075.1508350975,
+      "geodesic_surface_m": 980016.357,
+      "historical_m": 979075.1508350975,
+      "difference_m": 0.0
+    },
+    {
+      "pair": "EKAK00NGA-PHRI00NGA",
+      "ecef_chord_m": 105552.65675817484,
+      "numpy_chord_m": 105552.65675817484,
+      "geodesic_surface_m": 105553.114,
+      "historical_m": 105552.65675817484,
+      "difference_m": 0.0
+    },
+    {
+      "pair": "MGBO00NGA-PHRI00NGA",
+      "ecef_chord_m": 1029033.8199170888,
+      "numpy_chord_m": 1029033.819917089,
+      "geodesic_surface_m": 1030128.731,
+      "historical_m": 1029033.819917089,
+      "difference_m": -1.1641532182693481e-10
+    }
+  ],
+  "rotations": [
+    {
+      "target": "ABFC00NGA",
+      "references": [
+        "EKAK00NGA",
+        "MGBO00NGA",
+        "PHRI00NGA"
+      ],
+      "origin_ecef_m": [
+        6228901.68736,
+        1021628.5116833333,
+        780493.6927533332
+      ],
+      "enu_m": {
+        "ABFC00NGA": [
+          -200975.8826567753,
+          214009.66780084313,
+          11365.43340812224
+        ],
+        "EKAK00NGA": [
+          -155078.5586978806,
+          -271459.50118148024,
+          9954.5901428488
+        ],
+        "MGBO00NGA": [
+          414094.4873440217,
+          524711.3363616461,
+          -17288.612459419084
+        ],
+        "PHRI00NGA": [
+          -259015.92864614085,
+          -253251.8351801655,
+          7334.022316570379
+        ]
+      },
+      "area_m2": 46557607801.509,
+      "area_km2": 46557.607801509,
+      "area_crosscheck_m2": 46557607801.509155,
+      "longest_edge_to_altitude_ratio": 11.365535928110361,
+      "barycentric": [
+        -2.892820090132351,
+        0.5329172589961138,
+        3.359902831136237
+      ],
+      "containment": "OUTSIDE",
+      "classification": "EXTRAPOLATION",
+      "planar_diagnostics": {
+        "rank": 3,
+        "condition_number": 13.85256669034247,
+        "coordinate_scale_m": 524711.336361646,
+        "coefficients": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "anchor": "PHRI00NGA",
+      "candidate_distances_m": {
+        "EKAK00NGA": 487636.00037086534,
+        "MGBO00NGA": 689686.987874908,
+        "PHRI00NGA": 470869.6331065616
+      }
+    },
+    {
+      "target": "EKAK00NGA",
+      "references": [
+        "ABFC00NGA",
+        "MGBO00NGA",
+        "PHRI00NGA"
+      ],
+      "origin_ecef_m": [
+        6212111.636073333,
+        1003371.1838466666,
+        941135.3734800001
+      ],
+      "enu_m": {
+        "ABFC00NGA": [
+          -185665.61340897597,
+          51823.40084769621,
+          12673.852422369357
+        ],
+        "EKAK00NGA": [
+          -139626.02283590555,
+          -433433.9301530204,
+          -1274.1821208738183
+        ],
+        "MGBO00NGA": [
+          429240.4900295886,
+          363379.3755698928,
+          -9495.94263457357
+        ],
+        "PHRI00NGA": [
+          -243574.87662061228,
+          -415202.77641758916,
+          -3177.9097877957465
+        ]
+      },
+      "area_m2": 134567634960.3297,
+      "area_km2": 134567.63496032968,
+      "area_crosscheck_m2": 134567634960.32944,
+      "longest_edge_to_altitude_ratio": 3.9343438164245663,
+      "barycentric": [
+        -0.34629026024260706,
+        0.18430356047023982,
+        1.1619866997723671
+      ],
+      "containment": "OUTSIDE",
+      "classification": "EXTRAPOLATION",
+      "planar_diagnostics": {
+        "rank": 3,
+        "condition_number": 3.517624012565701,
+        "coordinate_scale_m": 429240.49002958846,
+        "coefficients": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "anchor": "PHRI00NGA",
+      "candidate_distances_m": {
+        "ABFC00NGA": 487636.00037086534,
+        "MGBO00NGA": 979075.1508350975,
+        "PHRI00NGA": 105552.65675817484
+      }
+    },
+    {
+      "target": "MGBO00NGA",
+      "references": [
+        "ABFC00NGA",
+        "EKAK00NGA",
+        "PHRI00NGA"
+      ],
+      "origin_ecef_m": [
+        6284063.493466667,
+        822913.0424500001,
+        678899.6322566667
+      ],
+      "enu_m": {
+        "ABFC00NGA": [
+          2834.580949824839,
+          317575.8021159679,
+          -3511.4524004001214
+        ],
+        "EKAK00NGA": [
+          50602.63831058892,
+          -167688.59836119253,
+          1542.5740355574635
+        ],
+        "MGBO00NGA": [
+          615421.5430277907,
+          629894.7568340211,
+          -57011.22492211382
+        ],
+        "PHRI00NGA": [
+          -53437.21926041375,
+          -149887.20375477526,
+          1968.878364841732
+        ]
+      },
+      "area_m2": 24818250535.630417,
+      "area_km2": 24818.250535630417,
+      "area_crosscheck_m2": 24818250535.63045,
+      "longest_edge_to_altitude_ratio": 4.79009036783502,
+      "barycentric": [
+        1.8743267730733408,
+        5.415107572601519,
+        -6.289434345674859
+      ],
+      "containment": "OUTSIDE",
+      "classification": "EXTRAPOLATION",
+      "planar_diagnostics": {
+        "rank": 3,
+        "condition_number": 7.469466939658496,
+        "coordinate_scale_m": 317575.80211596785,
+        "coefficients": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "anchor": "ABFC00NGA",
+      "candidate_distances_m": {
+        "ABFC00NGA": 689686.987874908,
+        "EKAK00NGA": 979075.1508350975,
+        "PHRI00NGA": 1029033.8199170888
+      }
+    },
+    {
+      "target": "PHRI00NGA",
+      "references": [
+        "ABFC00NGA",
+        "EKAK00NGA",
+        "MGBO00NGA"
+      ],
+      "origin_ecef_m": [
+        6208099.41649,
+        1037821.8177100001,
+        935220.5462300001
+      ],
+      "enu_m": {
+        "ABFC00NGA": [
+          -220329.97168201895,
+          58091.458350723056,
+          10783.957365405988
+        ],
+        "EKAK00NGA": [
+          -174612.89456789894,
+          -427216.44933266856,
+          -2446.7817600107446
+        ],
+        "MGBO00NGA": [
+          394942.8662499176,
+          369124.9909819451,
+          -8337.175605394397
+        ],
+        "PHRI00NGA": [
+          -278534.8668908238,
+          -408902.4915000936,
+          -4933.94193357668
+        ]
+      },
+      "area_m2": 156408158813.7747,
+      "area_km2": 156408.1588137747,
+      "area_crosscheck_m2": 156408158813.77487,
+      "longest_edge_to_altitude_ratio": 3.064269349863022,
+      "barycentric": [
+        0.2979006786271441,
+        0.8606488967403578,
+        -0.15854957536750192
+      ],
+      "containment": "OUTSIDE",
+      "classification": "EXTRAPOLATION",
+      "planar_diagnostics": {
+        "rank": 3,
+        "condition_number": 2.869985826640802,
+        "coordinate_scale_m": 427216.44933266845,
+        "coefficients": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "anchor": "EKAK00NGA",
+      "candidate_distances_m": {
+        "ABFC00NGA": 470869.6331065616,
+        "EKAK00NGA": 105552.65675817484,
+        "MGBO00NGA": 1029033.8199170888
+      }
+    }
+  ],
+  "satellite_checks": [
+    {
+      "satellite": "G03",
+      "gps_week": 2298,
+      "tow_s": 432000.0,
+      "ecef_m": [
+        16858146.1575519,
+        -2149239.7734418456,
+        20238341.423866328
+      ],
+      "rtklib_ecef_m": [
+        16858146.1575519,
+        -2149239.77344184,
+        20238341.4238663
+      ],
+      "difference_m": 2.6669019951068523e-08
+    },
+    {
+      "satellite": "G10",
+      "gps_week": 2298,
+      "tow_s": 432000.0,
+      "ecef_m": [
+        -9978788.742668867,
+        23953066.197867464,
+        4984928.211874131
+      ],
+      "rtklib_ecef_m": [
+        -9978788.74266887,
+        23953066.1978675,
+        4984928.21187412
+      ],
+      "difference_m": 3.90711742702928e-08
+    },
+    {
+      "satellite": "G22",
+      "gps_week": 2298,
+      "tow_s": 432000.0,
+      "ecef_m": [
+        8693147.95011589,
+        -23629146.919830937,
+        9337498.49014558
+      ],
+      "rtklib_ecef_m": [
+        8693147.95011589,
+        -23629146.9198309,
+        9337498.49014558
+      ],
+      "difference_m": 3.725290298461914e-08
+    },
+    {
+      "satellite": "G32",
+      "gps_week": 2298,
+      "tow_s": 432000.0,
+      "ecef_m": [
+        -7503229.836152139,
+        14700282.621332994,
+        20962457.882932734
+      ],
+      "rtklib_ecef_m": [
+        -7503229.83615216,
+        14700282.621333,
+        20962457.8829327
+      ],
+      "difference_m": 3.9687893824023225e-08
+    },
+    {
+      "satellite": "G03",
+      "gps_week": 2298,
+      "tow_s": 438123.0,
+      "ecef_m": [
+        11859098.247141786,
+        13665816.163131481,
+        19344828.60343945
+      ],
+      "rtklib_ecef_m": [
+        11859098.2471418,
+        13665816.1631315,
+        19344828.6034395
+      ],
+      "difference_m": 5.398458520393609e-08
+    },
+    {
+      "satellite": "G10",
+      "gps_week": 2298,
+      "tow_s": 438123.0,
+      "ecef_m": [
+        -10711606.170825223,
+        19726758.125792578,
+        -13731814.474937553
+      ],
+      "rtklib_ecef_m": [
+        -10711606.1708252,
+        19726758.1257926,
+        -13731814.4749375
+      ],
+      "difference_m": 6.098563054108955e-08
+    },
+    {
+      "satellite": "G22",
+      "gps_week": 2298,
+      "tow_s": 438123.0,
+      "ecef_m": [
+        10443869.74760786,
+        -22532671.673150018,
+        -9379436.774471318
+      ],
+      "rtklib_ecef_m": [
+        10443869.7476079,
+        -22532671.67315,
+        -9379436.77447132
+      ],
+      "difference_m": 4.336404326119578e-08
+    },
+    {
+      "satellite": "G32",
+      "gps_week": 2298,
+      "tow_s": 438123.0,
+      "ecef_m": [
+        -19475735.082088906,
+        15982752.64645014,
+        8258844.540438697
+      ],
+      "rtklib_ecef_m": [
+        -19475735.0820889,
+        15982752.6464501,
+        8258844.54043869
+      ],
+      "difference_m": 4.034895267791016e-08
+    },
+    {
+      "satellite": "G03",
+      "gps_week": 2298,
+      "tow_s": 475200.0,
+      "ecef_m": [
+        -16711668.134291094,
+        1876744.8985517928,
+        20386658.669738576
+      ],
+      "rtklib_ecef_m": [
+        -16711668.1342911,
+        1876744.89855179,
+        20386658.6697386
+      ],
+      "difference_m": 2.3208438967125698e-08
+    },
+    {
+      "satellite": "G10",
+      "gps_week": 2298,
+      "tow_s": 475200.0,
+      "ecef_m": [
+        10038165.98552786,
+        -24001671.629332222,
+        4597763.969879432
+      ],
+      "rtklib_ecef_m": [
+        10038165.9855279,
+        -24001671.6293322,
+        4597763.96987942
+      ],
+      "difference_m": 4.6649872460842856e-08
+    },
+    {
+      "satellite": "G22",
+      "gps_week": 2298,
+      "tow_s": 475200.0,
+      "ecef_m": [
+        -8790019.308188658,
+        23723689.733319473,
+        8987565.230655137
+      ],
+      "rtklib_ecef_m": [
+        -8790019.30818867,
+        23723689.7333195,
+        8987565.23065513
+      ],
+      "difference_m": 2.933296514306892e-08
+    },
+    {
+      "satellite": "G32",
+      "gps_week": 2298,
+      "tow_s": 475200.0,
+      "ecef_m": [
+        7827546.664667573,
+        -14693333.755684005,
+        20844993.172953367
+      ],
+      "rtklib_ecef_m": [
+        7827546.66466757,
+        -14693333.755684,
+        20844993.1729534
+      ],
+      "difference_m": 3.410472240969642e-08
+    },
+    {
+      "satellite": "G03",
+      "gps_week": 2298,
+      "tow_s": 518220.0,
+      "ecef_m": [
+        16784833.8917266,
+        -2019837.2961593168,
+        20312579.38690277
+      ],
+      "rtklib_ecef_m": [
+        16784833.8917266,
+        -2019837.29615932,
+        20312579.3869028
+      ],
+      "difference_m": 3.36856941998132e-08
+    },
+    {
+      "satellite": "G10",
+      "gps_week": 2298,
+      "tow_s": 518220.0,
+      "ecef_m": [
+        -10009191.782474454,
+        23979934.967420943,
+        4780708.879343436
+      ],
+      "rtklib_ecef_m": [
+        -10009191.7824745,
+        23979934.9674209,
+        4780708.87934344
+      ],
+      "difference_m": 6.332993507385254e-08
+    },
+    {
+      "satellite": "G22",
+      "gps_week": 2298,
+      "tow_s": 518220.0,
+      "ecef_m": [
+        8741932.71339684,
+        -23680029.51779544,
+        9154596.238909116
+      ],
+      "rtklib_ecef_m": [
+        8741932.71339684,
+        -23680029.5177954,
+        9154596.23890912
+      ],
+      "difference_m": 4.114717624033712e-08
+    },
+    {
+      "satellite": "G32",
+      "gps_week": 2298,
+      "tow_s": 518220.0,
+      "ecef_m": [
+        -7681235.423319283,
+        14695438.26204949,
+        20899691.24721726
+      ],
+      "rtklib_ecef_m": [
+        -7681235.42331928,
+        14695438.2620495,
+        20899691.2472173
+      ],
+      "difference_m": 4.211596792412927e-08
+    }
+  ],
+  "nmf_checks": 48,
+  "nmf_max_difference": 4.6629367034256575e-15,
+  "notes": [
+    "IGS20 coordinates retained; WGS84 ellipsoid does not transform reference frame.",
+    "Geodesic is ellipsoid surface distance; chord is 3D marker separation including height.",
+    "Phase 5 area is a 3D chord triangle (Heron); reviewed area is a common EN projection.",
+    "Satellite comparison uses the same GPST epoch. Phase 6 mapping uses reception time."
+  ]
+}

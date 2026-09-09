@@ -17,5 +17,14 @@ IONO_COEFF_M_HZ2_PER_TECU = 40.308e16
 electrons/m^2, i.e. I(m) = 40.308e16 * TECU / f^2. Gives ~0.162 m per TECU
 on GPS L1."""
 EARTH_GM_M3_S2 = 3.986005e14
-EARTH_ROT_RATE_RAD_S = 7.2921151467e-07
-GPS_PI = 3.1415926535898  # IS-GPS-200 semicircle convention
+EARTH_ROT_RATE_RAD_S = 7.2921151467e-05
+"""Earth rotation rate (IS-GPS-200 Table 20-IV; RTKLIB rtklib.h OMGE).
+
+Must be 7.2921151467e-05 rad/s. A previous value of 7.2921151467e-07
+(factor-100 error) corrupted the broadcast-orbit node computation
+``omega_k = omega0 + (omegadot - OMEGA_E)*tk - OMEGA_E*toe`` and every
+downstream elevation/mapping term. Corrected in the Phase 6/7
+scientific-validation sprint; verified against pinned RTKLIB
+v2.4.2-p13 ``src/rtklib.h`` (``#define OMGE 7.2921151467E-5``).
+"""
+GPS_PI = 3.1415926535898  # circle constant; NOT a RINEX unit conversion

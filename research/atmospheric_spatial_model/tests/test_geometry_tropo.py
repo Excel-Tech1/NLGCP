@@ -39,12 +39,30 @@ EARTH_R = 6_378_137.0
 def circular_equatorial_eph() -> BroadcastEphemeris:
     a = 26_560_000.0
     return BroadcastEphemeris(
-        satellite_id="G01", toc_week=2298, toc_tow_s=432000.0,
-        af0_s=0.0, af1_s_s=0.0, af2_s_s2=0.0, iode=1.0, crs_m=0.0,
-        delta_n_rad_s=0.0, m0_rad=0.0, cuc_rad=0.0, e=0.0, cus_rad=0.0,
-        sqrt_a_m_sqrt=math.sqrt(a), toe_tow_s=432000.0, toe_week=2298,
-        cic_rad=0.0, omega0_rad=0.0, cis_rad=0.0, i0_rad=0.0, crc_m=0.0,
-        omega_rad=0.0, omega_dot_rad_s=0.0, idot_rad_s=0.0,
+        satellite_id="G01",
+        toc_week=2298,
+        toc_tow_s=432000.0,
+        af0_s=0.0,
+        af1_s_s=0.0,
+        af2_s_s2=0.0,
+        iode=1.0,
+        crs_m=0.0,
+        delta_n_rad_s=0.0,
+        m0_rad=0.0,
+        cuc_rad=0.0,
+        e=0.0,
+        cus_rad=0.0,
+        sqrt_a_m_sqrt=math.sqrt(a),
+        toe_tow_s=432000.0,
+        toe_week=2298,
+        cic_rad=0.0,
+        omega0_rad=0.0,
+        cis_rad=0.0,
+        i0_rad=0.0,
+        crc_m=0.0,
+        omega_rad=0.0,
+        omega_dot_rad_s=0.0,
+        idot_rad_s=0.0,
     )
 
 
@@ -71,9 +89,12 @@ def test_east_horizon_satellite() -> None:
 
 
 def test_gps_week_conversion() -> None:
+    # RINEX labels in this archive are GPS time: no UTC leap-second offset.
+    # 2024-01-26T00:00:00 GPST = week 2298, tow 432000 s exactly. A previous
+    # revision added 18 s (432018), biasing broadcast propagation ~70 km.
     week, tow = gps_datetime_to_tow(datetime(2024, 1, 26, 0, 0, tzinfo=UTC))
     assert week == 2298
-    assert tow == pytest.approx(432018.0)
+    assert tow == pytest.approx(432000.0)
 
 
 def test_synthetic_nav_parses_and_selects(tmp_path: Path) -> None:
@@ -140,14 +161,21 @@ def test_standard_atmosphere_labelled_not_measured() -> None:
 def test_apriori_slant_reasonable_and_differential() -> None:
     station = (6_246_471.0, 820_849.0, 994_268.0)
     term = a_priori_slant(
-        station_id="S", satellite_id="G01", epoch_iso="e",
-        elevation_deg=45.0, station_ecef_m=station, doy=26,
+        station_id="S",
+        satellite_id="G01",
+        epoch_iso="e",
+        elevation_deg=45.0,
+        station_ecef_m=station,
+        doy=26,
     )
     assert term.slant_total_m == pytest.approx(3.2, abs=0.6)
     assert "not measured" in term.meteorology_source
     term2 = a_priori_slant(
-        station_id="T", satellite_id="G01", epoch_iso="e",
-        elevation_deg=45.0, station_ecef_m=(station[0] + 1e5, station[1], station[2]),
+        station_id="T",
+        satellite_id="G01",
+        epoch_iso="e",
+        elevation_deg=45.0,
+        station_ecef_m=(station[0] + 1e5, station[1], station[2]),
         doy=26,
     )
     assert differential_apriori_m(term2, term) != 0.0

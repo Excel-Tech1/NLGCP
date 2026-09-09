@@ -1,0 +1,663 @@
+{
+  "head": "59c986a8d1f426002918bd9a5abd5af32623408b",
+  "initial_status": "clean (observed before inventory creation)",
+  "log": "59c986a Implement Phase 7 offline geometry-only VRS generator\nf9e7341 Merge Phase 6 atmospheric and spatial error model\n0e358eb Build Phase 6 atmospheric and spatial error model\n6174ceb Record Phase 5 merge closure on main\n9a2d870 Merge Phase 5 offline network RTK\n9c47203 Merge main (Phase 4 validation closure) into phase5/offline-network-rtk\n8976de3 Build Phase 5 offline network RTK engine\n345646d Complete Phase 4 GNSS QC dataset validation\n9acaf36 Record Phase 1-4 consolidation on main\nde40037 Merge Phase 4 GNSS QC and station health\n",
+  "data_root": "/home/excellence/nlgcp-data",
+  "artifacts": [
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/admission.json",
+      "bytes": 374,
+      "sha256": "5076872f6ef458b0937640361afac6063ea303f80b8412b1350b222e0c9d8953"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/common-observations/per-epoch-common.csv",
+      "bytes": 18938,
+      "sha256": "6b416b9b55fa74229e1fcb94b39db9fd8d251791859bc8f003aa3b8a74738913"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/common-observations/summary.json",
+      "bytes": 12435,
+      "sha256": "7204fe98921fd3edc997f0abfb5f95897358e76bcc4c575ef2ac543dc60781d5"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/definition.json",
+      "bytes": 910,
+      "sha256": "b0db30d98991456239417adfeb6925259988cd46d36306b6874f65c0db6bd0a6"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/derive-status.json",
+      "bytes": 6637,
+      "sha256": "4847dea421fe3f1db2e511a68e31acc5decf6308c4b96e4b127a328a0bb6e742"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/figures/common-satellites.png",
+      "bytes": 69137,
+      "sha256": "e8b2c2461362996dab966f067993d87e85a35ab92ecbba98e750a1f14c4b224f"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/figures/decorrelation.png",
+      "bytes": 45912,
+      "sha256": "8c538b6ff17ea968eb067f60c2be1e691a8b568ca23840e6b8d7b4b0fd827c46"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/figures/loocv-rmse.png",
+      "bytes": 28025,
+      "sha256": "c0fa61c4cda5ee80bf5637739fe779bb61ac59521088c105260e0fd6649c6a04"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/ionosphere/pair-sd.csv",
+      "bytes": 12414843,
+      "sha256": "7bf4942bdbd195da84433e540e58191aa03443197699718d6b076a0230832c94"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/ionosphere/station-gf.csv",
+      "bytes": 1979441,
+      "sha256": "0e5a6d32ca2a111845d3b25e3c46ffe4f165e52646e4c980ca7f539c044ba7df"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/ionosphere/summary.json",
+      "bytes": 3220,
+      "sha256": "1fd3517043abfb64faac38c6e84d5addd5f1af7fea4163b36c630f8ff5c934b1"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/metrics.json",
+      "bytes": 1905,
+      "sha256": "e1d21c66160e9003fb4471a57a33c415a5b65d12ec123e18787fd200900c472d"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/models/fits.json",
+      "bytes": 295,
+      "sha256": "6ffd45f18a408cb249d0f0f3b37cf047de76a39c147963ef7b1e6891e33cefa1"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/models/target-predictions.csv",
+      "bytes": 2498509,
+      "sha256": "7709e642efac9f6a5db7a83020498ae57ce4d2dabd0a9e247821021922b50716"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/residuals/spatial-records.csv",
+      "bytes": 6189496,
+      "sha256": "207bb05360331eba70e80c8b11d443388802962cb3e0e165fd01b7b1d57e4215"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/tables/baseline-matrix.csv",
+      "bytes": 390,
+      "sha256": "542e3874b486975cabcc9ba755a70036a0bd839e1a8eef8c74b39261460ba651"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/tables/decorrelation.csv",
+      "bytes": 404,
+      "sha256": "6494da869fe3bd8e0d931d825823707e1015189d4952ff1a884273bb1c3cb37c"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/tables/loocv-summary.csv",
+      "bytes": 705,
+      "sha256": "7ae7e6e66126dfbb0655d2c351fafea8bc642d3798d46269cfc1ae49320fdbff"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/troposphere/apriori.csv",
+      "bytes": 4988899,
+      "sha256": "c68d00284faf97dc0d5a6ada435f955c5d20ff9d08fe4404dffa3d28b2c6c76c"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/troposphere/geometry-exclusions.json",
+      "bytes": 63362,
+      "sha256": "38cd7e5baae7b0c802ca0c8d9cd71103c336367702dd1af1d06682ee20a6c445"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/troposphere/summary.json",
+      "bytes": 293,
+      "sha256": "2f7630e96eec5767def3f86c3d7bff41f668dc6fd6b950b56d22771f72135ea0"
+    },
+    {
+      "path": "processed/atmospheric-model/experiments/atm-2024d026-phri-target/validation/loocv.json",
+      "bytes": 4196,
+      "sha256": "d06b46a4230f98759f6c55b19505eaa335f2b7b49cfef6d827ff2d528d2174ba"
+    },
+    {
+      "path": "processed/atmospheric-model/summaries/model-experiments.csv",
+      "bytes": 152,
+      "sha256": "7d95b2abf9fbf8e0d8b90db73f473613a82d7200d4fef7308d298b7459d2e1a2"
+    },
+    {
+      "path": "processed/atmospheric-model/summaries/spatial-gradients.csv",
+      "bytes": 568,
+      "sha256": "6812681b86ec6b585c6eb85040109c2275fa321ebaf175bd9f16f64400beca8f"
+    },
+    {
+      "path": "processed/atmospheric-model/summaries/validation-results.csv",
+      "bytes": 707,
+      "sha256": "26d59ce488bd8d5defdfb19090fbe5114a8b89244d18914b239027a78bb10b0d"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/admission.json",
+      "bytes": 780,
+      "sha256": "431709c3dd81197bf35e58e5072046a47519d0357abbbdfe4c86d5748b892d55"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/anchor.json",
+      "bytes": 147,
+      "sha256": "4260132c40deb6c9b525ee51a087c3e673486ad70d6b2d22ac544db322bff610"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/completion.json",
+      "bytes": 935,
+      "sha256": "007df1da358aacaabc8629b56f98e198db30bea07c67c8bc81f019703cc0b728"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/definition.json",
+      "bytes": 1953,
+      "sha256": "b03964d1a2eb4853f0b59312b5aa168e64f3b636fb520cda20ea8d83a456ed83"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/exclusions.json",
+      "bytes": 903,
+      "sha256": "ed9cad97c5cbcf62fb3f4c6d3112dbc12fe49bac910218de502343048363c3e9"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/metrics.json",
+      "bytes": 1310,
+      "sha256": "9dc33166665098619ab8bac398b33606d7331005cf88c111a0f221c3245076de"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/provenance.json",
+      "bytes": 18217,
+      "sha256": "a9a7a4a6f6b91061754d93a87a915bd82addc4827961175869440547c879b909"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/target.json",
+      "bytes": 1037,
+      "sha256": "8cc10e9bfb4af5fc4466ee8009097a855d59dac4a056082e20b03691f9be3b83"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/validation-residuals.csv",
+      "bytes": 1891551,
+      "sha256": "e444180aa3eeb0fcca6925689c02793d19321ab24d43a1dc53c83cd869deeb3f"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/validation.json",
+      "bytes": 3205,
+      "sha256": "16f688abb1b2c59f4e266bfbe2ef742e6839f86c8591e7ac8134f407f9e4d30e"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v1/virtual-observations.csv",
+      "bytes": 10221555,
+      "sha256": "cdac2b339b199d685f051f389d57e17825df1ec764e9f7d67c1317b1b8e0b0f1"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/admission.json",
+      "bytes": 780,
+      "sha256": "431709c3dd81197bf35e58e5072046a47519d0357abbbdfe4c86d5748b892d55"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/anchor.json",
+      "bytes": 147,
+      "sha256": "4260132c40deb6c9b525ee51a087c3e673486ad70d6b2d22ac544db322bff610"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/completion.json",
+      "bytes": 935,
+      "sha256": "f7e1362d27da7270eef0d0bd11434b10015ae508720d18db7c6b232d7bc4c26e"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/definition.json",
+      "bytes": 1953,
+      "sha256": "90e855328fe53e9012a487bd4bf0ccc5597d09579a26240d95c5d4ba68e5e90c"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/exclusions.json",
+      "bytes": 903,
+      "sha256": "ed9cad97c5cbcf62fb3f4c6d3112dbc12fe49bac910218de502343048363c3e9"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/metrics.json",
+      "bytes": 1310,
+      "sha256": "80e3719f392281101527c98e122918837b1ef3ba4725e09e68f4bdcc7b95e2cc"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/provenance.json",
+      "bytes": 18217,
+      "sha256": "1771008527b2d09cfd2c8be938782e4d6c78dce999b5070195d64f37507a53f6"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/target.json",
+      "bytes": 1037,
+      "sha256": "8cc10e9bfb4af5fc4466ee8009097a855d59dac4a056082e20b03691f9be3b83"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/validation-residuals.csv",
+      "bytes": 1891551,
+      "sha256": "e444180aa3eeb0fcca6925689c02793d19321ab24d43a1dc53c83cd869deeb3f"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/validation.json",
+      "bytes": 3097,
+      "sha256": "5d99a111c72ef0a1fb69883f20bd31acda916c4fb18d0dc1f81a347fc34c6a25"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-abfc-geometry-v2/virtual-observations.csv",
+      "bytes": 10221555,
+      "sha256": "ae9baedb662e3158f54fb8f995a851f205ef363093d8d5d871664899acadd894"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/admission.json",
+      "bytes": 780,
+      "sha256": "73634dbb604507402027ff6a4b5a8484e617a82c2f310b477ddaac92945bd3f0"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/anchor.json",
+      "bytes": 148,
+      "sha256": "0ffa8ffa260e26c59374c6ba2881a330837a9a69641bfcbcf2d62e2b8a861b63"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/completion.json",
+      "bytes": 935,
+      "sha256": "c73ba37e68b8fae7670ca063ad603046c67f7aeaaa39e4da8a2797a112892bff"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/definition.json",
+      "bytes": 1954,
+      "sha256": "f1467e1972d49a7529b1df2005e79ad3fd13481e0d766d6c68d8f1fe417fc652"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/exclusions.json",
+      "bytes": 903,
+      "sha256": "d03aea139a6bba0350e2d32fdd7cfb28f5ed8ff266e9ba30bd39b9410d1ad384"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/metrics.json",
+      "bytes": 1311,
+      "sha256": "f20577be127ecc2c2d0161570c9c01763b46724fe03013b4023b91e0a7f91c70"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/provenance.json",
+      "bytes": 18218,
+      "sha256": "4b73201b0fec6b483d5d7463a8a5119e8475111e51939b9819da07c26f89f418"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/target.json",
+      "bytes": 1047,
+      "sha256": "b92660956f7fd56508a1ce48d4622811af97e596a82c86dea4165a7c6b629232"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/validation-residuals.csv",
+      "bytes": 1890309,
+      "sha256": "b71074994183a9da1e1e844202542a395f44241b070776ff63b2f7b3cc654d59"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/validation.json",
+      "bytes": 3261,
+      "sha256": "25a9fbdd998f247063a7667774b305a5e9d68b197b122e2577d5383ea36d82f8"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v1/virtual-observations.csv",
+      "bytes": 10251982,
+      "sha256": "a64a232b813030b17febc43579d3406080ffb3e9380b43198baede0ca81f0b51"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/admission.json",
+      "bytes": 780,
+      "sha256": "73634dbb604507402027ff6a4b5a8484e617a82c2f310b477ddaac92945bd3f0"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/anchor.json",
+      "bytes": 148,
+      "sha256": "0ffa8ffa260e26c59374c6ba2881a330837a9a69641bfcbcf2d62e2b8a861b63"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/completion.json",
+      "bytes": 935,
+      "sha256": "1313bc8ca99a3686eb27bf33fa247655820d3dd691fb035b827c2a124034ae54"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/definition.json",
+      "bytes": 1954,
+      "sha256": "a964fd9ad11c624e5108cedbc07e1382f6d052e056e12cf42228c8d36440e9ba"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/exclusions.json",
+      "bytes": 903,
+      "sha256": "d03aea139a6bba0350e2d32fdd7cfb28f5ed8ff266e9ba30bd39b9410d1ad384"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/metrics.json",
+      "bytes": 1311,
+      "sha256": "f18a9acf040d4a1bf3079c0180d34e30d46ad11be06a3da10a7a66812492ba81"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/provenance.json",
+      "bytes": 18218,
+      "sha256": "830a997779375ae980531961dcfbc07acb78e9bdab95d72c2a619f742f93728f"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/target.json",
+      "bytes": 1047,
+      "sha256": "b92660956f7fd56508a1ce48d4622811af97e596a82c86dea4165a7c6b629232"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/validation-residuals.csv",
+      "bytes": 1890309,
+      "sha256": "b71074994183a9da1e1e844202542a395f44241b070776ff63b2f7b3cc654d59"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/validation.json",
+      "bytes": 3153,
+      "sha256": "888d4ba9786ede035f6af10c335dae70e21857aaecc41f01c414bf50f8a28966"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-ekak-geometry-v2/virtual-observations.csv",
+      "bytes": 10251982,
+      "sha256": "9c5de33f5bd45d7f7ad48f84b563a7b8a8aa7b29e482f97a4da5b6b7407eca5d"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/admission.json",
+      "bytes": 780,
+      "sha256": "cf09a15d2362094498c351646f6381ae5d3bf380d3edfe24730803b85d9a2ddc"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/anchor.json",
+      "bytes": 146,
+      "sha256": "2b00976a85a583a8912671a3d588ecb31dd697701722a3c49bb75c94308066ca"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/completion.json",
+      "bytes": 935,
+      "sha256": "132d80d67f85087ee01da345ef4ce9a9bff77f0a7debe9e95dd10086746e75c1"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/definition.json",
+      "bytes": 1957,
+      "sha256": "d640e28f04bda8be60a68599d7d527d3ea32ea37c128397d082083667798cb56"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/exclusions.json",
+      "bytes": 902,
+      "sha256": "450680fe2286718b1852604c7b88fb3470f1d2b8f10a1f35c3cef58f9ee83265"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/metrics.json",
+      "bytes": 1309,
+      "sha256": "0bd172885dde6858192442eb2dc33fbb67291b56c21fc8334d4c00974f78210a"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/provenance.json",
+      "bytes": 18221,
+      "sha256": "c38ff1fda73370787625525cd2b6c30d217cd30da9ccf4cb13fe11f163846133"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/target.json",
+      "bytes": 1052,
+      "sha256": "e9674c10dd41fc6ae909cc59c0f40439df05530707dbdc2aa3c72532ee67dda5"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/validation-residuals.csv",
+      "bytes": 1913728,
+      "sha256": "ba47511622564023a6ed982addebd5d217a13c66ecca9e66e948ad612ec8a01f"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/validation.json",
+      "bytes": 3262,
+      "sha256": "35753062f1438544cf7ba7ab0c0871bae87f79825f2f9be6b4e45a5fbfcaaade"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v1/virtual-observations.csv",
+      "bytes": 10296520,
+      "sha256": "8327d4b85947cf5cf668530354f32750d716da5c9d27714a5f0410e84df99b59"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/admission.json",
+      "bytes": 780,
+      "sha256": "cf09a15d2362094498c351646f6381ae5d3bf380d3edfe24730803b85d9a2ddc"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/anchor.json",
+      "bytes": 146,
+      "sha256": "2b00976a85a583a8912671a3d588ecb31dd697701722a3c49bb75c94308066ca"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/completion.json",
+      "bytes": 935,
+      "sha256": "be46337f418fc1902fc0a486d4c446e3ca2e216446d01d4b77585b69e8133ca3"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/definition.json",
+      "bytes": 1957,
+      "sha256": "fc2fa03f04902c4870203d362ba6f30620bb912333d035eed72de50aba42c833"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/exclusions.json",
+      "bytes": 902,
+      "sha256": "450680fe2286718b1852604c7b88fb3470f1d2b8f10a1f35c3cef58f9ee83265"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/metrics.json",
+      "bytes": 1309,
+      "sha256": "544061fd7b62cf53631f61b60aa189a6f45502cdb61cc86348d7f050922b963b"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/provenance.json",
+      "bytes": 18221,
+      "sha256": "70adc8155916ccdbac998cb80de2ce1fc0b1661636091b0b28b25b88619e9ff0"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/target.json",
+      "bytes": 1052,
+      "sha256": "e9674c10dd41fc6ae909cc59c0f40439df05530707dbdc2aa3c72532ee67dda5"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/validation-residuals.csv",
+      "bytes": 1913728,
+      "sha256": "ba47511622564023a6ed982addebd5d217a13c66ecca9e66e948ad612ec8a01f"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/validation.json",
+      "bytes": 3154,
+      "sha256": "5a57e2a7dfe69243adbb3594a69e0c53a4c7f65da94a5be885bba9d5273b36a6"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-mgbo-geometry-v2/virtual-observations.csv",
+      "bytes": 10296520,
+      "sha256": "003e1b0f61085bedcdb71292e35654a274581a84c4a05b7762d3a3ff17c86f48"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/admission.json",
+      "bytes": 780,
+      "sha256": "88f3baba20457f542402068cdd16c0f2ff97ec5af31cd4b33489f519519c6998"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/anchor.json",
+      "bytes": 148,
+      "sha256": "8d34677b395766b18f1f61190d5eb9129e36ea0b180b80c1792d4926a5c20910"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/completion.json",
+      "bytes": 935,
+      "sha256": "b5be74c7a7d1aff248f718a66917d405ad2f2e982c1e55c8d201d471319e4172"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/definition.json",
+      "bytes": 1950,
+      "sha256": "f94eaf8d73a28356b767c40efbc59b7895316e456d924153420033d95d667c82"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/exclusions.json",
+      "bytes": 868,
+      "sha256": "f0ec7978e06fbee518624c47420dd71097e9a293be71668f5a3a14c6eb7697ec"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/metrics.json",
+      "bytes": 1257,
+      "sha256": "75bbe0a5a3ecead9ebb928cfb37056516bedf4af529908118f8bd0a9f4f59251"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/provenance.json",
+      "bytes": 18214,
+      "sha256": "7993c55e54a26081a5b42335417cc0d1726283724187b9973104de99dbadd7ae"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/target.json",
+      "bytes": 1046,
+      "sha256": "3b60ace3b4adff72640d3553285d6b67d3f6b65c28ae4cb5344bfdaeb3bb7292"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry/virtual-observations.csv",
+      "bytes": 13612628,
+      "sha256": "0eb9a386656770f216641f8bdb9afaa958e9b2c30004207e5af55119789a31ef"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/admission.json",
+      "bytes": 780,
+      "sha256": "88f3baba20457f542402068cdd16c0f2ff97ec5af31cd4b33489f519519c6998"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/anchor.json",
+      "bytes": 148,
+      "sha256": "8d34677b395766b18f1f61190d5eb9129e36ea0b180b80c1792d4926a5c20910"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/completion.json",
+      "bytes": 935,
+      "sha256": "ab72f88bd1492eb1d5642780b49c63bcd54fb2899f4e19c521c0ba542b96b251"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/definition.json",
+      "bytes": 1953,
+      "sha256": "baad166ac0ae9bcba614c698329543e80fb1bb0031111373e85ef14f1fe7315b"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/exclusions.json",
+      "bytes": 868,
+      "sha256": "f0ec7978e06fbee518624c47420dd71097e9a293be71668f5a3a14c6eb7697ec"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/metrics.json",
+      "bytes": 1327,
+      "sha256": "a577f1eb9365f1838fca2b11b9a1daddfdee91e5c111cbfcc9d28ec624c10fa6"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/provenance.json",
+      "bytes": 18217,
+      "sha256": "3271733a31cd7bab8f0c37325be564e84f7cb972dab5db82a8781f01e08966fe"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/target.json",
+      "bytes": 1046,
+      "sha256": "3b60ace3b4adff72640d3553285d6b67d3f6b65c28ae4cb5344bfdaeb3bb7292"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/validation-residuals.csv",
+      "bytes": 1899292,
+      "sha256": "1b13ae85521ca6230ea296f2e65e0bd2cb95669f053f88b431b91840b751a4fd"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/validation.json",
+      "bytes": 3608,
+      "sha256": "c5f5fc469c7cacdf2c3d4ca481c45f7179b2ed8b09d08bb39876d897d69537a0"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v1/virtual-observations.csv",
+      "bytes": 14002725,
+      "sha256": "bd733497644648bc60096f105bad4b1ebe9cd431ddd1beec2ccc3848f3c17c1f"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/admission.json",
+      "bytes": 780,
+      "sha256": "88f3baba20457f542402068cdd16c0f2ff97ec5af31cd4b33489f519519c6998"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/anchor.json",
+      "bytes": 148,
+      "sha256": "8d34677b395766b18f1f61190d5eb9129e36ea0b180b80c1792d4926a5c20910"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/completion.json",
+      "bytes": 935,
+      "sha256": "04556768d1689125aa6da87f23b337b55899efb882772c71e91f68c062005839"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/correction-model.json",
+      "bytes": 2870,
+      "sha256": "20656cbccde8eb80e7681f9827d45ae9932f79512f72c64d1bd8ccc78b7f3160"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/definition.json",
+      "bytes": 1953,
+      "sha256": "8122c36f199e1cfd5a9702c396ffd883ce2b4a8aee72041a53dbe3e83c084c86"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/exclusions.json",
+      "bytes": 868,
+      "sha256": "f0ec7978e06fbee518624c47420dd71097e9a293be71668f5a3a14c6eb7697ec"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/metrics.json",
+      "bytes": 1327,
+      "sha256": "1c479002e70b49049cfae2b73bac68e3c705aa65732ead6fbe4a201a7b50bdfa"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/provenance.json",
+      "bytes": 18217,
+      "sha256": "c4565b3437a5c364bfedde24c9cb1357eccaf62ca91fc2c5ce87e8d4b64e0671"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/target.json",
+      "bytes": 1046,
+      "sha256": "3b60ace3b4adff72640d3553285d6b67d3f6b65c28ae4cb5344bfdaeb3bb7292"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/validation-residuals.csv",
+      "bytes": 1899292,
+      "sha256": "1b13ae85521ca6230ea296f2e65e0bd2cb95669f053f88b431b91840b751a4fd"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/validation.json",
+      "bytes": 3473,
+      "sha256": "c5d4d772357df90f9602eab1e7b13a0ccd2cbf3ecfdda736f83a4acfb070a568"
+    },
+    {
+      "path": "processed/vrs/experiments/vrs-2024d026-phri-geometry-v2/virtual-observations.csv",
+      "bytes": 14002725,
+      "sha256": "0a8bc284a821782626a574418817b662551310d292b3562b3724965d8ef7c794"
+    }
+  ]
+}

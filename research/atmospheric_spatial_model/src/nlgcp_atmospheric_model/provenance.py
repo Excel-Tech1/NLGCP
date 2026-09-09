@@ -48,6 +48,9 @@ def code_fingerprint(repo_root: Path) -> str:
     script = repo_root / "scripts" / "run_atmospheric_model.py"
     if script.is_file():
         parts.append(f"scripts/run_atmospheric_model.py:{sha256_file(script)}")
+    shared = repo_root / "research/single_base_rtk/src/nlgcp_single_base/coordinates.py"
+    if shared.is_file():
+        parts.append(f"shared-coordinates:{sha256_file(shared)}")
     return sha256_text("\n".join(parts))
 
 

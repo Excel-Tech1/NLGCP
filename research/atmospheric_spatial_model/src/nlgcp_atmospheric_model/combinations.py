@@ -33,10 +33,10 @@ from .constants import (
 from .observations import GPS_L1_WAVELENGTH_M, GPS_L2_WAVELENGTH_M, StationDataset
 
 GAMMA_GPS = (GPS_L1_HZ / GPS_L2_HZ) ** 2
-GF_TO_L1_FACTOR = -1.0 / (GAMMA_GPS - 1.0)
+GF_TO_L1_FACTOR = 1.0 / (GAMMA_GPS - 1.0)
 """Scale arc-detrended GF (m) to L1 slant ionospheric variation (m).
 
-GF = I1*(1 - gamma); hence I1 = GF/(1 - gamma) = -GF/(gamma - 1).
+Carrier: GF = -I1 - (-I2) = I1*(gamma - 1); I1 = GF/(gamma - 1).
 """
 
 GF_METHOD = "GF=L1_cycles*lambda1-L2_cycles*lambda2 (metres); IS-GPS-200 frequencies"
@@ -120,7 +120,7 @@ def compute_gf_series(
     arc_id = 0
     previous: float | None = None
     previous_time: float | None = None
-    previous_lli: int | None = None
+    previous_lli: tuple[int, int] | None = None
     base_step = step_s if step_s is not None else dataset.header.interval_s
     nominal_step = base_step if base_step else 30.0
     for epoch in dataset.epochs:
@@ -132,13 +132,13 @@ def compute_gf_series(
             continue
         l1 = obs.values.get("L1")
         l2 = obs.values.get("L2")
-        if l1 is None or l2 is None:
+        if l1 is None or l2 is None or any((obs.lli.get(code) or 0) & 2 for code in ("L1", "L2")):
             previous = None
             previous_time = None
             previous_lli = None
             continue
         gf = l1 * lam1 - l2 * lam2
-        lli = (obs.lli.get("L1") or 0) | (obs.lli.get("L2") or 0)
+        lli = (obs.lli.get("L1") or 0, obs.lli.get("L2") or 0)
         now = _epoch_seconds(epoch)
         if previous is None:
             if series:
@@ -152,8 +152,10 @@ def compute_gf_series(
                 and previous_time is not None
                 and (now - previous_time) > 1.5 * nominal_step + 1e-6
             )
-            lli_break = previous_lli is not None and lli != previous_lli
-            if gap_break or lli_break or abs(gf - previous) > slip_threshold_m:
+            lli_break = previous_lli is not None and (
+                lli != previous_lli or any(flag & 1 for flag in lli)
+            )
+            if gap_break or lli_break or obs.epoch_flag or abs(gf - previous) > slip_threshold_m:
                 arc_id += 1
         series.append((epoch, gf, arc_id))
         previous = gf
@@ -184,11 +186,7 @@ def single_difference(
 ) -> list[tuple[str, float]]:
     """Between-station single difference of GF values on common epochs."""
     map_b = {epoch: gf for epoch, gf, _ in series_b}
-    return [
-        (epoch, gf_a - map_b[epoch])
-        for epoch, gf_a, _ in series_a
-        if epoch in map_b
-    ]
+    return [(epoch, gf_a - map_b[epoch]) for epoch, gf_a, _ in series_a if epoch in map_b]
 
 
 def _median(values: list[float]) -> float:

@@ -44,10 +44,17 @@ def geodetic_to_ecef(coordinate: GeodeticCoordinate) -> EcefCoordinate:
 def ecef_to_geodetic(coordinate: EcefCoordinate) -> GeodeticCoordinate:
     """Convert ECEF metres to WGS84 geodetic coordinates."""
 
+    ensure_finite_ecef(coordinate)
+    if hypot(coordinate.x_m, coordinate.y_m, coordinate.z_m) == 0:
+        raise ValueError("geodetic frame undefined at Earth centre")
     a = WGS84_A_M
     b = a * (1.0 - WGS84_F)
     ep2 = (a * a - b * b) / (b * b)
     p = hypot(coordinate.x_m, coordinate.y_m)
+    if p == 0:
+        return GeodeticCoordinate(
+            90.0 if coordinate.z_m > 0 else -90.0, 0.0, abs(coordinate.z_m) - b
+        )
     theta = atan2(coordinate.z_m * a, p * b)
     lon = atan2(coordinate.y_m, coordinate.x_m)
     lat = atan2(
@@ -67,9 +74,7 @@ def baseline_distance_m(base: EcefCoordinate, rover: EcefCoordinate) -> float:
     """Calculate physical ECEF baseline distance in metres."""
 
     return sqrt(
-        (base.x_m - rover.x_m) ** 2
-        + (base.y_m - rover.y_m) ** 2
-        + (base.z_m - rover.z_m) ** 2
+        (base.x_m - rover.x_m) ** 2 + (base.y_m - rover.y_m) ** 2 + (base.z_m - rover.z_m) ** 2
     )
 
 
@@ -96,13 +101,7 @@ def ecef_delta_to_enu(
     lon = radians(reference.longitude_deg)
     east = -sin(lon) * delta.x_m + cos(lon) * delta.y_m
     north = (
-        -sin(lat) * cos(lon) * delta.x_m
-        - sin(lat) * sin(lon) * delta.y_m
-        + cos(lat) * delta.z_m
+        -sin(lat) * cos(lon) * delta.x_m - sin(lat) * sin(lon) * delta.y_m + cos(lat) * delta.z_m
     )
-    up = (
-        cos(lat) * cos(lon) * delta.x_m
-        + cos(lat) * sin(lon) * delta.y_m
-        + sin(lat) * delta.z_m
-    )
+    up = cos(lat) * cos(lon) * delta.x_m + cos(lat) * sin(lon) * delta.y_m + sin(lat) * delta.z_m
     return east, north, up

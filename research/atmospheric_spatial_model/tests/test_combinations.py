@@ -32,7 +32,7 @@ def test_gf_reference_values() -> None:
 
 
 def test_gf_to_l1_factor() -> None:
-    assert gf_to_l1_iono_m(1.0) == pytest.approx(-1.5457277802, rel=1e-9)
+    assert gf_to_l1_iono_m(1.0) == pytest.approx(1.5457277802, rel=1e-9)
     # 1 TECU produces ~0.162 m of L1 delay (first-order, documented).
     assert gf_iono_to_tecu(0.16237) == pytest.approx(1.0, rel=1e-3)
 
@@ -136,9 +136,14 @@ def test_gradient_proxy_scales_with_baseline() -> None:
     from nlgcp_atmospheric_model.ionosphere import spatial_gradient_proxy as grad
 
     sample = IonosphericSample(
-        epoch_iso="e", satellite_id="G01", constellation="G",
-        reference_pair=("A", "B"), baseline_distance_m=None,
-        value_m=2.0, value_tecu=1.0, kind="GF_SD_ARC_DETRENDED",
+        epoch_iso="e",
+        satellite_id="G01",
+        constellation="G",
+        reference_pair=("A", "B"),
+        baseline_distance_m=None,
+        value_m=2.0,
+        value_tecu=1.0,
+        kind="GF_SD_ARC_DETRENDED",
     )
 
     out = grad([sample], 1_000_000.0)
