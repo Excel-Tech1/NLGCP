@@ -2,25 +2,23 @@
 
 ## Active Phase
 
-Phase 9 — Recorded RTCM Replay
+Phase 10 — Live CORS / NTRIP Ingestion
 
 ## Current Milestone
 
-Phase 9 engineering + synthetic framework pilot (COMPLETE);
-real recorded RTCM pilot BLOCKED (no authentic capture)
+Phase 10 engineering COMPLETE (fail-closed live ingestion layer +
+synthetic loopback pilot);
+REAL LIVE INGESTION = BLOCKED (no authorized source)
 
 ## Status
 
-Phase 9 closure: engineering COMPLETE, synthetic framework pilot
-COMPLETE (scenarios A–E, all CLI ops, 74 synthetic-only tests,
-`RTKLIB_SOURCE=/home/excellence/RTKLIB make check` PASS: 488 passed);
-REAL RECORDED RTCM PILOT = BLOCKED — no authentic recorded RTCM
-exists under `${NLGCP_DATA_ROOT}` (zero manifest references;
-miranet/nignet endpoint checks are connectivity only, not captures);
-Phase 8 handoff consumed without recalculation (real DOY 026 AUTO →
-SINGLE_BASE/EKAK replays BLOCKED
-`SELECTED_CORRECTION_SOURCE_UNAVAILABLE`; real VRS_ONLY →
-`NO_CORRECTION`, zero frames); Phase 10 NOT STARTED
+Phase 10 closure: engineering COMPLETE, synthetic loopback pilot
+COMPLETE (87 Python + 30 Go synthetic-only tests, `make check` PASS);
+REAL LIVE INGESTION = BLOCKED — no authorized reachable NTRIP source
+exists (no public endpoint documented, no `NLGCP_NTRIP_*` credentials
+configured, endpoint checks are web pages not casters, home-directory
+`.rtcm3` files lack capture provenance and were NOT admitted);
+Phase 11 NOT STARTED
 
 Reviewed science (authoritative, from `main` @ `cabcfbb`):
 
@@ -59,6 +57,50 @@ via EKAK00NGA 105.553 km (fallback, `VRS_MODEL_NOT_VALIDATED`); `VRS_ONLY`
 EKAK00NGA. Automatic corrected VRS stays BLOCKED (fail-closed) under
 reviewed evidence; single-base fallback remains the admitted path under
 PROVISIONAL policy (FLOAT-only history, no centimetre claim).
+
+## Completed (Phase 10)
+
+- Live-ingestion transport added in Go under
+  `services/gnss-ingestor/internal/ntrip/` (config/auth/sourcetable/
+  handshake/framing/crc/reconnect/admission/buffer/client/capture/
+  subjects) plus Python research bridge `research/ntrip_ingestion`
+  (`nlgcp_ntrip_ingest`: models, auth/redaction, source-table,
+  handshake, streaming framer reusing Phase 9 CRC-24Q, arrival timing,
+  backoff, admission/mapping, client, capture writer, provenance,
+  subjects, Phase 9 bridge, test server, reporting) and CLI
+  `scripts/run_ntrip_ingest.py`
+  (`sourcetable`/`probe`/`capture`/`validate-capture`/`summarize`,
+  `--dry-run`).
+- NTRIP v2 first with v1 `ICY 200` tolerance; fail-closed handshake
+  (401/403/404 terminal, HTML/source-table-instead/empty/malformed
+  refused before binary parsing); mountpoint admission
+  (ACCEPT/WARN/REJECT/BLOCKED) with explicit mountpoint→registry
+  mapping (`STATION_IDENTITY_UNVERIFIED` gates Phase 8 use);
+  `NMEA_POSITION_REQUIRED` fail-closed (no fabricated positions);
+  TLS validated by default; bounded timeouts/reconnect/buffers/stall
+  detection; CRC_FAIL quarantine (captured, never forwarded);
+  `LiveFrame` → Phase 9 `CorrectionFrame` lossless bridge with
+  `correction.live.*` subjects mirroring `correction.replay.*`;
+  immutable capture layout with SHA-256 + arrival index.
+- 87 synthetic-only Python tests + 30 Go tests
+  (`SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS`);
+  `pyproject.toml` registers the new package, tests, and script.
+- Real-source audit: no authorized/public NTRIP endpoint exists (no
+  env credentials; miranet/nignet checks are web pages, not casters;
+  home-dir `cors-*.rtcm3` lack provenance, NOT admitted). No network
+  connection opened. REAL LIVE INGESTION = BLOCKED (accepted exit
+  state); Phase 8 EKAK availability still BLOCKED; no substitution of
+  other stations.
+- Synthetic loopback pilot (deterministic local test server, 8
+  labelled frames): probe 8/8 CRC-valid; capture COMPLETE 8 valid /
+  0 invalid, 0 drops, VALID offline validation; Phase 9 framing parses
+  the capture 8/8 (transport compat, no identity claim). Evidence in
+  `research/ntrip_ingestion/PILOT_EVIDENCE.md`; outputs under
+  `${NLGCP_DATA_ROOT}/working/ntrip-pilot-synthetic/` (outside Git).
+- No scientific validity manufactured: no accuracy, ambiguity,
+  VRS-improvement, live-service, or real-pilot claims. Transport
+  success ≠ positioning success. Phase 6 BEST=ZERO and Phase 7
+  geometry-only conclusions unchanged.
 
 ## Completed (Phase 9)
 
@@ -352,11 +394,10 @@ scientific scope representative DOY 026 only).
 
 ## In Progress
 
-- Phase 9 merge into authoritative `main` and push (branch clean and
-  green: 74 Phase 9 tests, pytest 488 passed, `make check` PASS;
-  synthetic pilot complete; real pilot BLOCKED pending authorised
-  RTCM capture). Do not begin Phase 10 (live NTRIP, CORS subscriber,
-  continuous capture, production reconnection) in this task.
+- Phase 10 branch hygiene and merge readiness (engineering green;
+  update handoff docs before stopping). Do not begin Phase 11 (live
+  RTCM correction generation, MSM encoding, rover service) in this
+  task.
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -421,10 +462,10 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Merge Phase 9 into authoritative `main`, validate `main`, and push.
-Acquire an authorised RTCM capture (per
-`research/rtcm_replay/config/future-capture-template.md`) before any
-real-pilot claim. Do not begin Phase 10 in this sprint.
+Obtain an authorized NTRIP source (public endpoint or approved
+credentials via `NLGCP_NTRIP_*`) and run the bounded Phase 10
+capture → Phase 9 admission/index/replay feedback loop. Do not begin
+Phase 11 in this sprint.
 
 ## Consolidation Record (2026-09-07)
 
@@ -436,16 +477,15 @@ real-pilot claim. Do not begin Phase 10 in this sprint.
 
 ## Last Verified State
 
-Phase 9 closure on `phase9/recorded-rtcm-replay`: replay package +
-CLI + 74 tests; synthetic pilot scenarios A–E complete (A 8/8, B 7
-emitted quarantined, C resume to seq 7, D bounded 8/8, E real AUTO
-BLOCKED + real NO_CORRECTION zero frames); real recorded RTCM audit
-BLOCKED (zero manifest references); pytest 488 passed (RTKLIB_SOURCE
-set, no skips); `make check` PASS. Phase 8 record preserved
-(AUTO SINGLE_BASE/OK via EKAK 105.553 km; VRS BLOCKED; handoff
-fingerprints `737e0f0a…` / `4d990325…` consumed, not recalculated).
-Phase 10 NOT STARTED.
+Phase 10 closure on `phase10/live-cors-ntrip-ingestion`: Go ntrip
+transport + Python bridge + CLI + 117 tests (87 Python + 30 Go);
+synthetic loopback pilot COMPLETE (probe 8/8, capture COMPLETE 8/0,
+VALID, Phase 9 framing 8/8); real live ingestion BLOCKED (no
+authorized source; zero network attempts); pytest 569 passed
+(RTKLIB_SOURCE unset, 6 skipped); `make check` PASS. Phase 9 record
+preserved (74 tests; real replay still BLOCKED pending authentic
+capture). Phase 11 NOT STARTED.
 
 ## Last Updated
 
-2026-09-09 (Phase 9 engineering + synthetic pilot closure)
+2026-09-09 (Phase 10 engineering + synthetic loopback pilot closure)
