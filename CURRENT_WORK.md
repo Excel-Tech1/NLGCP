@@ -2,18 +2,65 @@
 
 ## Active Phase
 
-Phase 6 — Atmospheric & Spatial Error Model (implemented on
-`phase6/atmospheric-spatial-error-model`; real DOY 026 pilot COMPLETE)
+Phase 6/7 scientific validation & geometry hardening
+(`phase67/scientific-validation-geometry-hardening`, from `phase7/vrs-generator`
+@ `59c986a`; review sprint COMPLETE, verdict recorded below; Phase 7 merge
+conditional, Phase 8 NOT STARTED)
 
 ## Current Milestone
 
-Phase 6 Implementation and Real-Data Pilot
+Phase 7 merge-readiness decision after corrected geometry and regenerated evidence
 
 ## Status
 
-Engineering + real pilot COMPLETE (Phase 4 engineering + 2024 dataset
+Validation sprint COMPLETE with verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS:
+13 Phase 6 geometry/science bugs found and fixed with regression tests; Phase 6
+evidence regenerated as `atm-2024d026-phri-target-geometry-v3` (zero still wins:
+3.076 m vs IDW 3.352 / nearest 3.757 / planar 14.373 m, n=15948; all four folds
+proven EXTRAPOLATION); all four VRS rotations regenerated as `*-geometry-v3`
+(78,060 virtual observations, numerics identical to v2, leakage excluded, ZERO
+retained); `make check` PASS (355 Python tests). Merge requires three documented
+conditions (PILOT_EVIDENCE rewrite, old-ID supersede marking, v1/v2 retirement).
+Full record: `docs/phase6-7-scientific-validation.md`.
+
+## Current Milestone
+
+Phase 7 Geometry-Only Synthesis and Held-Out Validation
+
+## Status
+
+Phase 7 engineering + real pilot COMPLETE; scientific review COMPLETE with
+verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS (merge conditional, see §13 of
+`docs/phase6-7-scientific-validation.md`). Prior engineering + real pilot COMPLETE (Phase 4 engineering + 2024 dataset
 validation COMPLETE with provisional calibration; Phase 5 engineering +
 real pilot COMPLETE; scientific scope representative DOY 026 only)
+
+## Phase 7 handoff (2026-09-08)
+
+- Worktree `/home/excellence/NLGCP-phase7`, branch `phase7/vrs-generator`,
+  based on Phase 6 merge `f9e7341`. Main worktree remains untouched.
+- Structured geometry-only synthesis, deterministic anchor, strict RINEX 2.11
+  adapter, pinned RTKLIB satellite geometry, zero-only promotion gate, CLI,
+  provenance, resumability and held-out clock/ambiguity-aware diagnostics added.
+- Phase 6 radians and GPST handling defects found during review were corrected
+  (13 fixes) and affected evidence regenerated as reviewed geometry-v3; no model
+  promotion. See `docs/phase6-7-scientific-validation.md` for the audit record
+  and the three merge conditions.
+- PHRI generated 24,556 observations at all 480 planned epochs (180-second
+  sampling), EKAK anchor 105.553 km; code C1/P2 clock-adjusted residual RMSE
+  0.597/0.768 m; L1/L2 180-second time-differenced double-difference RMSE
+  2.087/3.202 m. These are diagnostics, not positioning errors.
+- Four final rotations generated 78,060 observations total; every target has
+  480/480 scheduled epochs and 30 GPS satellites. All use ZERO spatial correction.
+  Authoritative experiment IDs end in `-geometry-v3`; `geometry`/v1/v2 outputs
+  are SUPERSEDED / NON-AUTHORITATIVE. Full metrics/hashes: `research/vrs_generator/PILOT_EVIDENCE.json`.
+- 79 Phase 7 tests pass (including leakage-exclusion tests and six native
+  RTKLIB adapter checks with labelled synthetic orbits). `RTKLIB_SOURCE=/home/excellence/RTKLIB make check` PASS:
+  Ruff, mypy strict, pytest (355), Go, CMake/CTest, ESLint,
+  TypeScript and Next.js production build. PHRI hash-gated resume verified.
+- Runtime provenance records base commit `f9e7341`, dirty=true and exact per-file
+  source hashes; the committed Phase 7 source reproduces the same fingerprints.
+- Optional RINEX export/positioning validation deferred. No Phase 8 work.
 
 ## Completed (Phase 6)
 
@@ -176,8 +223,9 @@ real pilot COMPLETE; scientific scope representative DOY 026 only)
 
 ## In Progress
 
-- Phase 6 branch verification (`make check`) and merge preparation. Do
-  not begin VRS generation (Phase 7) in this task.
+- Phase 7 merge conditions from the validation review (PILOT_EVIDENCE rewrite
+  from geometry-v3, old pilot-ID supersede marking, VRS v1/v2 ID retirement).
+  No further scientific revalidation required beyond those three conditions.
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -217,7 +265,7 @@ real pilot COMPLETE; scientific scope representative DOY 026 only)
 ## Not Started
 
 - Fixed-ambiguity single-base processing (requires a shorter baseline rover or denser station geometry; the 105 km control remains FLOAT-only, confirming the reference-geometry constraint on this dataset).
-- Phase 7 VRS generation; live RTCM/NTRIP work (explicitly out of scope for Phase 6).
+- Phase 8 and later phases; live RTCM/NTRIP delivery remains out of scope.
 
 ## Blocked
 
@@ -242,8 +290,9 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Run `make check` on the Phase 6 branch, then merge to `main`. Do not
-begin VRS generation (Phase 7) in this task.
+Satisfy the three merge conditions in `docs/phase6-7-scientific-validation.md`
+§13, then merge Phase 7. Acquire denser multi-day observations for any future
+spatial-model promotion claim. Do not begin Phase 8 in this sprint.
 
 ## Consolidation Record (2026-09-07)
 
@@ -253,13 +302,15 @@ begin VRS generation (Phase 7) in this task.
 - Phase 4 milestone commits on the merged line: `fdf7ab6` (QC + station-health engine) and `b18b814` (parallel/resumable dataset QC).
 - `main` `.venv` synced via declared deps only (`.venv/bin/python -m pip install -e '.[dev]'`); `pyproject.toml` already declared `numpy`/`matplotlib`, no new packages added to silence errors.
 
-## Last Verified Commit
+## Last Verified State
 
-`main` merge `9a2d870` (Merge Phase 5 offline network RTK) atop Phase 4
-closure `345646d` and Phase 5 commits `8976de3` + integration `9c47203`;
-pilot `net-2024d026-phri-rover` outputs preserved; post-merge `make check`
-green (see EVIDENCE_INDEX).
+Phase 6/7 review-branch source, corrected Phase 6 `*-geometry-v3` evidence and
+all four VRS `-geometry-v3` pilot outputs verified on 2026-09-09. Full
+`make check` PASS (355 Python tests, including 79 Phase 7). Scientific review
+verdict APPROVED_WITH_PROVISIONAL_LIMITATIONS; merge conditions recorded in
+`docs/phase6-7-scientific-validation.md` §13. Earlier Phase 1–6 results are
+preserved. No spatial model promoted; no Phase 8 work.
 
 ## Last Updated
 
-2026-09-07 (Phase 6 implementation sprint)
+2026-09-09 (Phase 6/7 review closure sprint)

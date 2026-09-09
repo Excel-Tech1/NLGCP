@@ -1,5 +1,9 @@
 # Phase 6 — Atmospheric & Spatial Error Model: Observation Model
 
+> Scientific review update (2026-09-09): the original pilot is SUPERSEDED.
+> Use `docs/phase6-7-scientific-validation.md` and the equation traceability
+> table for corrected evidence, assumptions and unresolved reference attributions.
+
 ## 1. Objective
 
 Estimate and model the spatially correlated GNSS error field across the
@@ -24,8 +28,8 @@ representation. No VRS is generated in Phase 6.
 
 * Coordinate frame: IGS20 at the observation epoch (verified PRIDE PPP-AR
   coordinates in `processed/single-base/derived-coordinates.json`).
-* Time system: GPST internally (UTC + 18 s for 2024); epochs stored as
-  ISO-8601 UTC with `+00:00`.
+* Observation time system: GPST calendar labels without a UTC suffix. No leap
+  offset is added. Coordinate epoch metadata retains its separately recorded UTC epoch.
 * Sign: `GF = λ1·L1 − λ2·L2` in metres; `SD_AB = GF_A − GF_B`.
 * Code files: `research/atmospheric_spatial_model/src/nlgcp_atmospheric_model/`.
 
@@ -45,8 +49,8 @@ Higher-order terms (mm-level) are neglected and documented as a limitation.
 
 ```text
 GF = Φ_1·λ_1 − Φ_2·λ_2   [metres]
-   = (I_1 − I_2) + (λ_1·N_1 − λ_2·N_2) + (b_Φ,1 − b_Φ,2) + noise
-   = I_1·(1 − γ) + const_per_arc + noise
+   = (I_2 − I_1) + (λ_1·N_1 − λ_2·N_2) + (b_Φ,1 − b_Φ,2) + noise
+   = I_1·(γ − 1) + const_per_arc + noise
 ```
 
 Geometry, clocks, and troposphere cancel. With GPS
@@ -54,7 +58,7 @@ Geometry, clocks, and troposphere cancel. With GPS
 
 ```text
 γ = (f1/f2)² ≈ 1.6469444444
-I_1 = −GF / (γ − 1) ≈ −1.5457277802 · GF
+I_1 = GF / (γ − 1) ≈ 1.5457277802 · GF
 ```
 
 First-order slant TEC: `TECU = I_1·f1² / (40.308·10¹⁶)` (≈ 0.162 m/TECU
@@ -82,19 +86,16 @@ decimated datasets do not shred into singleton arcs), on *changes* of the
 L1/L2 LLI flags between consecutive epochs, and on GF jumps above 0.5 m
 (a documented cycle-slip segmentation heuristic). Each arc is detrended
 by its median, removing the constant-per-arc ambiguity/hardware-bias
-term. The remainder is an **arc-detrended double-differenced residual
+term. The remainder is an **station-differenced arc-detrended residual
 proxy** (`GF_SD_ARC_DETRENDED`): differential ionosphere plus unmodelled
 effects. It is never labelled absolute TEC.
 
-LLI changes (rather than any nonzero LLI) delimit arcs because a flag
-that is constant across a day cannot encode per-epoch events. Evidence:
-the PHRI00NGA DOY 026 file carries a static LLI=4 on every L2 observable
-(Trimble NETR9/converter annotation), yet its header declares full-cycle
-tracking (`WAVELENGTH FACT L1/2 = 1 1`), its L1/L2 cycle ratio equals
-`f1/f2` (1.2834, proving full-cycle L2), its GF series is smooth and
-physical, and the same file supported 100% RTKLIB availability in
-Phase 3/5. Transitions (`4 -> 5` loss-of-lock, `-> blank`) still open new
-arcs, and the GF-jump test provides independent slip protection.
+LLI is tracked separately on L1 and L2. Loss-of-lock bit 1 opens a new
+arc even when repeated; wavelength/half-cycle bit 2 excludes that value.
+Static bit 4 is retained as a quality annotation, and flag transitions open
+arcs. The earlier claim that a static flag cannot represent repeated loss
+of lock was incorrect. The RINEX bit-4 anti-spoofing/noise annotation is not
+proof of ambiguity continuity. Retained-epoch decimation can still miss slips.
 
 RINEX 2 parsing consumes exactly `ceil(ntypes/5)` lines per satellite,
 including blank lines for absent observables (e.g. SBAS satellites with
@@ -108,8 +109,10 @@ GF replaced by 1e7 m garbage).
 Elevation/azimuth come from verified station ECEF plus satellite ECEF from
 GPS broadcast navigation (RINEX 3 merged BRDC) propagated with the
 IS-GPS-200 Table 20-IV Kepler solution. Signal-travel-time Earth-rotation
-correction is omitted (documented ~3 m simplification, negligible for mask
-and mapping use). Non-GPS satellites and epochs without a broadcast record
+and signal emission-time treatment are omitted for the approximate mapping
+geometry. The former ~3 m statement was unsupported and is withdrawn; this
+is not range geometry suitable for observation synthesis. Phase 7 uses RTKLIB
+with emission time and Sagnac. Non-GPS satellites and epochs without a broadcast record
 fail closed. The navigation file hash is recorded with every geometry.
 
 ## 7. Tropospheric a priori chain
@@ -117,7 +120,7 @@ fail closed. The navigation file hash is recorded with every geometry.
 Station meteorology is unavailable, so the chain is strictly a priori and
 labelled `not measured station meteorology`:
 
-* Berg (1948) standard pressure `P = 1013.25·(1 − 2.2557·10⁻⁵·h)^5.2559`;
+* Standard pressure approximation (legacy Berg attribution needs reference review) `P = 1013.25·(1 − 2.2557·10⁻⁵·h)^5.2559`;
 * Saastamoinen (1972) `ZHD = 0.0022768·P / (1 − 0.00266·cos2φ − 0.00028·h_km)`;
 * standard wet a priori `ZWD = 0.12·exp(−h/2000)` (documented default);
 * Niell (1996) hydrostatic/wet mapping functions (undefined below 3°).
@@ -127,32 +130,27 @@ Between-station single differences of the a priori slant form the
 
 ## 8. Spatial error representation
 
-Per epoch/satellite/reference, relative to a datum reference (the first
-listed reference station):
+Independent per-station fields are stored in `residuals/station-fields.csv`.
+The real pilot uses `F_s = I_s_arc_variation + T_s_apriori` only where both
+components exist. It never silently substitutes an ionosphere-only value for
+an I+T value. A wholly navigation-unavailable experiment can report a separately
+labelled ionosphere-only diagnostic; its derive status remains PARTIAL.
 
-```text
-ionosphere_proxy_m   SD ionospheric residual proxy (m)
-troposphere_proxy_m  SD a priori slant difference (m)
-combined_residual_m  sum where both exist (else partial/null + reason)
-```
-
-Unsupported fields are null with reasons (`spatial.py`). The datum
-station's single difference against itself is identically zero, so one
-explicit zero record per (epoch, satellite) anchors the differential
-field at the datum (`datum <station> self-difference identically zero`
-in provenance). Without it the datum-target leave-one-out fold would
-have no observed values and the target fit would never see three
-references. Target-fit reference sets exclude the target station's own
-record (predicting a station from its own value at distance zero would
-be leakage, not modelling).
+For the primary target, differential records use the first configured reference
+as datum, only when its own station field exists. For cross-validation, each
+fold selects the lexical first **remaining reference** as datum and subtracts
+that station field from reference and target fields. Self-difference zero is a
+reference constraint, never held-out truth. All four rotations have independent
+station observations and use no target values in their predictors. The combined
+field is a diagnostic composite, not an absolute code or phase correction.
 
 ## 9. Interpolation candidates
 
 `zero` (control), `nearest` (transfer control), `idw` (power 2.0), `planar`
-(least-squares plane in local ENU; singular/collinear geometry returns null
-instead of coefficients). Minimum references: planar 3, IDW 2, nearest 1,
-zero 0. Targets outside the reference bounding circle are flagged
-`extrapolated`. No kriging: three references cannot support it.
+(scaled SVD plane in common geodetic ENU; rank/condition diagnostics
+and a numerical precision guard reject unusable matrices). Minimum references: planar 3, IDW 2, nearest 1,
+zero 0. For three usable references, barycentric triangle containment drives
+`extrapolated`; all four real held-out targets are outside. No kriging: three references cannot support it.
 
 ## 10. Validation
 

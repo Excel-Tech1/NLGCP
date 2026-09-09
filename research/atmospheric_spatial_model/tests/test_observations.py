@@ -133,8 +133,7 @@ def test_multiline_blocks_with_blank_lines_stay_aligned(tmp_path: Path) -> None:
     structural: skipping them desynchronises every later record
     (observed on the real DOY 026 archive: L1/L2 columns misassigned).
     """
-    codes = ["C1", "L1", "L2", "P2", "P1", "C2", "C5", "L5",
-             "C6", "L6", "C7", "L7", "C8", "L8"]
+    codes = ["C1", "L1", "L2", "P2", "P1", "C2", "C5", "L5", "C6", "L6", "C7", "L7", "C8", "L8"]
     first = f"{len(codes):6d}" + "".join(f"{c:>6s}" for c in codes[:9])
     second = "      " + "".join(f"{c:>6s}" for c in codes[9:])
     header_lines = [
@@ -142,16 +141,30 @@ def test_multiline_blocks_with_blank_lines_stay_aligned(tmp_path: Path) -> None:
         first.ljust(60) + "# / TYPES OF OBSERV",
         second.ljust(60) + "# / TYPES OF OBSERV",
         "    30.0000".ljust(60) + "INTERVAL",
+        ("  2024     1    26     0     0    0.0000000".ljust(48) + "GPS").ljust(60)
+        + "TIME OF FIRST OBS",
         "                                                            END OF HEADER",
     ]
-    gps_values: list[float | None] = [22000000.0, 115000000.0, 89600000.0, 22000001.0,
-                  22000002.0, 22000003.0, 22000004.0, 22000005.0,
-                  22000006.0, 22000007.0, 22000008.0, 22000009.0,
-                  22000010.0, 22000011.0]
+    gps_values: list[float | None] = [
+        22000000.0,
+        115000000.0,
+        89600000.0,
+        22000001.0,
+        22000002.0,
+        22000003.0,
+        22000004.0,
+        22000005.0,
+        22000006.0,
+        22000007.0,
+        22000008.0,
+        22000009.0,
+        22000010.0,
+        22000011.0,
+    ]
 
     def sat_block(values: list[float | None]) -> list[str]:
         fields = "".join(_field(v) for v in values)
-        return [fields[k:k + 80] for k in range(0, len(fields), 80)]
+        return [fields[k : k + 80] for k in range(0, len(fields), 80)]
 
     body: list[str] = []
     for minute in (0, 1):

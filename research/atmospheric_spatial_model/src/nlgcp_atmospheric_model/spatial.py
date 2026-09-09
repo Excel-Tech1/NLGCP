@@ -13,21 +13,33 @@ from typing import Any
 from .models import SpatialRecord, StationCoordinate
 
 
-def baseline_length_m(
-    a: tuple[float, float, float], b: tuple[float, float, float]
-) -> float:
+def baseline_length_m(a: tuple[float, float, float], b: tuple[float, float, float]) -> float:
     return math.dist(a, b)
+
+
+def _geodetic_lat_lon(origin_ecef: tuple[float, float, float]) -> tuple[float, float]:
+    """Geodetic origin radians, using the shared WGS84 ellipsoid helper."""
+    from nlgcp_single_base.coordinates import EcefCoordinate, ecef_to_geodetic
+
+    point = ecef_to_geodetic(EcefCoordinate(*origin_ecef))
+    return math.radians(point.latitude_deg), math.radians(point.longitude_deg)
 
 
 def ecef_to_local_enu(
     station_ecef: tuple[float, float, float],
     origin_ecef: tuple[float, float, float],
 ) -> tuple[float, float, float]:
-    """Station offset in a local ENU frame about the origin (metres)."""
+    """Station offset in a local ENU frame about the origin (metres).
+
+    The rotation uses the geodetic latitude/longitude of ``origin_ecef``
+    (WGS84). All stations interpolated together must share the same origin;
+    callers pass the common ECEF centroid (see ``interpolation``), whose
+    latitude/longitude defines one consistent frame. A previous revision
+    used geocentric latitude, tilting East/North by up to ~0.08 deg.
+    """
     ox, oy, oz = origin_ecef
     dx = (station_ecef[0] - ox, station_ecef[1] - oy, station_ecef[2] - oz)
-    lon = math.atan2(oy, ox)
-    lat = math.atan2(oz, math.hypot(ox, oy))
+    lat, lon = _geodetic_lat_lon(origin_ecef)
     s_lat, c_lat = math.sin(lat), math.cos(lat)
     s_lon, c_lon = math.sin(lon), math.cos(lon)
     return (
@@ -70,24 +82,26 @@ def build_spatial_records(
             combined = iono if iono is not None else tropo
         else:
             flags.append("combined_residual unavailable: no component proxies")
-        records.append(SpatialRecord(
-            epoch_iso=epoch_iso,
-            satellite_id=satellite_id,
-            constellation=constellation,
-            reference_station=ref.station_id,
-            target_station=target.station_id,
-            station_x_m=ref.x_m,
-            station_y_m=ref.y_m,
-            station_z_m=ref.z_m,
-            baseline_length_m=baseline_length_m(ref_xyz, target_xyz),
-            azimuth_deg=azimuth_by_station.get(ref.station_id),
-            elevation_deg=elevation_by_station.get(ref.station_id),
-            ionosphere_proxy_m=iono,
-            troposphere_proxy_m=tropo,
-            combined_residual_m=combined,
-            quality_flags=tuple(flags),
-            provenance=provenance,
-        ))
+        records.append(
+            SpatialRecord(
+                epoch_iso=epoch_iso,
+                satellite_id=satellite_id,
+                constellation=constellation,
+                reference_station=ref.station_id,
+                target_station=target.station_id,
+                station_x_m=ref.x_m,
+                station_y_m=ref.y_m,
+                station_z_m=ref.z_m,
+                baseline_length_m=baseline_length_m(ref_xyz, target_xyz),
+                azimuth_deg=azimuth_by_station.get(ref.station_id),
+                elevation_deg=elevation_by_station.get(ref.station_id),
+                ionosphere_proxy_m=iono,
+                troposphere_proxy_m=tropo,
+                combined_residual_m=combined,
+                quality_flags=tuple(flags),
+                provenance=provenance,
+            )
+        )
     return records
 
 
@@ -95,22 +109,24 @@ def records_to_rows(records: list[SpatialRecord]) -> list[dict[str, Any]]:
     """Serialise records to machine-readable rows."""
     rows: list[dict[str, Any]] = []
     for record in records:
-        rows.append({
-            "epoch": record.epoch_iso,
-            "satellite": record.satellite_id,
-            "constellation": record.constellation,
-            "reference_station": record.reference_station,
-            "target_station": record.target_station,
-            "station_x_m": record.station_x_m,
-            "station_y_m": record.station_y_m,
-            "station_z_m": record.station_z_m,
-            "baseline_length_m": record.baseline_length_m,
-            "azimuth_deg": record.azimuth_deg,
-            "elevation_deg": record.elevation_deg,
-            "ionosphere_proxy_m": record.ionosphere_proxy_m,
-            "troposphere_proxy_m": record.troposphere_proxy_m,
-            "combined_residual_m": record.combined_residual_m,
-            "quality_flags": list(record.quality_flags),
-            "provenance": record.provenance,
-        })
+        rows.append(
+            {
+                "epoch": record.epoch_iso,
+                "satellite": record.satellite_id,
+                "constellation": record.constellation,
+                "reference_station": record.reference_station,
+                "target_station": record.target_station,
+                "station_x_m": record.station_x_m,
+                "station_y_m": record.station_y_m,
+                "station_z_m": record.station_z_m,
+                "baseline_length_m": record.baseline_length_m,
+                "azimuth_deg": record.azimuth_deg,
+                "elevation_deg": record.elevation_deg,
+                "ionosphere_proxy_m": record.ionosphere_proxy_m,
+                "troposphere_proxy_m": record.troposphere_proxy_m,
+                "combined_residual_m": record.combined_residual_m,
+                "quality_flags": list(record.quality_flags),
+                "provenance": record.provenance,
+            }
+        )
     return rows

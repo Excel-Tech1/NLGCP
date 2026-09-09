@@ -11,12 +11,14 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import os
 import subprocess
 from pathlib import Path
 from typing import Any, cast
 
 from . import PIPELINE_VERSION
+from .combinations import gf_to_l1_iono_m
 from .interpolation import METHOD_NAMES, interpolate, prediction_to_row
 from .ionosphere import pair_sd_proxies, spatial_gradient_proxy, station_gf_arcs
 from .metrics import decorrelation_fit, rmse
@@ -70,8 +72,12 @@ def resolve_data_root(override: Path | None = None) -> Path:
 def git_commit(repo_root: Path) -> str:
     try:
         out = subprocess.run(
-            ["git", "rev-parse", "HEAD"], cwd=repo_root, capture_output=True, text=True,
-            timeout=10, check=False,
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo_root,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
         )
         return out.stdout.strip() or "unknown"
     except (OSError, subprocess.SubprocessError):
@@ -102,15 +108,21 @@ def load_station_coordinates(data_root: Path) -> dict[str, StationCoordinate]:
     """Load verified IGS20 station coordinates (Phase 2/3 provenance)."""
     path = data_root / "processed" / "single-base" / "derived-coordinates.json"
     if not path.is_file():
-        raise ModelBlocked(
-            f"{BLOCKED_MESSAGE}: verified coordinates not found at {path}"
-        )
+        raise ModelBlocked(f"{BLOCKED_MESSAGE}: verified coordinates not found at {path}")
     payload = json.loads(path.read_text(encoding="utf-8"))
     coords: dict[str, StationCoordinate] = {}
     stations = payload.get("stations", payload) if isinstance(payload, dict) else []
     items = stations.items() if isinstance(stations, dict) else []
     for station_id, entry in items:
-        if not isinstance(entry, dict):
+        if not isinstance(entry, dict) or entry.get("scientifically_valid") is not True:
+            continue
+        source = Path(str(entry.get("pos_file_path", "")))
+        if (
+            not entry.get("reference_frame")
+            or not entry.get("coordinate_epoch")
+            or not source.is_file()
+            or sha256_file(source) != entry.get("pos_file_sha256")
+        ):
             continue
         raw_ecef = entry.get("ecef") or entry.get("xyz") or entry.get("coordinate_ecef")
         seq: Any = (
@@ -121,6 +133,8 @@ def load_station_coordinates(data_root: Path) -> dict[str, StationCoordinate]:
         try:
             xyz = (float(seq[0]), float(seq[1]), float(seq[2]))
         except (TypeError, ValueError, IndexError):
+            continue
+        if not all(math.isfinite(x) for x in xyz) or math.hypot(*xyz) == 0:
             continue
         coords[str(station_id)] = StationCoordinate(
             station_id=str(station_id),
@@ -154,13 +168,20 @@ def admit_experiment(
             continue
         if item.get("qc_status") != "ACCEPT":
             problems.append(f"station {station} Phase 5 QC status {item.get('qc_status')}")
-        obs = item.get("observation_path") or item.get("observation_sha256") or ""
-        if obs and not Path(str(item.get("observation_path", ""))).is_file():
+        obs_path = Path(str(item.get("observation_path", "")))
+        if not obs_path.is_file():
             problems.append(f"station {station} RINEX observation file missing")
+        elif sha256_file(obs_path) != item.get("converted_sha256"):
+            problems.append(f"station {station} RINEX observation checksum mismatch")
     coords = load_station_coordinates(data_root)
     for station in needed:
         if station not in coords:
             problems.append(f"station {station} lacks verified coordinates")
+        elif (
+            coords[station].frame != definition.coordinate_frame
+            or coords[station].epoch != definition.coordinate_epoch
+        ):
+            problems.append(f"station {station} coordinate frame/epoch mismatch")
     status = StageStatus.BLOCKED if problems else StageStatus.COMPLETE
     body = {
         "experiment_id": definition.experiment_id,
@@ -246,9 +267,11 @@ def plan_experiment(
     data_root: Path, definition: ModelExperimentDefinition, repo_root: Path
 ) -> dict[str, Any]:
     admission = admit_experiment(data_root, definition, repo_root)
-    coords = load_station_coordinates(data_root) if admission["status"] == str(
-        StageStatus.COMPLETE
-    ) else {}
+    coords = (
+        load_station_coordinates(data_root)
+        if admission["status"] == str(StageStatus.COMPLETE)
+        else {}
+    )
     needed = [*definition.reference_stations, definition.target_station]
     geometry: dict[str, Any] = {"baselines_m": {}, "centroid_m": None}
     points = [coords[s] for s in needed if s in coords]
@@ -257,8 +280,8 @@ def plan_experiment(
             if ref in coords and definition.target_station in coords:
                 a = coords[ref]
                 b = coords[definition.target_station]
-                geometry["baselines_m"][f"{ref}->{definition.target_station}"] = (
-                    baseline_length_m((a.x_m, a.y_m, a.z_m), (b.x_m, b.y_m, b.z_m))
+                geometry["baselines_m"][f"{ref}->{definition.target_station}"] = baseline_length_m(
+                    (a.x_m, a.y_m, a.z_m), (b.x_m, b.y_m, b.z_m)
                 )
     folds = loocv_folds(needed)
     return {
@@ -277,12 +300,14 @@ def plan_experiment(
 def _definition_fingerprint(
     definition: ModelExperimentDefinition, repo_root: Path, extra: dict[str, Any]
 ) -> str:
-    return fingerprint({
-        "definition": definition.as_dict(),
-        "code_fingerprint": code_fingerprint(repo_root),
-        "pipeline_version": PIPELINE_VERSION,
-        "extra": extra,
-    })
+    return fingerprint(
+        {
+            "definition": definition.as_dict(),
+            "code_fingerprint": code_fingerprint(repo_root),
+            "pipeline_version": PIPELINE_VERSION,
+            "extra": extra,
+        }
+    )
 
 
 def derive_experiment(
@@ -308,9 +333,7 @@ def derive_experiment(
     )
     coords = load_station_coordinates(data_root)
     needed = [*definition.reference_stations, definition.target_station]
-    coord_xyz = {
-        s: (coords[s].x_m, coords[s].y_m, coords[s].z_m) for s in needed
-    }
+    coord_xyz = {s: (coords[s].x_m, coords[s].y_m, coords[s].z_m) for s in needed}
     paths = _station_rinex_paths(data_root, definition)
     input_hashes = {s: sha256_file(p) for s, p in paths.items()}
     nav_path, nav_recorded_sha = _nav_path(data_root, definition)
@@ -318,15 +341,30 @@ def derive_experiment(
     if nav_path is not None and nav_path.is_file():
         nav_hash = sha256_file(nav_path)
 
-    key = _definition_fingerprint(definition, repo_root, {
-        "inputs": input_hashes, "nav": nav_hash, "stage": "derive",
-    })
+    key = _definition_fingerprint(
+        definition,
+        repo_root,
+        {
+            "inputs": input_hashes,
+            "nav": nav_hash,
+            "stage": "derive",
+            "coordinates": {
+                k: vars(v) if hasattr(v, "__dict__") else str(v) for k, v in coords.items()
+            },
+            "admission": admission,
+        },
+    )
     status_path = out / "derive-status.json"
     if status_path.is_file():
         stored = json.loads(status_path.read_text(encoding="utf-8"))
         derive_key = stored.get("derive_key")
         records_ready = (out / "residuals" / "spatial-records.csv").is_file()
-        if derive_key == key and records_ready:
+        products = stored.get("derived_sha256", {})
+        intact = bool(products) and all(
+            (out / name).is_file() and sha256_file(out / name) == digest
+            for name, digest in products.items()
+        )
+        if derive_key == key and records_ready and intact:
             return {**stored, "reused": True}
 
     datasets: dict[str, StationDataset] = {}
@@ -340,16 +378,21 @@ def derive_experiment(
     common_dir.mkdir(parents=True, exist_ok=True)
     summary = common_satellite_summary(datasets, epochs, stations=needed)
     (common_dir / "summary.json").write_text(
-        json.dumps({"discovery": discovery, "common": summary,
-                    "common_epoch_count": len(epochs)}, indent=2, sort_keys=True),
+        json.dumps(
+            {"discovery": discovery, "common": summary, "common_epoch_count": len(epochs)},
+            indent=2,
+            sort_keys=True,
+        ),
         encoding="utf-8",
     )
     with (common_dir / "per-epoch-common.csv").open("w", newline="", encoding="utf-8") as handle:
         epoch_writer = csv.writer(handle)
         epoch_writer.writerow(["epoch", "common_satellites", "gps_l1l2_common"])
         for epoch, total, gps in zip(
-            epochs, summary["common_satellites_per_epoch"],
-            summary["gps_l1l2_common_per_epoch"], strict=True,
+            epochs,
+            summary["common_satellites_per_epoch"],
+            summary["gps_l1l2_common_per_epoch"],
+            strict=True,
         ):
             epoch_writer.writerow([epoch, total, gps])
 
@@ -372,20 +415,35 @@ def derive_experiment(
         )
         for sat in sats:
             for epoch, gf, arc, detr in station_gf_arcs(
-                datasets[station], sat,
+                datasets[station],
+                sat,
                 slip_threshold_m=definition.gf_slip_threshold_m,
                 step_s=step_by_station[station],
             ):
-                station_rows.append({
-                    "epoch": epoch, "station": station, "satellite": sat,
-                    "gf_m": gf, "gf_detrended_m": detr, "arc_id": arc,
-                    "codes": "L1,L2",
-                })
+                station_rows.append(
+                    {
+                        "epoch": epoch,
+                        "station": station,
+                        "satellite": sat,
+                        "gf_m": gf,
+                        "gf_detrended_m": detr,
+                        "arc_id": arc,
+                        "codes": "L1,L2",
+                    }
+                )
     with (iono_dir / "station-gf.csv").open("w", newline="", encoding="utf-8") as handle:
-        station_writer = csv.DictWriter(handle, fieldnames=[
-            "epoch", "station", "satellite", "gf_m", "gf_detrended_m",
-            "arc_id", "codes",
-        ])
+        station_writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "epoch",
+                "station",
+                "satellite",
+                "gf_m",
+                "gf_detrended_m",
+                "arc_id",
+                "codes",
+            ],
+        )
         station_writer.writeheader()
         station_writer.writerows(station_rows)
 
@@ -395,36 +453,61 @@ def derive_experiment(
     pair_status: dict[str, Any] = {}
     for sta_a, sta_b in pairs:
         dist = baseline_length_m(coord_xyz[sta_a], coord_xyz[sta_b])
-        sats = sorted({s for e in epochs for s in common_satellites(
-            datasets, e, stations=[sta_a, sta_b], require_l1_l2=True)})
+        sats = sorted(
+            {
+                s
+                for e in epochs
+                for s in common_satellites(datasets, e, stations=[sta_a, sta_b], require_l1_l2=True)
+            }
+        )
         count = 0
         step_pair = max(step_by_station[sta_a], step_by_station[sta_b])
         for sat in sats:
             samples = pair_sd_proxies(
-                datasets[sta_a], datasets[sta_b], sat,
+                datasets[sta_a],
+                datasets[sta_b],
+                sat,
                 slip_threshold_m=definition.gf_slip_threshold_m,
                 step_s=step_pair,
             )
             for row in spatial_gradient_proxy(samples, dist):
-                pair_rows.append({
-                    "epoch": row["epoch_iso"], "satellite": row["satellite_id"],
-                    "pair": f"{sta_a}-{sta_b}", "baseline_m": dist,
-                    "value_m": row["value_m"], "value_tecu": row["value_tecu"],
-                    "gradient_m_per_km": row["gradient_m_per_km"],
-                    "kind": row["kind"], "method": row["derivation_method"],
-                    "codes": ",".join(row["input_obs_codes"]),
-                })
+                pair_rows.append(
+                    {
+                        "epoch": row["epoch_iso"],
+                        "satellite": row["satellite_id"],
+                        "pair": f"{sta_a}-{sta_b}",
+                        "baseline_m": dist,
+                        "value_m": row["value_m"],
+                        "value_tecu": row["value_tecu"],
+                        "gradient_m_per_km": row["gradient_m_per_km"],
+                        "kind": row["kind"],
+                        "method": row["derivation_method"],
+                        "codes": ",".join(row["input_obs_codes"]),
+                    }
+                )
                 count += 1
         pair_status[f"{sta_a}-{sta_b}"] = {
-            "baseline_m": dist, "sample_count": count,
+            "baseline_m": dist,
+            "sample_count": count,
             "satellites": sats,
             "status": str(StageStatus.COMPLETE if count else StageStatus.BLOCKED),
         }
     with (iono_dir / "pair-sd.csv").open("w", newline="", encoding="utf-8") as handle:
-        pair_writer = csv.DictWriter(handle, fieldnames=[
-            "epoch", "satellite", "pair", "baseline_m", "value_m", "value_tecu",
-            "gradient_m_per_km", "kind", "method", "codes",
-        ])
+        pair_writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "epoch",
+                "satellite",
+                "pair",
+                "baseline_m",
+                "value_m",
+                "value_tecu",
+                "gradient_m_per_km",
+                "kind",
+                "method",
+                "codes",
+            ],
+        )
         pair_writer.writeheader()
         pair_writer.writerows(pair_rows)
     (iono_dir / "summary.json").write_text(
@@ -440,18 +523,20 @@ def derive_experiment(
     azim_by_epoch_sat_station: dict[tuple[str, str, str], float] = {}
     if nav_path is None or not nav_path.is_file():
         tropo_status["reasons"].append("broadcast navigation file unavailable")
-    elif nav_hash is None:
-        tropo_status["reasons"].append("navigation hash could not be established")
+    elif nav_hash is None or nav_hash != nav_recorded_sha:
+        tropo_status["reasons"].append("navigation hash absent or mismatched")
     else:
         nav_records = parse_rinex3_gps_nav(nav_path)
         if not nav_records:
             tropo_status["reasons"].append("no GPS broadcast records parsed from nav file")
         else:
-            gps_sats = sorted({s for e in epochs for s in common_satellites(
-                datasets, e, stations=needed, require_l1_l2=True)})
+            gps_sats = sorted({r["satellite"] for r in station_rows})
             rows_geo, exclusions = geometry_table(
-                epochs=epochs, satellites=gps_sats,
-                station_coords=coord_xyz, nav_records=nav_records, nav_hash=nav_hash,
+                epochs=epochs,
+                satellites=gps_sats,
+                station_coords=coord_xyz,
+                nav_records=nav_records,
+                nav_hash=nav_hash,
             )
             geo_by_key: dict[tuple[str, str, str], Topocentric] = {
                 (r.epoch_iso, r.satellite_id, r.station_id): r for r in rows_geo
@@ -461,25 +546,44 @@ def derive_experiment(
                 if geo.elevation_deg < definition.min_elevation_deg:
                     continue
                 term = a_priori_slant(
-                    station_id=station, satellite_id=sat, epoch_iso=epoch,
+                    station_id=station,
+                    satellite_id=sat,
+                    epoch_iso=epoch,
                     elevation_deg=geo.elevation_deg,
-                    station_ecef_m=coord_xyz[station], doy=definition.day_of_year,
+                    station_ecef_m=coord_xyz[station],
+                    doy=definition.day_of_year,
                 )
                 tropo_by_epoch_sat_station[(epoch, sat, station)] = term.slant_total_m
                 elev_by_epoch_sat_station[(epoch, sat, station)] = geo.elevation_deg
                 azim_by_epoch_sat_station[(epoch, sat, station)] = geo.azimuth_deg
-                tropo_rows.append({
-                    "epoch": epoch, "satellite": sat, "station": station,
-                    "elevation_deg": geo.elevation_deg, "azimuth_deg": geo.azimuth_deg,
-                    "zhd_m": term.zenith_hydrostatic_m, "zwd_m": term.zenith_wet_m,
-                    "slant_m": term.slant_total_m,
-                    "meteorology": term.meteorology_source,
-                })
+                tropo_rows.append(
+                    {
+                        "epoch": epoch,
+                        "satellite": sat,
+                        "station": station,
+                        "elevation_deg": geo.elevation_deg,
+                        "azimuth_deg": geo.azimuth_deg,
+                        "zhd_m": term.zenith_hydrostatic_m,
+                        "zwd_m": term.zenith_wet_m,
+                        "slant_m": term.slant_total_m,
+                        "meteorology": term.meteorology_source,
+                    }
+                )
             with (tropo_dir / "apriori.csv").open("w", newline="", encoding="utf-8") as handle:
-                tropo_writer = csv.DictWriter(handle, fieldnames=[
-                    "epoch", "satellite", "station", "elevation_deg", "azimuth_deg",
-                    "zhd_m", "zwd_m", "slant_m", "meteorology",
-                ])
+                tropo_writer = csv.DictWriter(
+                    handle,
+                    fieldnames=[
+                        "epoch",
+                        "satellite",
+                        "station",
+                        "elevation_deg",
+                        "azimuth_deg",
+                        "zhd_m",
+                        "zwd_m",
+                        "slant_m",
+                        "meteorology",
+                    ],
+                )
                 tropo_writer.writeheader()
                 tropo_writer.writerows(tropo_rows)
             (tropo_dir / "geometry-exclusions.json").write_text(
@@ -498,79 +602,116 @@ def derive_experiment(
         json.dumps(tropo_status, indent=2, sort_keys=True), encoding="utf-8"
     )
 
-    # Spatial records: iono SD vs datum reference + trop SD vs datum.
-    # The datum station's single difference against itself is identically
-    # zero, so one explicit zero record per (epoch, satellite) anchors the
-    # differential field at the datum. Without it the datum fold of the
-    # leave-one-out validation would have no observed target values and the
-    # planar fit at the target would never see three references.
+    # Independent station fields: never construct a held-out predictor from
+    # target-differenced observations. Datum subtraction happens per fold.
     res_dir = out / "residuals"
     res_dir.mkdir(parents=True, exist_ok=True)
+    station_fields: dict[tuple[str, str, str], float] = {}
+    field_rows: list[dict[str, Any]] = []
+    has_tropo = tropo_status["status"] == str(StageStatus.COMPLETE)
+    field_kind = "IONO_VARIATION_PLUS_APRIORI_TROPO" if has_tropo else "IONO_VARIATION_ONLY"
+    for row in station_rows:
+        epoch, sat, station = row["epoch"], row["satellite"], row["station"]
+        key_station = (epoch, sat, station)
+        iono = gf_to_l1_iono_m(row["gf_detrended_m"])
+        tropo = tropo_by_epoch_sat_station.get(key_station)
+        # One estimand throughout an experiment; no per-row mixture of I and I+T.
+        value = iono + tropo if tropo is not None else (None if has_tropo else iono)
+        field_rows.append(
+            {
+                "epoch": epoch,
+                "satellite": sat,
+                "station": station,
+                "ionosphere_variation_m": iono,
+                "apriori_troposphere_m": tropo,
+                "field_m": value,
+                "field_kind": field_kind,
+            }
+        )
+        if value is not None:
+            station_fields[key_station] = value
+    write_csv(
+        res_dir / "station-fields.csv",
+        field_rows,
+        [
+            "epoch",
+            "satellite",
+            "station",
+            "ionosphere_variation_m",
+            "apriori_troposphere_m",
+            "field_m",
+            "field_kind",
+        ],
+    )
+    # Primary-target presentation retains a reference datum, but emits it only
+    # when the datum's own observables exist. Actual target cannot create it.
+    component_map = {(r["epoch"], r["satellite"], r["station"]): r for r in field_rows}
     datum = definition.reference_stations[0]
     records: list[Any] = []
-    datum_emitted: set[tuple[str, str]] = set()
-    for row in pair_rows:
-        epoch, sat = row["epoch"], row["satellite"]
-        if (epoch, sat) not in datum_emitted:
-            datum_emitted.add((epoch, sat))
-            records.extend(build_spatial_records(
-                epoch_iso=epoch, satellite_id=sat, constellation=sat[0] if sat else "?",
+    for epoch, sat, station in sorted(station_fields):
+        datum_value = station_fields.get((epoch, sat, datum))
+        if datum_value is None:
+            continue
+        r, d = component_map[(epoch, sat, station)], component_map[(epoch, sat, datum)]
+        records.extend(
+            build_spatial_records(
+                epoch_iso=epoch,
+                satellite_id=sat,
+                constellation="G",
                 target=coords[definition.target_station],
-                references=[coords[datum]],
-                iono_by_station={datum: 0.0}, tropo_by_station={datum: 0.0},
-                elevation_by_station={datum: elev_by_epoch_sat_station.get((epoch, sat, datum))},
-                azimuth_by_station={datum: azim_by_epoch_sat_station.get((epoch, sat, datum))},
-                provenance=(
-                    f"phase6 derive {definition.experiment_id}; "
-                    f"datum {datum} self-difference identically zero"
-                ),
-            ))
-        a, b = row["pair"].split("-", 1)
-        for ref_station, other in ((a, b), (b, a)):
-            # Only the non-datum side of a datum pair carries a measured
-            # single difference; the datum side is identically zero and is
-            # emitted once per (epoch, satellite) above.
-            if ref_station == datum or other != datum:
-                continue
-            value = row["value_m"] if ref_station == a else -row["value_m"]
-            iono_map = {ref_station: value}
-            tropo_map: dict[str, float | None] = {}
-            t_key = (epoch, sat, ref_station)
-            d_key = (epoch, sat, datum)
-            if t_key in tropo_by_epoch_sat_station and d_key in tropo_by_epoch_sat_station:
-                tropo_map[ref_station] = (
-                    tropo_by_epoch_sat_station[t_key] - tropo_by_epoch_sat_station[d_key]
-                )
-            elev_map = {ref_station: elev_by_epoch_sat_station.get(t_key)}
-            azim_map = {ref_station: azim_by_epoch_sat_station.get(t_key)}
-            records.extend(build_spatial_records(
-                epoch_iso=epoch, satellite_id=sat, constellation=sat[0] if sat else "?",
-                target=coords[definition.target_station],
-                references=[coords[ref_station]],
-                iono_by_station=iono_map, tropo_by_station=tropo_map,
-                elevation_by_station=elev_map, azimuth_by_station=azim_map,
-                provenance=(
-                    f"phase6 derive {definition.experiment_id}; "
-                    f"datum {datum}; iono {row['kind']}"
-                ),
-            ))
+                references=[coords[station]],
+                iono_by_station={
+                    station: r["ionosphere_variation_m"] - d["ionosphere_variation_m"]
+                },
+                tropo_by_station={
+                    station: (r["apriori_troposphere_m"] - d["apriori_troposphere_m"])
+                    if has_tropo
+                    else None
+                },
+                elevation_by_station={
+                    station: elev_by_epoch_sat_station.get((epoch, sat, station))
+                },
+                azimuth_by_station={station: azim_by_epoch_sat_station.get((epoch, sat, station))},
+                provenance=f"{field_kind}; datum {datum}; reference-only datum; diagnostic field",
+            )
+        )
     rows = records_to_rows(records)
     with (res_dir / "spatial-records.csv").open("w", newline="", encoding="utf-8") as handle:
-        record_writer = csv.DictWriter(handle, fieldnames=list(rows[0].keys()) if rows else [
-            "epoch", "satellite", "constellation", "reference_station", "target_station",
-            "station_x_m", "station_y_m", "station_z_m", "baseline_length_m",
-            "azimuth_deg", "elevation_deg", "ionosphere_proxy_m", "troposphere_proxy_m",
-            "combined_residual_m", "quality_flags", "provenance",
-        ])
+        record_writer = csv.DictWriter(
+            handle,
+            fieldnames=list(rows[0].keys())
+            if rows
+            else [
+                "epoch",
+                "satellite",
+                "constellation",
+                "reference_station",
+                "target_station",
+                "station_x_m",
+                "station_y_m",
+                "station_z_m",
+                "baseline_length_m",
+                "azimuth_deg",
+                "elevation_deg",
+                "ionosphere_proxy_m",
+                "troposphere_proxy_m",
+                "combined_residual_m",
+                "quality_flags",
+                "provenance",
+            ],
+        )
         record_writer.writeheader()
         record_writer.writerows(rows)
     iono_complete = any(v["status"] == str(StageStatus.COMPLETE) for v in pair_status.values())
     if iono_complete:
-        derive_status = StageStatus.COMPLETE if tropo_status["status"] == str(
-            StageStatus.COMPLETE) else StageStatus.PARTIAL
+        derive_status = (
+            StageStatus.COMPLETE
+            if tropo_status["status"] == str(StageStatus.COMPLETE)
+            else StageStatus.PARTIAL
+        )
     else:
         derive_status = StageStatus.BLOCKED
-    result = {
+    result: dict[str, Any] = {
         "experiment_id": definition.experiment_id,
         "status": str(derive_status),
         "derive_key": key,
@@ -580,24 +721,59 @@ def derive_experiment(
         "troposphere": tropo_status,
         "spatial_record_count": len(rows),
         "provenance": provenance_record(
-            inputs={"observation_sha256": input_hashes, "nav_sha256": nav_hash,
-                    "phase5_admission_fingerprint": admission["phase5_admission_fingerprint"],
-                    "station_coordinates": {
-                        s: {"x_m": coords[s].x_m, "y_m": coords[s].y_m,
-                            "z_m": coords[s].z_m, "frame": coords[s].frame,
-                            "epoch": coords[s].epoch} for s in needed}},
-            algorithm="phase6-derive-v1",
-            parameters={"epoch_stride": definition.epoch_stride,
-                        "min_elevation_deg": definition.min_elevation_deg,
-                        "gf_slip_threshold_m": definition.gf_slip_threshold_m},
+            inputs={
+                "observation_sha256": input_hashes,
+                "nav_sha256": nav_hash,
+                "phase5_admission_fingerprint": admission["phase5_admission_fingerprint"],
+                "station_coordinates": {
+                    s: {
+                        "x_m": coords[s].x_m,
+                        "y_m": coords[s].y_m,
+                        "z_m": coords[s].z_m,
+                        "frame": coords[s].frame,
+                        "epoch": coords[s].epoch,
+                    }
+                    for s in needed
+                },
+            },
+            algorithm="phase6-derive-geometry-v3",
+            parameters={
+                "epoch_stride": definition.epoch_stride,
+                "min_elevation_deg": definition.min_elevation_deg,
+                "gf_slip_threshold_m": definition.gf_slip_threshold_m,
+            },
             code_fingerprint_value=code_fingerprint(repo_root),
             git_commit=git_commit(repo_root),
         ),
     }
+    result["derived_sha256"] = {
+        str(p.relative_to(out)): sha256_file(p)
+        for directory in ("common-observations", "ionosphere", "troposphere", "residuals")
+        for p in sorted((out / directory).glob("*"))
+        if p.is_file()
+    }
+    result["provenance"]["git_dirty"] = bool(
+        subprocess.check_output(["git", "status", "--porcelain"], cwd=repo_root, text=True).strip()
+    )
+    # Re-seal provenance after adding dirty state.
+    result["provenance"].pop("provenance_fingerprint", None)
+    result["provenance"]["provenance_fingerprint"] = fingerprint(result["provenance"])
     (out / "derive-status.json").write_text(
         json.dumps(result, indent=2, sort_keys=True, default=str), encoding="utf-8"
     )
     return {**result, "reused": False}
+
+
+def verify_derived(out: Path, derived: dict[str, Any], repo_root: Path) -> None:
+    """Downstream stages refuse stale source identities and modified derivatives."""
+    if derived.get("provenance", {}).get("code_fingerprint") != code_fingerprint(repo_root):
+        raise ModelBlocked("stale derive source fingerprint; rerun derive under a reviewed ID")
+    products = derived.get("derived_sha256", {})
+    if not products or any(
+        not (out / name).is_file() or sha256_file(out / name) != digest
+        for name, digest in products.items()
+    ):
+        raise ModelBlocked("derived product checksum mismatch; rerun derive")
 
 
 def fit_experiment(
@@ -613,12 +789,17 @@ def fit_experiment(
         return {"status": "PLANNED", "outputs": str(out / "models")}
     derive_path = out / "derive-status.json"
     if not derive_path.is_file():
-        return {"status": str(StageStatus.BLOCKED),
-                "reason": "derive stage has not produced satellite-derived proxies"}
+        return {
+            "status": str(StageStatus.BLOCKED),
+            "reason": "derive stage has not produced satellite-derived proxies",
+        }
     derived = json.loads(derive_path.read_text(encoding="utf-8"))
+    verify_derived(out, derived, repo_root)
     if derived.get("status") == str(StageStatus.BLOCKED):
-        return {"status": str(StageStatus.BLOCKED),
-                "reason": "no satellite-derived proxies; position RMSE is not a substitute"}
+        return {
+            "status": str(StageStatus.BLOCKED),
+            "reason": "no satellite-derived proxies; position RMSE is not a substitute",
+        }
     import csv as _csv
 
     records: list[dict[str, Any]] = []
@@ -634,17 +815,22 @@ def fit_experiment(
                 continue
             records.append(row)
     coords = load_station_coordinates(data_root)
-    target_xyz = (coords[definition.target_station].x_m,
-                  coords[definition.target_station].y_m,
-                  coords[definition.target_station].z_m)
+    target_xyz = (
+        coords[definition.target_station].x_m,
+        coords[definition.target_station].y_m,
+        coords[definition.target_station].z_m,
+    )
     # Group values per (epoch, satellite) across reference stations.
     from collections import defaultdict
+
     groups: dict[tuple[str, str], dict[str, float | None]] = defaultdict(dict)
     ref_xyz: dict[str, tuple[float, float, float]] = {}
     for row in records:
         ref = row["reference_station"]
         ref_xyz[ref] = (
-            float(row["station_x_m"]), float(row["station_y_m"]), float(row["station_z_m"])
+            float(row["station_x_m"]),
+            float(row["station_y_m"]),
+            float(row["station_z_m"]),
         )
         raw = row.get("combined_residual_m") or row.get("ionosphere_proxy_m")
         try:
@@ -663,28 +849,44 @@ def fit_experiment(
         refs = [(r, ref_xyz[r], values.get(r)) for r in sorted(values)]
         for model in METHOD_NAMES:
             pred = interpolate(
-                model_name=model, epoch_iso=epoch, satellite_id=sat,
-                target_station=definition.target_station, target_xyz=target_xyz,
+                model_name=model,
+                epoch_iso=epoch,
+                satellite_id=sat,
+                target_station=definition.target_station,
+                target_xyz=target_xyz,
                 references=refs,
             )
             if pred.predicted_m is not None:
                 fitted += 1
             predictions.append(prediction_to_row(pred))
     with (models_dir / "target-predictions.csv").open("w", newline="", encoding="utf-8") as handle:
-        fields = ["epoch", "satellite", "target_station", "model", "predicted_m",
-                  "observed_m", "residual_m", "extrapolated", "model_parameters", "reason"]
+        fields = [
+            "epoch",
+            "satellite",
+            "target_station",
+            "model",
+            "predicted_m",
+            "observed_m",
+            "residual_m",
+            "extrapolated",
+            "model_parameters",
+            "reason",
+        ]
         pred_writer = csv.DictWriter(handle, fieldnames=fields)
         pred_writer.writeheader()
         pred_writer.writerows(predictions)
     status = StageStatus.COMPLETE if fitted else StageStatus.BLOCKED
-    result = {
+    result: dict[str, Any] = {
         "experiment_id": definition.experiment_id,
         "status": str(status),
         "prediction_count": len(predictions),
         "fitted_count": fitted,
         "models": list(METHOD_NAMES),
-        "note": ("predictions of satellite-derived differential proxies at target; "
-                 "not VRS corrections") if fitted else "no predictions could be fitted",
+        "note": (
+            "predictions of satellite-derived differential proxies at target; not VRS corrections"
+        )
+        if fitted
+        else "no predictions could be fitted",
     }
     (models_dir / "fits.json").write_text(
         json.dumps(result, indent=2, sort_keys=True), encoding="utf-8"
@@ -707,35 +909,40 @@ def validate_experiment(
     if not derive_path.is_file():
         return {"status": str(StageStatus.BLOCKED), "reason": "derive stage missing"}
     derived = json.loads(derive_path.read_text(encoding="utf-8"))
+    verify_derived(out, derived, repo_root)
     if derived.get("status") == str(StageStatus.BLOCKED):
-        return {"status": str(StageStatus.BLOCKED),
-                "reason": "no satellite-derived proxies to validate"}
+        return {
+            "status": str(StageStatus.BLOCKED),
+            "reason": "no satellite-derived proxies to validate",
+        }
     import csv as _csv
     from collections import defaultdict
 
     coords = load_station_coordinates(data_root)
     stations = [*definition.reference_stations, definition.target_station]
     coord_map = {s: (coords[s].x_m, coords[s].y_m, coords[s].z_m) for s in stations}
-    # Observed term per (epoch, satellite, station): the datum-anchored
-    # differential proxy from the spatial records (combined residual where
-    # both components exist, else the ionospheric proxy). The datum
-    # station's self-difference records (identically zero) are included so
-    # that the datum-target fold is evaluable like every other rotation.
-    records_path = out / "residuals" / "spatial-records.csv"
+    # Read independent station values, then construct a new reference-only
+    # datum in EACH held-out fold. The held-out datum never defines a zero truth.
     obs_store: dict[tuple[str, str, str], float] = {}
-    with records_path.open(encoding="utf-8") as handle:
+    with (out / "residuals" / "station-fields.csv").open(encoding="utf-8") as handle:
         for row in _csv.DictReader(handle):
-            raw = row.get("combined_residual_m") or row.get("ionosphere_proxy_m")
-            if raw is None or raw == "":
-                continue
-            try:
-                obs_store[(row["epoch"], row["satellite"], row["reference_station"])] = float(raw)
-            except (TypeError, ValueError):
-                continue
+            if row["field_m"]:
+                obs_store[(row["epoch"], row["satellite"], row["station"])] = float(row["field_m"])
     epochs = sorted({e for e, _, _ in obs_store})
     satellites = sorted({s for _, s, _ in obs_store})
-    loocv = run_loocv(epochs=epochs, satellites=satellites, coords=coord_map,
-                      observed=obs_store)
+    loocv = run_loocv(
+        epochs=epochs,
+        satellites=satellites,
+        coords=coord_map,
+        observed=obs_store,
+        reference_datum=True,
+    )
+    samples = loocv.pop("comparison_samples")
+    write_csv(
+        out / "validation" / "comparison-samples.csv",
+        samples,
+        ["epoch", "satellite", "target", "model", "observed_m", "predicted_m", "residual_m"],
+    )
     # Decorrelation: RMS SD proxy per pair vs baseline distance.
     iono_path = out / "ionosphere" / "pair-sd.csv"
     pair_values: dict[str, list[float]] = defaultdict(list)
@@ -756,14 +963,15 @@ def validate_experiment(
             continue
         distances.append(dist)
         rms_list.append(rms_value)
-        pair_rows.append({"pair": pair, "baseline_m": dist, "rms_m": rms_value,
-                          "count": len(values)})
+        pair_rows.append(
+            {"pair": pair, "baseline_m": dist, "rms_m": rms_value, "count": len(values)}
+        )
     decorr = decorrelation_fit(distances, rms_list)
     validation_dir = out / "validation"
     validation_dir.mkdir(parents=True, exist_ok=True)
     evaluated = sum(f.get("evaluated", 0) for f in loocv["folds"])
     status = StageStatus.COMPLETE if evaluated else StageStatus.BLOCKED
-    result = {
+    result: dict[str, Any] = {
         "experiment_id": definition.experiment_id,
         "status": str(status),
         "loocv": loocv,
@@ -786,11 +994,14 @@ def validate_experiment(
     if metrics_path.is_file():
         metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
     metrics["validation"] = {
-        "status": str(status), "best_model": loocv["best_model"],
-        "models": loocv["models"], "decorrelation": decorr,
+        "status": str(status),
+        "best_model": loocv["best_model"],
+        "models": loocv["models"],
+        "decorrelation": decorr,
     }
-    metrics_path.write_text(json.dumps(metrics, indent=2, sort_keys=True, default=str),
-                            encoding="utf-8")
+    metrics_path.write_text(
+        json.dumps(metrics, indent=2, sort_keys=True, default=str), encoding="utf-8"
+    )
     return result
 
 
@@ -802,8 +1013,12 @@ def summarize_data_root(data_root: Path) -> dict[str, Any]:
         children = sorted(experiments_dir.glob("*")) if experiments_dir.is_dir() else []
         for child in children:
             row: dict[str, Any] = {"experiment_id": child.name}
-            for name in ("derive-status.json", "metrics.json", "validation/loocv.json",
-                         "models/fits.json"):
+            for name in (
+                "derive-status.json",
+                "metrics.json",
+                "validation/loocv.json",
+                "models/fits.json",
+            ):
                 path = child / name
                 if path.is_file():
                     try:
@@ -822,8 +1037,9 @@ def summarize_data_root(data_root: Path) -> dict[str, Any]:
     experiment_rows: list[dict[str, Any]] = []
     validation_rows: list[dict[str, Any]] = []
     gradient_rows: list[dict[str, Any]] = []
-    for child in ([base / "experiments" / e["experiment_id"] for e in experiments]
-                  if experiments else []):
+    for child in (
+        [base / "experiments" / e["experiment_id"] for e in experiments] if experiments else []
+    ):
         derive_path = child / "derive-status.json"
         derive: dict[str, Any] = {}
         if derive_path.is_file():
@@ -839,52 +1055,80 @@ def summarize_data_root(data_root: Path) -> dict[str, Any]:
             except (ValueError, OSError):
                 loocv_doc = {}
         loocv = loocv_doc.get("loocv", {}) if isinstance(loocv_doc, dict) else {}
-        experiment_rows.append({
-            "experiment_id": child.name,
-            "derive_status": derive.get("status"),
-            "common_epoch_count": derive.get("common_epoch_count"),
-            "spatial_record_count": derive.get("spatial_record_count"),
-            "best_model": loocv.get("best_model"),
-            "comparison_keys": loocv.get("comparison_keys"),
-        })
+        experiment_rows.append(
+            {
+                "experiment_id": child.name,
+                "derive_status": derive.get("status"),
+                "common_epoch_count": derive.get("common_epoch_count"),
+                "spatial_record_count": derive.get("spatial_record_count"),
+                "best_model": loocv.get("best_model"),
+                "comparison_keys": loocv.get("comparison_keys"),
+            }
+        )
         for model in sorted(loocv.get("models") or {}):
             metrics = loocv["models"][model]
-            validation_rows.append({
-                "experiment_id": child.name,
-                "model": model,
-                "count": metrics.get("count"),
-                "bias_m": metrics.get("bias_m"),
-                "mae_m": metrics.get("mae_m"),
-                "rmse_m": metrics.get("rmse_m"),
-                "std_m": metrics.get("std_m"),
-                "correlation_predicted_observed": metrics.get(
-                    "correlation_predicted_observed"),
-                "coverage_within_tolerance": metrics.get(
-                    "coverage_within_tolerance"),
-            })
-        decorr = loocv_doc.get("decorrelation", {}) if isinstance(
-            loocv_doc, dict) else {}
+            validation_rows.append(
+                {
+                    "experiment_id": child.name,
+                    "model": model,
+                    "count": metrics.get("count"),
+                    "bias_m": metrics.get("bias_m"),
+                    "mae_m": metrics.get("mae_m"),
+                    "rmse_m": metrics.get("rmse_m"),
+                    "std_m": metrics.get("std_m"),
+                    "correlation_predicted_observed": metrics.get("correlation_predicted_observed"),
+                    "coverage_within_tolerance": metrics.get("coverage_within_tolerance"),
+                }
+            )
+        decorr = loocv_doc.get("decorrelation", {}) if isinstance(loocv_doc, dict) else {}
         for pair in decorr.get("pairs", []) or []:
-            gradient_rows.append({
-                "experiment_id": child.name,
-                "pair": pair.get("pair"),
-                "baseline_m": pair.get("baseline_m"),
-                "rms_m": pair.get("rms_m"),
-                "count": pair.get("count"),
-            })
+            gradient_rows.append(
+                {
+                    "experiment_id": child.name,
+                    "pair": pair.get("pair"),
+                    "baseline_m": pair.get("baseline_m"),
+                    "rms_m": pair.get("rms_m"),
+                    "count": pair.get("count"),
+                }
+            )
     if experiments:
-        write_csv(summaries_dir / "model-experiments.csv", experiment_rows,
-                  ["experiment_id", "derive_status", "common_epoch_count",
-                   "spatial_record_count", "best_model", "comparison_keys"])
-        write_csv(summaries_dir / "validation-results.csv", validation_rows,
-                  ["experiment_id", "model", "count", "bias_m", "mae_m",
-                   "rmse_m", "std_m", "correlation_predicted_observed",
-                   "coverage_within_tolerance"])
-        write_csv(summaries_dir / "spatial-gradients.csv", gradient_rows,
-                  ["experiment_id", "pair", "baseline_m", "rms_m", "count"])
-        payload["summaries"] = [str(summaries_dir / "model-experiments.csv"),
-                                str(summaries_dir / "validation-results.csv"),
-                                str(summaries_dir / "spatial-gradients.csv")]
+        write_csv(
+            summaries_dir / "model-experiments.csv",
+            experiment_rows,
+            [
+                "experiment_id",
+                "derive_status",
+                "common_epoch_count",
+                "spatial_record_count",
+                "best_model",
+                "comparison_keys",
+            ],
+        )
+        write_csv(
+            summaries_dir / "validation-results.csv",
+            validation_rows,
+            [
+                "experiment_id",
+                "model",
+                "count",
+                "bias_m",
+                "mae_m",
+                "rmse_m",
+                "std_m",
+                "correlation_predicted_observed",
+                "coverage_within_tolerance",
+            ],
+        )
+        write_csv(
+            summaries_dir / "spatial-gradients.csv",
+            gradient_rows,
+            ["experiment_id", "pair", "baseline_m", "rms_m", "count"],
+        )
+        payload["summaries"] = [
+            str(summaries_dir / "model-experiments.csv"),
+            str(summaries_dir / "validation-results.csv"),
+            str(summaries_dir / "spatial-gradients.csv"),
+        ]
     return payload
 
 

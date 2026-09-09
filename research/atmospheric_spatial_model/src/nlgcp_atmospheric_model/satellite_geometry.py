@@ -22,11 +22,20 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from .constants import EARTH_GM_M3_S2, EARTH_ROT_RATE_RAD_S, GPS_PI
+from .constants import EARTH_GM_M3_S2, EARTH_ROT_RATE_RAD_S
+from .spatial import _geodetic_lat_lon
 
 GPS_EPOCH = datetime(1980, 1, 6, tzinfo=UTC)
 LEAP_SECONDS_2024 = 18
-"""GPS - UTC offset valid for 2024 (RINEX header records 18 leap seconds)."""
+"""GPS minus UTC offset valid for 2024 (informational only).
+
+RINEX 2 observation epochs and RINEX 3 navigation epochs in this archive
+carry GPS-time labels (headers declare ``GPS`` in TIME OF FIRST OBS), and
+the pipeline stores them as ISO-8601 wall times. They must be interpreted
+as GPST directly: no leap-second offset is added in conversions. A previous
+revision added these 18 s, biasing every broadcast propagation by ~70 km
+of along-track error. Retained as a named constant for documentation only.
+"""
 
 WEEK_SECONDS = 604_800.0
 HALF_WEEK = 302_400.0
@@ -62,6 +71,7 @@ class BroadcastEphemeris:
     omega_rad: float
     omega_dot_rad_s: float
     idot_rad_s: float
+    health: int = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -77,13 +87,30 @@ class Topocentric:
     method: str = "IS-GPS-200 broadcast Kepler + topocentric ENU"
 
 
-def _semicircles_to_rad(value: float) -> float:
-    return value * GPS_PI
+def _rinex_rad(value: float) -> float:
+    """RINEX broadcast angles/rates are stored in radians (identity).
+
+    The ICD (IS-GPS-200) uses semicircles, but RINEX navigation files
+    record M0, Delta-n, OMEGA0, i0, omega, OMEGADOT and IDOT converted to
+    radians / radians/second. The pinned RTKLIB ``decode_eph`` stores these
+    fields without any pi scaling, and the real DOY 026 product confirms it:
+    raw i0 = 0.9905 rad = 56.7 deg (correct GPS inclination), whereas
+    ``* pi`` would give 178.3 deg. A previous revision multiplied seven
+    fields by pi; that is removed here. Cuc/Cus/Crc/Crs/Cic/Cis were and
+    remain unscaled (radians/metres).
+    """
+    return value
 
 
 def gps_datetime_to_tow(moment: datetime) -> tuple[int, float]:
-    """Convert an aware UTC datetime to (GPS week, time-of-week in seconds)."""
-    gps_time = moment.timestamp() + LEAP_SECONDS_2024
+    """Convert a GPST calendar label to (GPS week, time-of-week in seconds).
+
+    The input wall time is GPS time (RINEX headers declare GPS); no
+    UTC leap-second offset is applied.
+    """
+    if moment.utcoffset() not in (None, __import__("datetime").timedelta(0)):
+        raise ValueError("GPST label cannot carry a nonzero UTC offset")
+    gps_time = moment.replace(tzinfo=UTC).timestamp()
     epoch_s = GPS_EPOCH.timestamp()
     elapsed = gps_time - epoch_s
     week = int(elapsed // WEEK_SECONDS)
@@ -99,6 +126,8 @@ def broadcast_position(
     first-order simplification: ~3 m position effect, negligible for the
     elevation-mask and mapping-function use here).
     """
+    if not (0 <= eph.e < 1) or not math.isfinite(eph.sqrt_a_m_sqrt) or eph.sqrt_a_m_sqrt <= 0:
+        raise ValueError("invalid broadcast eccentricity/semimajor axis")
     a = eph.sqrt_a_m_sqrt * eph.sqrt_a_m_sqrt
     tk = tow_s - eph.toe_tow_s + (week - eph.toe_week) * WEEK_SECONDS
     if tk > HALF_WEEK:
@@ -114,6 +143,8 @@ def broadcast_position(
         e_k += delta
         if abs(delta) < 1e-13:
             break
+    else:
+        raise ValueError("broadcast Kepler iteration did not converge")
     cos_e = math.cos(e_k)
     sin_e = math.sin(e_k)
     v_k = math.atan2(math.sqrt(1.0 - eph.e * eph.e) * sin_e, cos_e - eph.e)
@@ -124,11 +155,7 @@ def broadcast_position(
     i_k = eph.i0_rad + eph.idot_rad_s * tk + eph.cis_rad * sin2 + eph.cic_rad * cos2
     x_p = r_k * math.cos(u_k)
     y_p = r_k * math.sin(u_k)
-    omega_k = (
-        eph.omega0_rad
-        + (eph.omega_dot_rad_s - OMEGA_E) * tk
-        - OMEGA_E * eph.toe_tow_s
-    )
+    omega_k = eph.omega0_rad + (eph.omega_dot_rad_s - OMEGA_E) * tk - OMEGA_E * eph.toe_tow_s
     cos_o, sin_o = math.cos(omega_k), math.sin(omega_k)
     cos_i, sin_i = math.cos(i_k), math.sin(i_k)
     return (
@@ -147,14 +174,18 @@ def elevation_azimuth_deg(
     dx = satellite_ecef_m[0] - sx
     dy = satellite_ecef_m[1] - sy
     dz = satellite_ecef_m[2] - sz
-    lon = math.atan2(sy, sx)
-    lat = math.atan2(sz, math.hypot(sx, sy))
+    # Geodetic (ellipsoidal) latitude is required for the ENU rotation. A
+    # previous revision used geocentric latitude atan2(z, hypot(x, y)),
+    # tilting the frame by up to ~0.08 deg over Nigeria (km-level ENU bias).
+    lat, lon = _geodetic_lat_lon(station_ecef_m)
     sin_lat, cos_lat = math.sin(lat), math.cos(lat)
     sin_lon, cos_lon = math.sin(lon), math.cos(lon)
     east = -sin_lon * dx + cos_lon * dy
     north = -sin_lat * cos_lon * dx - sin_lat * sin_lon * dy + cos_lat * dz
     up = cos_lat * cos_lon * dx + cos_lat * sin_lon * dy + sin_lat * dz
     rng = math.hypot(east, north, up)
+    if not math.isfinite(rng) or rng <= 0:
+        raise ValueError("invalid topocentric range")
     elevation = math.degrees(math.asin(max(-1.0, min(1.0, up / rng))))
     azimuth = math.degrees(math.atan2(east, north)) % 360.0
     return elevation, azimuth
@@ -168,21 +199,26 @@ FLOAT_TOKEN = re.compile(r"[+-]?\d\.\d+[EDed][+-]?\d+")
 
 
 def _orbit_values(block: list[str]) -> list[float] | None:
-    """Tokenise 7 RINEX 3 orbit lines into 28 floats.
+    """Read RINEX 3 GPS D19.12 fields; blank fit/spare fields are optional.
 
-    Fixed 19-column slicing fails on real BRDC files because adjacent fields
-    are sign-glued (``...+05-1.34...``); tokenising on Fortran-float shapes
-    is robust to that while preserving field order.
+    Adjacent signed fields are valid fixed columns. Regex requiring 28
+    numeric tokens silently discarded records with blank trailing spares.
     """
-    tokens: list[str] = []
-    for line in block:
-        tokens.extend(FLOAT_TOKEN.findall(line))
-    if len(tokens) != 28:
-        return None
-    try:
-        return [_fortran_float(t) for t in tokens]
-    except ValueError:
-        return None
+    values: list[float] = []
+    for row, line in enumerate(block):
+        for col in range(4):
+            field = line[4 + 19 * col : 4 + 19 * (col + 1)].strip()
+            if not field and row * 4 + col >= 25:
+                values.append(0.0)  # unused optional fit interval / spares only
+                continue
+            try:
+                value = _fortran_float(field)
+            except ValueError:
+                return None
+            if not math.isfinite(value):
+                return None
+            values.append(value)
+    return values if len(values) == 28 else None
 
 
 def parse_rinex3_gps_nav(path: Path) -> dict[str, list[BroadcastEphemeris]]:
@@ -242,7 +278,7 @@ def parse_rinex3_gps_nav(path: Path) -> dict[str, list[BroadcastEphemeris]]:
             vals = vals_opt
             week, tow = gps_datetime_to_tow(toc)
             toe_tow = vals[8]
-            toe_week = week + int(round((tow - toe_tow) / WEEK_SECONDS))
+            toe_week = int(vals[18])
             eph = BroadcastEphemeris(
                 satellite_id=sat,
                 toc_week=week,
@@ -252,8 +288,8 @@ def parse_rinex3_gps_nav(path: Path) -> dict[str, list[BroadcastEphemeris]]:
                 af2_s_s2=af2,
                 iode=vals[0],
                 crs_m=vals[1],
-                delta_n_rad_s=_semicircles_to_rad(vals[2]),
-                m0_rad=_semicircles_to_rad(vals[3]),
+                delta_n_rad_s=_rinex_rad(vals[2]),
+                m0_rad=_rinex_rad(vals[3]),
                 cuc_rad=vals[4],
                 e=vals[5],
                 cus_rad=vals[6],
@@ -261,13 +297,14 @@ def parse_rinex3_gps_nav(path: Path) -> dict[str, list[BroadcastEphemeris]]:
                 toe_tow_s=toe_tow,
                 toe_week=toe_week,
                 cic_rad=vals[9],
-                omega0_rad=_semicircles_to_rad(vals[10]),
+                omega0_rad=_rinex_rad(vals[10]),
                 cis_rad=vals[11],
-                i0_rad=_semicircles_to_rad(vals[12]),
+                i0_rad=_rinex_rad(vals[12]),
                 crc_m=vals[13],
-                omega_rad=_semicircles_to_rad(vals[14]),
-                omega_dot_rad_s=_semicircles_to_rad(vals[15]),
-                idot_rad_s=_semicircles_to_rad(vals[16]),
+                omega_rad=_rinex_rad(vals[14]),
+                omega_dot_rad_s=_rinex_rad(vals[15]),
+                idot_rad_s=_rinex_rad(vals[16]),
+                health=int(vals[21]),
             )
             records.setdefault(sat, []).append(eph)
         except (ValueError, IndexError):
@@ -283,9 +320,9 @@ def select_ephemeris(
     best_dt = float("inf")
     for eph in records:
         dt = abs((tow_s + (week - eph.toe_week) * WEEK_SECONDS) - eph.toe_tow_s)
-        if dt > HALF_WEEK:
-            dt = abs(dt - WEEK_SECONDS)
-        if dt < best_dt:
+        if eph.health != 0 or dt > 7201.0:
+            continue
+        if dt <= best_dt:
             best_dt = dt
             best = eph
     return best
@@ -315,29 +352,35 @@ def geometry_table(
         week, tow = gps_datetime_to_tow(moment)
         for sat in satellites:
             if not sat.startswith("G"):
-                exclusions.append({
-                    "epoch": epoch_iso_value,
-                    "satellite": sat,
-                    "reason": "non-GPS broadcast propagation not implemented",
-                })
+                exclusions.append(
+                    {
+                        "epoch": epoch_iso_value,
+                        "satellite": sat,
+                        "reason": "non-GPS broadcast propagation not implemented",
+                    }
+                )
                 continue
             eph = select_ephemeris(nav_records.get(sat, []), week, tow)
             if eph is None:
-                exclusions.append({
-                    "epoch": epoch_iso_value,
-                    "satellite": sat,
-                    "reason": "no GPS broadcast record available",
-                })
+                exclusions.append(
+                    {
+                        "epoch": epoch_iso_value,
+                        "satellite": sat,
+                        "reason": "no GPS broadcast record available",
+                    }
+                )
                 continue
             sat_ecef = broadcast_position(eph, week, tow)
             for station_id, coord in station_coords.items():
                 elev, azim = elevation_azimuth_deg(coord, sat_ecef)
-                rows.append(Topocentric(
-                    epoch_iso=epoch_iso_value,
-                    station_id=station_id,
-                    satellite_id=sat,
-                    elevation_deg=elev,
-                    azimuth_deg=azim,
-                    nav_hash=nav_hash,
-                ))
+                rows.append(
+                    Topocentric(
+                        epoch_iso=epoch_iso_value,
+                        station_id=station_id,
+                        satellite_id=sat,
+                        elevation_deg=elev,
+                        azimuth_deg=azim,
+                        nav_hash=nav_hash,
+                    )
+                )
     return rows, exclusions

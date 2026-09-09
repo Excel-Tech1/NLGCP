@@ -76,23 +76,27 @@ def write_rinex2(
     types_padded = _labelled(types_line(codes), "# / TYPES OF OBSERV")
     interval_line = _labelled("    30.0000", "INTERVAL")
     first_obs_line = _labelled(
-        f"{24:6d}{1:6d}{26:6d}{0:6d}{0:6d}{0.0:13.7f}", "TIME OF FIRST OBS"
+        f"{24:6d}{1:6d}{26:6d}{0:6d}{0:6d}{0.0:13.7f}     GPS", "TIME OF FIRST OBS"
     )
-    lines = [HEADER_TEMPLATE.format(
-        approx_line=approx_line,
-        types_padded=types_padded,
-        interval_line=interval_line,
-        first_obs_line=first_obs_line,
-    )]
+    lines = [
+        HEADER_TEMPLATE.format(
+            approx_line=approx_line,
+            types_padded=types_padded,
+            interval_line=interval_line,
+            first_obs_line=first_obs_line,
+        )
+    ]
     for index in range(epochs):
         if gap_at is not None and index == gap_at:
             continue
         total_seconds = index * 30
-        lines.append(epoch_line(
-            minute=(total_seconds // 60) % 60,
-            second=float(total_seconds % 60),
-            sats=sats,
-        ))
+        lines.append(
+            epoch_line(
+                minute=(total_seconds // 60) % 60,
+                second=float(total_seconds % 60),
+                sats=sats,
+            )
+        )
         for sat in sats:
             drift = float(index) * 10.0
             plain: list[float] = [
@@ -123,12 +127,26 @@ def synthetic_nav_text() -> str:
     sqrt_a = a**0.5
     body = (
         "G01 2024 01 26 00 00 00  0.000000000000D+00  0.000000000000D+00  0.000000000000D+00\n"
-        + "   " + fmt([1.0, 0.0, 0.0, 0.0]) + "\n"  # IODE Crs dN M0
-        + "   " + fmt([0.0, 0.0, 0.0, sqrt_a]) + "\n"  # Cuc e Cus sqrtA
-        + "   " + fmt([0.0, 0.0, 0.0, 0.0]) + "\n"  # Toe Cic OMEGA CIS
-        + "   " + fmt([0.9599310886, 0.0, 0.0, 0.0]) + "\n"  # i0 Crc omega OMEGADOT
-        + "   " + fmt([0.0, 1.0, 2298.0, 0.0]) + "\n"  # IDOT codes week L2P
-        + "   " + fmt([0.0, 0.0, 0.0, 0.0]) + "\n"
-        + "   " + fmt([432000.0, 4.0, 0.0, 0.0]) + "\n"
+        + "    "
+        + fmt([1.0, 0.0, 0.0, 0.0])
+        + "\n"  # IODE Crs dN M0
+        + "    "
+        + fmt([0.0, 0.0, 0.0, sqrt_a])
+        + "\n"  # Cuc e Cus sqrtA
+        + "    "
+        + fmt([432000.0, 0.0, 0.0, 0.0])
+        + "\n"  # Toe Cic OMEGA CIS
+        + "    "
+        + fmt([0.9599310886, 0.0, 0.0, 0.0])
+        + "\n"  # i0 Crc omega OMEGADOT
+        + "    "
+        + fmt([0.0, 1.0, 2298.0, 0.0])
+        + "\n"  # IDOT codes week L2P
+        + "    "
+        + fmt([0.0, 0.0, 0.0, 0.0])
+        + "\n"
+        + "    "
+        + fmt([432000.0, 4.0, 0.0, 0.0])
+        + "\n"
     )
     return header + body

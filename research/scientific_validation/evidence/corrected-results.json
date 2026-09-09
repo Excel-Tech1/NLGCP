@@ -1,0 +1,1713 @@
+{
+  "status": "CORRECTED",
+  "phase6_previous": {
+    "decorrelation": {
+      "correlation": 0.4833781517071346,
+      "intercept_m": 3.7981203183717014,
+      "note": "representative/pilot evidence only: one day, 6 baseline pairs; not a national decorrelation law",
+      "pair_count": 6,
+      "pairs": [
+        {
+          "baseline_m": 487636.00037086534,
+          "count": 5069,
+          "pair": "ABFC00NGA-EKAK00NGA",
+          "rms_m": 3.3719011876971123
+        },
+        {
+          "baseline_m": 689686.987874908,
+          "count": 5198,
+          "pair": "ABFC00NGA-MGBO00NGA",
+          "rms_m": 4.238122502564018
+        },
+        {
+          "baseline_m": 470869.6331065616,
+          "count": 4506,
+          "pair": "ABFC00NGA-PHRI00NGA",
+          "rms_m": 4.21119533695601
+        },
+        {
+          "baseline_m": 979075.1508350975,
+          "count": 4879,
+          "pair": "EKAK00NGA-MGBO00NGA",
+          "rms_m": 4.3590739841124275
+        },
+        {
+          "baseline_m": 105552.65675817484,
+          "count": 4474,
+          "pair": "EKAK00NGA-PHRI00NGA",
+          "rms_m": 4.186927352081786
+        },
+        {
+          "baseline_m": 1029033.8199170888,
+          "count": 4474,
+          "pair": "MGBO00NGA-PHRI00NGA",
+          "rms_m": 4.644810419582802
+        }
+      ],
+      "slope_m_per_km": 0.0005910140919032435
+    },
+    "experiment_id": "atm-2024d026-phri-target",
+    "loocv": {
+      "best_model": "zero",
+      "best_model_note": "lowest RMSE on identical comparison samples across all models; report when a simpler control wins",
+      "comparison_keys": 13326,
+      "folds": [
+        {
+          "admissible": true,
+          "evaluated": 0,
+          "reason": null,
+          "references": [
+            "EKAK00NGA",
+            "MGBO00NGA",
+            "PHRI00NGA"
+          ],
+          "skipped": 0,
+          "target": "ABFC00NGA"
+        },
+        {
+          "admissible": true,
+          "evaluated": 5069,
+          "reason": null,
+          "references": [
+            "ABFC00NGA",
+            "MGBO00NGA",
+            "PHRI00NGA"
+          ],
+          "skipped": 0,
+          "target": "EKAK00NGA"
+        },
+        {
+          "admissible": true,
+          "evaluated": 5198,
+          "reason": null,
+          "references": [
+            "ABFC00NGA",
+            "EKAK00NGA",
+            "PHRI00NGA"
+          ],
+          "skipped": 0,
+          "target": "MGBO00NGA"
+        },
+        {
+          "admissible": true,
+          "evaluated": 4506,
+          "reason": null,
+          "references": [
+            "ABFC00NGA",
+            "EKAK00NGA",
+            "MGBO00NGA"
+          ],
+          "skipped": 0,
+          "target": "PHRI00NGA"
+        }
+      ],
+      "missing_observations_skipped": 42827,
+      "models": {
+        "idw": {
+          "bias_m": 0.30136969057754454,
+          "correlation_predicted_observed": 0.2722714930310515,
+          "count": 13326,
+          "coverage_within_tolerance": 0.050577817799789884,
+          "evaluable_keys": 14302,
+          "mae_m": 2.301542520644328,
+          "rmse_m": 3.8874112239811107,
+          "std_m": 3.8758572760315815,
+          "tolerance_m": 0.05
+        },
+        "nearest": {
+          "bias_m": 0.33801881205721945,
+          "correlation_predicted_observed": 0.24448170370967723,
+          "count": 13326,
+          "coverage_within_tolerance": 0.04307369052979138,
+          "evaluable_keys": 14773,
+          "mae_m": 2.3306536992594835,
+          "rmse_m": 3.9848908597516473,
+          "std_m": 3.9706777215813305,
+          "tolerance_m": 0.05
+        },
+        "planar": {
+          "bias_m": -0.23196287670541893,
+          "correlation_predicted_observed": -0.021425392055176986,
+          "count": 13326,
+          "coverage_within_tolerance": 0.0510280654359898,
+          "evaluable_keys": 13326,
+          "mae_m": 6.696143371662013,
+          "rmse_m": 15.720887506077126,
+          "std_m": 15.719765924769904,
+          "tolerance_m": 0.05
+        },
+        "zero": {
+          "bias_m": 0.4899609361385062,
+          "correlation_predicted_observed": null,
+          "count": 13326,
+          "coverage_within_tolerance": 0.028890889989494222,
+          "evaluable_keys": 14773,
+          "mae_m": 2.1369211156677768,
+          "rmse_m": 3.5464475259018795,
+          "std_m": 3.5125708826767066,
+          "tolerance_m": 0.05
+        }
+      }
+    },
+    "metrics_note": "bias/MAE/RMSE/std/correlation/coverage on satellite-derived proxies",
+    "status": "COMPLETE"
+  },
+  "phase6_corrected": {
+    "decorrelation": {
+      "correlation": 0.48337481127269577,
+      "intercept_m": 3.7981230451668653,
+      "note": "representative/pilot evidence only: one day, 6 baseline pairs; not a national decorrelation law",
+      "pair_count": 6,
+      "pairs": [
+        {
+          "baseline_m": 487636.00037086534,
+          "count": 5069,
+          "pair": "ABFC00NGA-EKAK00NGA",
+          "rms_m": 3.3719011876971123
+        },
+        {
+          "baseline_m": 689686.987874908,
+          "count": 5198,
+          "pair": "ABFC00NGA-MGBO00NGA",
+          "rms_m": 4.238118759088969
+        },
+        {
+          "baseline_m": 470869.6331065616,
+          "count": 4506,
+          "pair": "ABFC00NGA-PHRI00NGA",
+          "rms_m": 4.211194388504784
+        },
+        {
+          "baseline_m": 979075.1508350975,
+          "count": 4879,
+          "pair": "EKAK00NGA-MGBO00NGA",
+          "rms_m": 4.3590739841124275
+        },
+        {
+          "baseline_m": 105552.65675817484,
+          "count": 4474,
+          "pair": "EKAK00NGA-PHRI00NGA",
+          "rms_m": 4.186932885792298
+        },
+        {
+          "baseline_m": 1029033.8199170888,
+          "count": 4474,
+          "pair": "MGBO00NGA-PHRI00NGA",
+          "rms_m": 4.644812390522601
+        }
+      ],
+      "slope_m_per_km": 0.0005910104904753177
+    },
+    "experiment_id": "atm-2024d026-phri-target-geometry-v3",
+    "loocv": {
+      "best_model": "zero",
+      "best_model_note": "lowest RMSE on identical comparison samples across all models; report when a simpler control wins",
+      "comparison_keys": 15948,
+      "datum_policy": "lexical first reference per fold",
+      "folds": [
+        {
+          "admissible": true,
+          "comparison_keys": 3987,
+          "datum": "EKAK00NGA",
+          "evaluated": 4268,
+          "models": {
+            "idw": {
+              "bias_m": -0.26529673713576946,
+              "count": 3987,
+              "coverage_within_tolerance": 0.02583396037120642,
+              "mae_m": 1.5562469381642514,
+              "rmse_m": 2.341754803664886,
+              "std_m": 2.326970415248987,
+              "tolerance_m": 0.05
+            },
+            "nearest": {
+              "bias_m": -0.6169440129245072,
+              "count": 3987,
+              "coverage_within_tolerance": 0.015048908954100828,
+              "mae_m": 2.504062817652542,
+              "rmse_m": 3.8513363218803054,
+              "std_m": 3.8020780215697503,
+              "tolerance_m": 0.05
+            },
+            "planar": {
+              "bias_m": -1.231281012210357,
+              "count": 3987,
+              "coverage_within_tolerance": 0.0145472786556308,
+              "mae_m": 7.469964864992698,
+              "rmse_m": 13.241115071791551,
+              "std_m": 13.185396497682804,
+              "tolerance_m": 0.05
+            },
+            "zero": {
+              "bias_m": -0.2181811103822535,
+              "count": 3987,
+              "coverage_within_tolerance": 0.020316027088036117,
+              "mae_m": 1.6247800484298924,
+              "rmse_m": 2.424224573643816,
+              "std_m": 2.414689259614251,
+              "tolerance_m": 0.05
+            }
+          },
+          "reason": null,
+          "references": [
+            "EKAK00NGA",
+            "MGBO00NGA",
+            "PHRI00NGA"
+          ],
+          "skipped": 10132,
+          "target": "ABFC00NGA"
+        },
+        {
+          "admissible": true,
+          "comparison_keys": 3987,
+          "datum": "ABFC00NGA",
+          "evaluated": 4268,
+          "models": {
+            "idw": {
+              "bias_m": -0.36034327811592115,
+              "count": 3987,
+              "coverage_within_tolerance": 0.06797090544268874,
+              "mae_m": 2.1030470161096675,
+              "rmse_m": 3.734991675296486,
+              "std_m": 3.718034796849581,
+              "tolerance_m": 0.05
+            },
+            "nearest": {
+              "bias_m": -0.39876290254225366,
+              "count": 3987,
+              "coverage_within_tolerance": 0.06119889641334337,
+              "mae_m": 2.1972048723732325,
+              "rmse_m": 3.8972130661747286,
+              "std_m": 3.8772449422194297,
+              "tolerance_m": 0.05
+            },
+            "planar": {
+              "bias_m": -0.42592396172808705,
+              "count": 3987,
+              "coverage_within_tolerance": 0.048658138951592676,
+              "mae_m": 2.583412172339139,
+              "rmse_m": 4.57905333621811,
+              "std_m": 4.559773356892301,
+              "tolerance_m": 0.05
+            },
+            "zero": {
+              "bias_m": 0.2181811103822535,
+              "count": 3987,
+              "coverage_within_tolerance": 0.020316027088036117,
+              "mae_m": 1.6247800484298924,
+              "rmse_m": 2.424224573643816,
+              "std_m": 2.414689259614251,
+              "tolerance_m": 0.05
+            }
+          },
+          "reason": null,
+          "references": [
+            "ABFC00NGA",
+            "MGBO00NGA",
+            "PHRI00NGA"
+          ],
+          "skipped": 10132,
+          "target": "EKAK00NGA"
+        },
+        {
+          "admissible": true,
+          "comparison_keys": 3987,
+          "datum": "ABFC00NGA",
+          "evaluated": 4131,
+          "models": {
+            "idw": {
+              "bias_m": -0.5929743850944903,
+              "count": 3987,
+              "coverage_within_tolerance": 0.03160270880361174,
+              "mae_m": 2.3030094172216744,
+              "rmse_m": 3.270205333900875,
+              "std_m": 3.216398458237641,
+              "tolerance_m": 0.05
+            },
+            "nearest": {
+              "bias_m": -0.39486847257017393,
+              "count": 3987,
+              "coverage_within_tolerance": 0.02784048156508653,
+              "mae_m": 2.294990775592971,
+              "rmse_m": 3.35563745257132,
+              "std_m": 3.332741731417328,
+              "tolerance_m": 0.05
+            },
+            "planar": {
+              "bias_m": 2.3038862086461487,
+              "count": 3987,
+              "coverage_within_tolerance": 0.007022824178580386,
+              "mae_m": 13.98486078233019,
+              "rmse_m": 24.78885357092803,
+              "std_m": 24.684655141303043,
+              "tolerance_m": 0.05
+            },
+            "zero": {
+              "bias_m": -0.39486847257017393,
+              "count": 3987,
+              "coverage_within_tolerance": 0.02784048156508653,
+              "mae_m": 2.294990775592971,
+              "rmse_m": 3.35563745257132,
+              "std_m": 3.332741731417328,
+              "tolerance_m": 0.05
+            }
+          },
+          "reason": null,
+          "references": [
+            "ABFC00NGA",
+            "EKAK00NGA",
+            "PHRI00NGA"
+          ],
+          "skipped": 10269,
+          "target": "MGBO00NGA"
+        },
+        {
+          "admissible": true,
+          "comparison_keys": 3987,
+          "datum": "ABFC00NGA",
+          "evaluated": 4296,
+          "models": {
+            "idw": {
+              "bias_m": 0.4151791081915596,
+              "count": 3987,
+              "coverage_within_tolerance": 0.04339102081765739,
+              "mae_m": 2.180096253013168,
+              "rmse_m": 3.847389138736191,
+              "std_m": 3.8254019196154223,
+              "tolerance_m": 0.05
+            },
+            "nearest": {
+              "bias_m": 0.39876290254225366,
+              "count": 3987,
+              "coverage_within_tolerance": 0.06119889641334337,
+              "mae_m": 2.1972048723732325,
+              "rmse_m": 3.8972130661747286,
+              "std_m": 3.8772449422194297,
+              "tolerance_m": 0.05
+            },
+            "planar": {
+              "bias_m": 0.36656045233241946,
+              "count": 3987,
+              "coverage_within_tolerance": 0.055931778279408075,
+              "mae_m": 2.223226989803194,
+              "rmse_m": 3.9406724609249677,
+              "std_m": 3.924078876606035,
+              "tolerance_m": 0.05
+            },
+            "zero": {
+              "bias_m": 0.6169440129245072,
+              "count": 3987,
+              "coverage_within_tolerance": 0.015048908954100828,
+              "mae_m": 2.504062817652542,
+              "rmse_m": 3.8513363218803054,
+              "std_m": 3.8020780215697503,
+              "tolerance_m": 0.05
+            }
+          },
+          "reason": null,
+          "references": [
+            "ABFC00NGA",
+            "EKAK00NGA",
+            "MGBO00NGA"
+          ],
+          "skipped": 10104,
+          "target": "PHRI00NGA"
+        }
+      ],
+      "missing_observations_skipped": 40637,
+      "models": {
+        "idw": {
+          "bias_m": -0.20085882303865535,
+          "correlation_predicted_observed": 0.2820931115088313,
+          "count": 15948,
+          "coverage_within_tolerance": 0.04219964885879107,
+          "evaluable_keys": 16859,
+          "mae_m": 2.0355999061271906,
+          "rmse_m": 3.3515154962255718,
+          "std_m": 3.3455961649604387,
+          "tolerance_m": 0.05
+        },
+        "nearest": {
+          "bias_m": -0.25295312137367026,
+          "correlation_predicted_observed": 0.23375930258106375,
+          "count": 15948,
+          "coverage_within_tolerance": 0.04132179583646852,
+          "evaluable_keys": 16963,
+          "mae_m": 2.2983658344979943,
+          "rmse_m": 3.757313985537405,
+          "std_m": 3.7489070890612655,
+          "tolerance_m": 0.05
+        },
+        "planar": {
+          "bias_m": 0.253310421760031,
+          "correlation_predicted_observed": 0.012994104603586302,
+          "count": 15948,
+          "coverage_within_tolerance": 0.03154000501630298,
+          "evaluable_keys": 15948,
+          "mae_m": 6.565366202366305,
+          "rmse_m": 14.372813038907513,
+          "std_m": 14.371031225272594,
+          "tolerance_m": 0.05
+        },
+        "zero": {
+          "bias_m": 0.055518885088583325,
+          "correlation_predicted_observed": null,
+          "count": 15948,
+          "coverage_within_tolerance": 0.0208803611738149,
+          "evaluable_keys": 16963,
+          "mae_m": 2.0121534225263247,
+          "rmse_m": 3.0759886111724692,
+          "std_m": 3.0755839637659803,
+          "tolerance_m": 0.05
+        }
+      }
+    },
+    "metrics_note": "bias/MAE/RMSE/std/correlation/coverage on satellite-derived proxies",
+    "status": "COMPLETE"
+  },
+  "comparison": [
+    {
+      "metric": "zero.rmse_m",
+      "previous": 3.5464475259018795,
+      "corrected": 3.0759886111724692,
+      "absolute_difference": 0.47045891472941026,
+      "signed_difference": -0.47045891472941026,
+      "relative_difference": -0.13265638679082675,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "zero.correlation_predicted_observed",
+      "previous": null,
+      "corrected": null,
+      "absolute_difference": null,
+      "signed_difference": null,
+      "relative_difference": null,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "zero.count",
+      "previous": 13326,
+      "corrected": 15948,
+      "absolute_difference": 2622,
+      "signed_difference": 2622,
+      "relative_difference": 0.19675821701936064,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "zero.bias_m",
+      "previous": 0.4899609361385062,
+      "corrected": 0.055518885088583325,
+      "absolute_difference": 0.4344420510499229,
+      "signed_difference": -0.4344420510499229,
+      "relative_difference": -0.8866871193321241,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "zero.mae_m",
+      "previous": 2.1369211156677768,
+      "corrected": 2.0121534225263247,
+      "absolute_difference": 0.12476769314145209,
+      "signed_difference": -0.12476769314145209,
+      "relative_difference": -0.05838666304837501,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "nearest.rmse_m",
+      "previous": 3.9848908597516473,
+      "corrected": 3.757313985537405,
+      "absolute_difference": 0.22757687421424233,
+      "signed_difference": -0.22757687421424233,
+      "relative_difference": -0.057109939073318995,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "nearest.correlation_predicted_observed",
+      "previous": 0.24448170370967723,
+      "corrected": 0.23375930258106375,
+      "absolute_difference": 0.010722401128613473,
+      "signed_difference": -0.010722401128613473,
+      "relative_difference": -0.043857683278198833,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "nearest.count",
+      "previous": 13326,
+      "corrected": 15948,
+      "absolute_difference": 2622,
+      "signed_difference": 2622,
+      "relative_difference": 0.19675821701936064,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "nearest.bias_m",
+      "previous": 0.33801881205721945,
+      "corrected": -0.25295312137367026,
+      "absolute_difference": 0.5909719334308897,
+      "signed_difference": -0.5909719334308897,
+      "relative_difference": -1.7483403655381484,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "nearest.mae_m",
+      "previous": 2.3306536992594835,
+      "corrected": 2.2983658344979943,
+      "absolute_difference": 0.03228786476148926,
+      "signed_difference": -0.03228786476148926,
+      "relative_difference": -0.01385356596381009,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "idw.rmse_m",
+      "previous": 3.8874112239811107,
+      "corrected": 3.3515154962255718,
+      "absolute_difference": 0.535895727755539,
+      "signed_difference": -0.535895727755539,
+      "relative_difference": -0.13785413913754316,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "idw.correlation_predicted_observed",
+      "previous": 0.2722714930310515,
+      "corrected": 0.2820931115088313,
+      "absolute_difference": 0.009821618477779792,
+      "signed_difference": 0.009821618477779792,
+      "relative_difference": 0.03607288581129452,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "idw.count",
+      "previous": 13326,
+      "corrected": 15948,
+      "absolute_difference": 2622,
+      "signed_difference": 2622,
+      "relative_difference": 0.19675821701936064,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "idw.bias_m",
+      "previous": 0.30136969057754454,
+      "corrected": -0.20085882303865535,
+      "absolute_difference": 0.5022285136161999,
+      "signed_difference": -0.5022285136161999,
+      "relative_difference": -1.6664864759748392,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "idw.mae_m",
+      "previous": 2.301542520644328,
+      "corrected": 2.0355999061271906,
+      "absolute_difference": 0.2659426145171375,
+      "signed_difference": -0.2659426145171375,
+      "relative_difference": -0.11554972898901107,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "planar.rmse_m",
+      "previous": 15.720887506077126,
+      "corrected": 14.372813038907513,
+      "absolute_difference": 1.3480744671696137,
+      "signed_difference": -1.3480744671696137,
+      "relative_difference": -0.08575053200072177,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "planar.correlation_predicted_observed",
+      "previous": -0.021425392055176986,
+      "corrected": 0.012994104603586302,
+      "absolute_difference": 0.03441949665876329,
+      "signed_difference": 0.03441949665876329,
+      "relative_difference": -1.606481532292267,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "planar.count",
+      "previous": 13326,
+      "corrected": 15948,
+      "absolute_difference": 2622,
+      "signed_difference": 2622,
+      "relative_difference": 0.19675821701936064,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "planar.bias_m",
+      "previous": -0.23196287670541893,
+      "corrected": 0.253310421760031,
+      "absolute_difference": 0.4852732984654499,
+      "signed_difference": 0.4852732984654499,
+      "relative_difference": -2.092030006515751,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "planar.mae_m",
+      "previous": 6.696143371662013,
+      "corrected": 6.565366202366305,
+      "absolute_difference": 0.13077716929570826,
+      "signed_difference": -0.13077716929570826,
+      "relative_difference": -0.019530222403713077,
+      "reason": "corrected orbit/ENU/NMF/GF sign, complete component field, fold-local reference datum",
+      "scientific_impact": "revised diagnostic; aggregate ranking must be recomputed"
+    },
+    {
+      "metric": "decorrelation.slope_m_per_km",
+      "previous": 0.0005910140919032435,
+      "corrected": 0.0005910104904753177,
+      "absolute_difference": 3.6014279258464454e-09,
+      "signed_difference": -3.6014279258464454e-09,
+      "relative_difference": -6.093641378750821e-06,
+      "reason": "pair RMS unchanged by sign reversal; station arcs and chord lengths unchanged on this day",
+      "scientific_impact": "one-day pilot interpretation only"
+    },
+    {
+      "metric": "decorrelation.correlation",
+      "previous": 0.4833781517071346,
+      "corrected": 0.48337481127269577,
+      "absolute_difference": 3.3404344388365814e-06,
+      "signed_difference": -3.3404344388365814e-06,
+      "relative_difference": -6.910602862457172e-06,
+      "reason": "pair RMS unchanged by sign reversal; station arcs and chord lengths unchanged on this day",
+      "scientific_impact": "one-day pilot interpretation only"
+    },
+    {
+      "metric": "best_model",
+      "previous": "zero",
+      "corrected": "zero",
+      "absolute_difference": null,
+      "signed_difference": null,
+      "relative_difference": null,
+      "reason": "recomputed identical samples",
+      "scientific_impact": "no promotion"
+    },
+    {
+      "metric": "zero.rmse_m.original_pilot",
+      "previous": 2.984304079696885,
+      "corrected": 3.0759886111724692,
+      "absolute_difference": 0.09168453147558431,
+      "signed_difference": 0.09168453147558431,
+      "relative_difference": 0.030722248479751663,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "zero.count.original_pilot",
+      "previous": 17768.0,
+      "corrected": 15948,
+      "absolute_difference": 1820.0,
+      "signed_difference": -1820.0,
+      "relative_difference": -0.10243133723547951,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "zero.bias_m.original_pilot",
+      "previous": 0.23134050053545738,
+      "corrected": 0.055518885088583325,
+      "absolute_difference": 0.17582161544687405,
+      "signed_difference": -0.17582161544687405,
+      "relative_difference": -0.7600122548361393,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "zero.mae_m.original_pilot",
+      "previous": 1.55235376440604,
+      "corrected": 2.0121534225263247,
+      "absolute_difference": 0.4597996581202848,
+      "signed_difference": 0.4597996581202848,
+      "relative_difference": 0.2961951513005883,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "nearest.rmse_m.original_pilot",
+      "previous": 4.003570925917766,
+      "corrected": 3.757313985537405,
+      "absolute_difference": 0.2462569403803614,
+      "signed_difference": -0.2462569403803614,
+      "relative_difference": -0.0615093237854679,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "nearest.count.original_pilot",
+      "previous": 17768.0,
+      "corrected": 15948,
+      "absolute_difference": 1820.0,
+      "signed_difference": -1820.0,
+      "relative_difference": -0.10243133723547951,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "nearest.bias_m.original_pilot",
+      "previous": 0.2172546197775904,
+      "corrected": -0.25295312137367026,
+      "absolute_difference": 0.4702077411512606,
+      "signed_difference": -0.4702077411512606,
+      "relative_difference": -2.1643164211312302,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "nearest.mae_m.original_pilot",
+      "previous": 2.3598529820824465,
+      "corrected": 2.2983658344979943,
+      "absolute_difference": 0.061487147584452284,
+      "signed_difference": -0.061487147584452284,
+      "relative_difference": -0.026055499241394733,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "idw.rmse_m.original_pilot",
+      "previous": 3.5463531876683354,
+      "corrected": 3.3515154962255718,
+      "absolute_difference": 0.19483769144276364,
+      "signed_difference": -0.19483769144276364,
+      "relative_difference": -0.05494029532091415,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "idw.count.original_pilot",
+      "previous": 17768.0,
+      "corrected": 15948,
+      "absolute_difference": 1820.0,
+      "signed_difference": -1820.0,
+      "relative_difference": -0.10243133723547951,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "idw.bias_m.original_pilot",
+      "previous": 0.13284031374966085,
+      "corrected": -0.20085882303865535,
+      "absolute_difference": 0.3336991367883162,
+      "signed_difference": -0.3336991367883162,
+      "relative_difference": -2.5120321336877915,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "idw.mae_m.original_pilot",
+      "previous": 2.0895702269516314,
+      "corrected": 2.0355999061271906,
+      "absolute_difference": 0.053970320824440865,
+      "signed_difference": -0.053970320824440865,
+      "relative_difference": -0.025828431190453666,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "planar.rmse_m.original_pilot",
+      "previous": 15.299553579758575,
+      "corrected": 14.372813038907513,
+      "absolute_difference": 0.9267405408510623,
+      "signed_difference": -0.9267405408510623,
+      "relative_difference": -0.06057304456759752,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "planar.count.original_pilot",
+      "previous": 17768.0,
+      "corrected": 15948,
+      "absolute_difference": 1820.0,
+      "signed_difference": -1820.0,
+      "relative_difference": -0.10243133723547951,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "planar.bias_m.original_pilot",
+      "previous": -0.10936793577899548,
+      "corrected": 0.253310421760031,
+      "absolute_difference": 0.36267835753902644,
+      "signed_difference": 0.36267835753902644,
+      "relative_difference": -3.3161305912539696,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "planar.mae_m.original_pilot",
+      "previous": 7.026810564078458,
+      "corrected": 6.565366202366305,
+      "absolute_difference": 0.46144436171215286,
+      "signed_difference": -0.46144436171215286,
+      "relative_difference": -0.06566910513727073,
+      "reason": "frozen pre-refresh summary snapshot vs corrected reproduction",
+      "scientific_impact": "headline pilot figure revalidated"
+    },
+    {
+      "metric": "prediction_count",
+      "previous": 21656,
+      "corrected": 17696,
+      "absolute_difference": 3960,
+      "signed_difference": -3960,
+      "relative_difference": -0.1828592537864795,
+      "reason": "corrected component availability and geometry",
+      "scientific_impact": "different valid sample support"
+    },
+    {
+      "metric": "fitted_count",
+      "previous": 21095,
+      "corrected": 17247,
+      "absolute_difference": 3848,
+      "signed_difference": -3848,
+      "relative_difference": -0.18241289405072292,
+      "reason": "corrected component availability and geometry",
+      "scientific_impact": "different valid sample support"
+    },
+    {
+      "metric": "spatial_record_count",
+      "previous": 20187,
+      "corrected": 17119,
+      "absolute_difference": 3068,
+      "signed_difference": -3068,
+      "relative_difference": -0.15197899638381138,
+      "reason": "corrected component availability and geometry",
+      "scientific_impact": "different valid sample support"
+    },
+    {
+      "metric": "ABFC00NGA-EKAK00NGA.chord_m",
+      "previous": 487636.0003708653,
+      "corrected": 487636.00037086534,
+      "absolute_difference": 5.820766091346741e-11,
+      "signed_difference": 5.820766091346741e-11,
+      "relative_difference": 1.1936702964752053e-16,
+      "reason": "independent norm verification",
+      "scientific_impact": "VERIFIED; historical Phase 5 unchanged"
+    },
+    {
+      "metric": "ABFC00NGA-MGBO00NGA.chord_m",
+      "previous": 689686.987874908,
+      "corrected": 689686.987874908,
+      "absolute_difference": 0.0,
+      "signed_difference": 0.0,
+      "relative_difference": 0.0,
+      "reason": "independent norm verification",
+      "scientific_impact": "VERIFIED; historical Phase 5 unchanged"
+    },
+    {
+      "metric": "ABFC00NGA-PHRI00NGA.chord_m",
+      "previous": 470869.6331065616,
+      "corrected": 470869.6331065616,
+      "absolute_difference": 0.0,
+      "signed_difference": 0.0,
+      "relative_difference": 0.0,
+      "reason": "independent norm verification",
+      "scientific_impact": "VERIFIED; historical Phase 5 unchanged"
+    },
+    {
+      "metric": "EKAK00NGA-MGBO00NGA.chord_m",
+      "previous": 979075.1508350975,
+      "corrected": 979075.1508350975,
+      "absolute_difference": 0.0,
+      "signed_difference": 0.0,
+      "relative_difference": 0.0,
+      "reason": "independent norm verification",
+      "scientific_impact": "VERIFIED; historical Phase 5 unchanged"
+    },
+    {
+      "metric": "EKAK00NGA-PHRI00NGA.chord_m",
+      "previous": 105552.65675817484,
+      "corrected": 105552.65675817484,
+      "absolute_difference": 0.0,
+      "signed_difference": 0.0,
+      "relative_difference": 0.0,
+      "reason": "independent norm verification",
+      "scientific_impact": "VERIFIED; historical Phase 5 unchanged"
+    },
+    {
+      "metric": "MGBO00NGA-PHRI00NGA.chord_m",
+      "previous": 1029033.819917089,
+      "corrected": 1029033.8199170888,
+      "absolute_difference": 1.1641532182693481e-10,
+      "signed_difference": -1.1641532182693481e-10,
+      "relative_difference": -1.1313070530210037e-16,
+      "reason": "independent norm verification",
+      "scientific_impact": "VERIFIED; historical Phase 5 unchanged"
+    },
+    {
+      "metric": "ABFC00NGA.containment",
+      "previous": "INSIDE_CIRCLE",
+      "corrected": "OUTSIDE_TRIANGLE",
+      "absolute_difference": null,
+      "signed_difference": null,
+      "relative_difference": null,
+      "reason": "circle is not convex-hull membership",
+      "scientific_impact": "all folds are EXTRAPOLATION"
+    },
+    {
+      "metric": "ABFC00NGA.reference_area_m2",
+      "previous": 46614542442.93675,
+      "corrected": 46557607801.509,
+      "absolute_difference": 56934641.427749634,
+      "signed_difference": -56934641.427749634,
+      "relative_difference": -0.0012213922618128504,
+      "reason": "historical Heron 3D chord triangle versus common EN projection",
+      "scientific_impact": "different area definitions; historical chord area is not a numerical error"
+    },
+    {
+      "metric": "EKAK00NGA.containment",
+      "previous": "INSIDE_CIRCLE",
+      "corrected": "OUTSIDE_TRIANGLE",
+      "absolute_difference": null,
+      "signed_difference": null,
+      "relative_difference": null,
+      "reason": "circle is not convex-hull membership",
+      "scientific_impact": "all folds are EXTRAPOLATION"
+    },
+    {
+      "metric": "EKAK00NGA.reference_area_m2",
+      "previous": 134897501524.5019,
+      "corrected": 134567634960.3297,
+      "absolute_difference": 329866564.1722107,
+      "signed_difference": -329866564.1722107,
+      "relative_difference": -0.002445312629547078,
+      "reason": "historical Heron 3D chord triangle versus common EN projection",
+      "scientific_impact": "different area definitions; historical chord area is not a numerical error"
+    },
+    {
+      "metric": "MGBO00NGA.containment",
+      "previous": "OUTSIDE_CIRCLE",
+      "corrected": "OUTSIDE_TRIANGLE",
+      "absolute_difference": null,
+      "signed_difference": null,
+      "relative_difference": null,
+      "reason": "circle is not convex-hull membership",
+      "scientific_impact": "all folds are EXTRAPOLATION"
+    },
+    {
+      "metric": "MGBO00NGA.reference_area_m2",
+      "previous": 24820196760.31957,
+      "corrected": 24818250535.630417,
+      "absolute_difference": 1946224.689151764,
+      "signed_difference": -1946224.689151764,
+      "relative_difference": -7.841294361788555e-05,
+      "reason": "historical Heron 3D chord triangle versus common EN projection",
+      "scientific_impact": "different area definitions; historical chord area is not a numerical error"
+    },
+    {
+      "metric": "PHRI00NGA.containment",
+      "previous": "INSIDE_CIRCLE",
+      "corrected": "OUTSIDE_TRIANGLE",
+      "absolute_difference": null,
+      "signed_difference": null,
+      "relative_difference": null,
+      "reason": "circle is not convex-hull membership",
+      "scientific_impact": "all folds are EXTRAPOLATION"
+    },
+    {
+      "metric": "PHRI00NGA.reference_area_m2",
+      "previous": 156593638281.24167,
+      "corrected": 156408158813.7747,
+      "absolute_difference": 185479467.46697998,
+      "signed_difference": -185479467.46697998,
+      "relative_difference": -0.0011844636187190406,
+      "reason": "historical Heron 3D chord triangle versus common EN projection",
+      "scientific_impact": "different area definitions; historical chord area is not a numerical error"
+    }
+  ],
+  "phase6_fresh_replay": [
+    {
+      "artifact": "ionosphere/station-gf.csv",
+      "sha256": "9006fcd4c5e9e6dfa786b256023c04bde70c36bb4cc3d985c24b6ee70f2949d6",
+      "fresh_replay_equal": true
+    },
+    {
+      "artifact": "ionosphere/pair-sd.csv",
+      "sha256": "d745887ee46d5d75fc153fa4bccaa25c158d0f574c98813ec61a0d9623e51533",
+      "fresh_replay_equal": true
+    },
+    {
+      "artifact": "troposphere/apriori.csv",
+      "sha256": "547c853d18466f56dcdc7db0c72ac773d1a28c9c35dfc732a1a724070eeabf01",
+      "fresh_replay_equal": true
+    },
+    {
+      "artifact": "residuals/station-fields.csv",
+      "sha256": "ae5a03362e363377e31b19d8c242326de12b22cf360497b7b5cd2c195f78303a",
+      "fresh_replay_equal": true
+    },
+    {
+      "artifact": "residuals/spatial-records.csv",
+      "sha256": "5fbf16343be10b723c9dfe0be26e1df633e33ad67cf82cb3bb21b0828f6b1a69",
+      "fresh_replay_equal": true
+    },
+    {
+      "artifact": "models/target-predictions.csv",
+      "sha256": "46c4b4ccf98ff5d89b798a4aeb59cd5b17b94ca67e93edc8c4c08a4e0395e673",
+      "fresh_replay_equal": true
+    },
+    {
+      "artifact": "validation/comparison-samples.csv",
+      "sha256": "06bcd6d33d0c510348ac88db28bd120e8da9652c9098a9597b4ae8e85f4eadbb",
+      "fresh_replay_equal": true
+    }
+  ],
+  "vrs": [
+    {
+      "target": "PHRI00NGA",
+      "experiment_id": "vrs-2024d026-phri-geometry-v3",
+      "virtual_observation_count": 24556,
+      "epochs": 480,
+      "satellites": 30,
+      "codes": [
+        "C1",
+        "L1",
+        "L2",
+        "P1",
+        "P2"
+      ],
+      "anchor": "EKAK00NGA",
+      "metrics": {
+        "C1": {
+          "bias_m": 3.5802072805196904e-14,
+          "count": 4471,
+          "generated_count": 5090,
+          "mae_m": 0.4472647065292792,
+          "match_coverage": 0.8783889980353634,
+          "matched_count": 4471,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": 0.5973982906440425,
+          "std_m": 0.5974651099821682,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        },
+        "L1": {
+          "bias_m": -0.07702099936249691,
+          "count": 3843,
+          "generated_count": 4928,
+          "mae_m": 0.17248485826722035,
+          "match_coverage": 0.9028003246753247,
+          "matched_count": 4449,
+          "method": "PHASE_TIME_DIFFERENCED_DOUBLE_DIFFERENCE",
+          "rmse_m": 2.087013974215294,
+          "std_m": 2.0858636670852992,
+          "time_difference_interval_s": 180.0,
+          "unit": "m"
+        },
+        "L2": {
+          "bias_m": -0.09659313659320864,
+          "count": 3809,
+          "generated_count": 4846,
+          "mae_m": 0.2797362301929631,
+          "match_coverage": 0.9125051588939331,
+          "matched_count": 4422,
+          "method": "PHASE_TIME_DIFFERENCED_DOUBLE_DIFFERENCE",
+          "rmse_m": 3.2024321684264923,
+          "std_m": 3.2013953635924284,
+          "time_difference_interval_s": 180.0,
+          "unit": "m"
+        },
+        "P1": {
+          "bias_m": null,
+          "count": 0,
+          "generated_count": 4846,
+          "mae_m": null,
+          "match_coverage": 0.0,
+          "matched_count": 0,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": null,
+          "std_m": null,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        },
+        "P2": {
+          "bias_m": 1.513767753290084e-13,
+          "count": 4422,
+          "generated_count": 4846,
+          "mae_m": 0.5631885879494386,
+          "match_coverage": 0.9125051588939331,
+          "matched_count": 4422,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": 0.7678662284959538,
+          "std_m": 0.7679530666334659,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        }
+      },
+      "comparison_vs_v2": "observation/geometry columns identical except virtual ID/provenance; metrics exactly equal",
+      "generation": {
+        "anchor": {
+          "distance_m": 105552.65675817484,
+          "reason": "nearest admitted reference by ECEF chord; lexical station tie break",
+          "station": "EKAK00NGA"
+        },
+        "code_satellites_per_epoch_max": 14,
+        "code_satellites_per_epoch_min": 7,
+        "correction_mode": "ZERO",
+        "epoch_count": 480,
+        "epoch_coverage": 1.0,
+        "expected_epoch_count": 480,
+        "experiment_id": "vrs-2024d026-phri-geometry-v3",
+        "fingerprint": "ee67402f946d04fa7b3f02d7f0a3d4bee2b05f5e27d3351777fac69443dc1100",
+        "first_epoch_gpst": "2024-01-26T00:00:00.000000",
+        "last_epoch_gpst": "2024-01-26T23:57:00.000000",
+        "observation_codes": {
+          "C1": 5090,
+          "L1": 4928,
+          "L2": 4846,
+          "P1": 4846,
+          "P2": 4846
+        },
+        "observation_nature": "VIRTUAL / SYNTHETIC DERIVED OBSERVATION",
+        "rinex_generated": false,
+        "satellite_count": 30,
+        "satellites": [
+          "G02",
+          "G03",
+          "G04",
+          "G05",
+          "G06",
+          "G07",
+          "G08",
+          "G09",
+          "G10",
+          "G11",
+          "G12",
+          "G13",
+          "G14",
+          "G15",
+          "G16",
+          "G17",
+          "G18",
+          "G19",
+          "G20",
+          "G21",
+          "G22",
+          "G23",
+          "G24",
+          "G25",
+          "G26",
+          "G28",
+          "G29",
+          "G30",
+          "G31",
+          "G32"
+        ],
+        "scope": "TECHNICAL_GEOMETRY_ONLY",
+        "status": "COMPLETE",
+        "virtual_observation_count": 24556,
+        "watermark": "NO VALIDATED INTERPOLATION GAIN"
+      },
+      "artifacts": {
+        "admission.json": "88f3baba20457f542402068cdd16c0f2ff97ec5af31cd4b33489f519519c6998",
+        "anchor.json": "8d34677b395766b18f1f61190d5eb9129e36ea0b180b80c1792d4926a5c20910",
+        "completion.json": "eee17e7c69fbcede873de697f6587a4326db9e15798fc2727ad7149e0d5652fc",
+        "correction-model.json": "b38520a3d8e65760e5b927baafea18e746f2b09bd07dc50dfb46122e66d15fdb",
+        "definition.json": "ee21fdc55b2da54bca61969a99cef5b82643d624c4a42626d25cc7a85892dfd0",
+        "exclusions.json": "f0ec7978e06fbee518624c47420dd71097e9a293be71668f5a3a14c6eb7697ec",
+        "metrics.json": "d45d0592357712bdf240b13028d797249a78f299484f5c37098d16e13710a43f",
+        "provenance.json": "3710d150661ad46264799bae5f2dd242f2e75ebb8336c8453df2fb4a4257d00c",
+        "target.json": "3b60ace3b4adff72640d3553285d6b67d3f6b65c28ae4cb5344bfdaeb3bb7292",
+        "validation-residuals.csv": "1b13ae85521ca6230ea296f2e65e0bd2cb95669f053f88b431b91840b751a4fd",
+        "validation.json": "c9a4729295903ba5830bdbda4057060c3b134b23aabdbfd1c24255664ea66572",
+        "virtual-observations.csv": "b229e6488420deb198c6e25b402ffd6b80ac3a35d7320ca313830e2ad038050b"
+      }
+    },
+    {
+      "target": "ABFC00NGA",
+      "experiment_id": "vrs-2024d026-abfc-geometry-v3",
+      "virtual_observation_count": 17764,
+      "epochs": 480,
+      "satellites": 30,
+      "codes": [
+        "C1",
+        "L1",
+        "L2",
+        "P2"
+      ],
+      "anchor": "PHRI00NGA",
+      "metrics": {
+        "C1": {
+          "bias_m": 1.986023363955898e-13,
+          "count": 4471,
+          "generated_count": 4471,
+          "mae_m": 1.449081059356386,
+          "match_coverage": 1.0,
+          "matched_count": 4471,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": 2.0559586075320944,
+          "std_m": 2.0561885676701137,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        },
+        "L1": {
+          "bias_m": 0.00752349937954915,
+          "count": 3844,
+          "generated_count": 4449,
+          "mae_m": 0.1902851567261937,
+          "match_coverage": 1.0,
+          "matched_count": 4449,
+          "method": "PHASE_TIME_DIFFERENCED_DOUBLE_DIFFERENCE",
+          "rmse_m": 1.2028164718550665,
+          "std_m": 1.202949423475043,
+          "time_difference_interval_s": 180.0,
+          "unit": "m"
+        },
+        "L2": {
+          "bias_m": -0.036049193629482446,
+          "count": 3809,
+          "generated_count": 4422,
+          "mae_m": 0.26864458906377264,
+          "match_coverage": 1.0,
+          "matched_count": 4422,
+          "method": "PHASE_TIME_DIFFERENCED_DOUBLE_DIFFERENCE",
+          "rmse_m": 1.5629010654309727,
+          "std_m": 1.5626904074258514,
+          "time_difference_interval_s": 180.0,
+          "unit": "m"
+        },
+        "P2": {
+          "bias_m": 4.8552146774597894e-14,
+          "count": 4422,
+          "generated_count": 4422,
+          "mae_m": 1.9868892524756387,
+          "match_coverage": 1.0,
+          "matched_count": 4422,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": 2.7428293056491126,
+          "std_m": 2.7431394927358435,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        }
+      },
+      "comparison_vs_v2": "observation/geometry columns identical except virtual ID/provenance; metrics exactly equal",
+      "generation": {
+        "anchor": {
+          "distance_m": 470869.6331065616,
+          "reason": "nearest admitted reference by ECEF chord; lexical station tie break",
+          "station": "PHRI00NGA"
+        },
+        "code_satellites_per_epoch_max": 13,
+        "code_satellites_per_epoch_min": 7,
+        "correction_mode": "ZERO",
+        "epoch_count": 480,
+        "epoch_coverage": 1.0,
+        "expected_epoch_count": 480,
+        "experiment_id": "vrs-2024d026-abfc-geometry-v3",
+        "fingerprint": "a3ad1329b1fa5f37708cbadafd4c528b362acb3e81a01ffdd1e3feab31650e82",
+        "first_epoch_gpst": "2024-01-26T00:00:00.000000",
+        "last_epoch_gpst": "2024-01-26T23:57:00.000000",
+        "observation_codes": {
+          "C1": 4471,
+          "L1": 4449,
+          "L2": 4422,
+          "P2": 4422
+        },
+        "observation_nature": "VIRTUAL / SYNTHETIC DERIVED OBSERVATION",
+        "rinex_generated": false,
+        "satellite_count": 30,
+        "satellites": [
+          "G02",
+          "G03",
+          "G04",
+          "G05",
+          "G06",
+          "G07",
+          "G08",
+          "G09",
+          "G10",
+          "G11",
+          "G12",
+          "G13",
+          "G14",
+          "G15",
+          "G16",
+          "G17",
+          "G18",
+          "G19",
+          "G20",
+          "G21",
+          "G22",
+          "G23",
+          "G24",
+          "G25",
+          "G26",
+          "G28",
+          "G29",
+          "G30",
+          "G31",
+          "G32"
+        ],
+        "scope": "TECHNICAL_GEOMETRY_ONLY",
+        "status": "COMPLETE",
+        "virtual_observation_count": 17764,
+        "watermark": "NO VALIDATED INTERPOLATION GAIN"
+      },
+      "artifacts": {
+        "admission.json": "431709c3dd81197bf35e58e5072046a47519d0357abbbdfe4c86d5748b892d55",
+        "anchor.json": "4260132c40deb6c9b525ee51a087c3e673486ad70d6b2d22ac544db322bff610",
+        "completion.json": "7c14ba50d9fa186dbfa92d7657f0cb3aa9f598d9afa19a22ef6f33f37c3adef9",
+        "correction-model.json": "b38520a3d8e65760e5b927baafea18e746f2b09bd07dc50dfb46122e66d15fdb",
+        "definition.json": "5c859e3dbe31021947d515f95e5abc31494efa8475c66a85ce959c2519b8f937",
+        "exclusions.json": "ed9cad97c5cbcf62fb3f4c6d3112dbc12fe49bac910218de502343048363c3e9",
+        "metrics.json": "66bf11cf1b2e4d3047e7df1d317834c5497582c955b0a8975b0f2181cc6751e7",
+        "provenance.json": "99653801395b093173c613da618544d0cf613d2b6cbf9669d5dfb7f00bea5057",
+        "target.json": "8cc10e9bfb4af5fc4466ee8009097a855d59dac4a056082e20b03691f9be3b83",
+        "validation-residuals.csv": "e444180aa3eeb0fcca6925689c02793d19321ab24d43a1dc53c83cd869deeb3f",
+        "validation.json": "092e3df48cfa576e3beafefaeb7eb35953005432ee824ae819ebe62718304a4f",
+        "virtual-observations.csv": "2508c6e51cdad21f223ed3da710b3c7a3655c52ad7c906d6738844ef013d023f"
+      }
+    },
+    {
+      "target": "EKAK00NGA",
+      "experiment_id": "vrs-2024d026-ekak-geometry-v3",
+      "virtual_observation_count": 17847,
+      "epochs": 480,
+      "satellites": 30,
+      "codes": [
+        "C1",
+        "L1",
+        "L2",
+        "P2"
+      ],
+      "anchor": "PHRI00NGA",
+      "metrics": {
+        "C1": {
+          "bias_m": 1.3018935565526147e-14,
+          "count": 4471,
+          "generated_count": 4472,
+          "mae_m": 0.4472183482671065,
+          "match_coverage": 0.9997763864042933,
+          "matched_count": 4471,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": 0.5973722928317607,
+          "std_m": 0.5974391092620164,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        },
+        "L1": {
+          "bias_m": 0.077029112378109,
+          "count": 3843,
+          "generated_count": 4467,
+          "mae_m": 0.1724803787333169,
+          "match_coverage": 0.9959704499664204,
+          "matched_count": 4449,
+          "method": "PHASE_TIME_DIFFERENCED_DOUBLE_DIFFERENCE",
+          "rmse_m": 2.087016419998826,
+          "std_m": 2.0858658151861595,
+          "time_difference_interval_s": 180.0,
+          "unit": "m"
+        },
+        "L2": {
+          "bias_m": 0.0966007603952467,
+          "count": 3809,
+          "generated_count": 4454,
+          "mae_m": 0.27973208086637635,
+          "match_coverage": 0.9928154467894028,
+          "matched_count": 4422,
+          "method": "PHASE_TIME_DIFFERENCED_DOUBLE_DIFFERENCE",
+          "rmse_m": 3.2024352088898604,
+          "std_m": 3.201398175743035,
+          "time_difference_interval_s": 180.0,
+          "unit": "m"
+        },
+        "P2": {
+          "bias_m": -9.543318444654877e-14,
+          "count": 4422,
+          "generated_count": 4454,
+          "mae_m": 0.5631077255796734,
+          "match_coverage": 0.9928154467894028,
+          "matched_count": 4422,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": 0.7678217232361699,
+          "std_m": 0.7679085563405738,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        }
+      },
+      "comparison_vs_v2": "observation/geometry columns identical except virtual ID/provenance; metrics exactly equal",
+      "generation": {
+        "anchor": {
+          "distance_m": 105552.65675817484,
+          "reason": "nearest admitted reference by ECEF chord; lexical station tie break",
+          "station": "PHRI00NGA"
+        },
+        "code_satellites_per_epoch_max": 13,
+        "code_satellites_per_epoch_min": 7,
+        "correction_mode": "ZERO",
+        "epoch_count": 480,
+        "epoch_coverage": 1.0,
+        "expected_epoch_count": 480,
+        "experiment_id": "vrs-2024d026-ekak-geometry-v3",
+        "fingerprint": "c647824eb00a64c954d737203deffceb9ad4a909bbda9eae1c024476e9da8ee4",
+        "first_epoch_gpst": "2024-01-26T00:00:00.000000",
+        "last_epoch_gpst": "2024-01-26T23:57:00.000000",
+        "observation_codes": {
+          "C1": 4472,
+          "L1": 4467,
+          "L2": 4454,
+          "P2": 4454
+        },
+        "observation_nature": "VIRTUAL / SYNTHETIC DERIVED OBSERVATION",
+        "rinex_generated": false,
+        "satellite_count": 30,
+        "satellites": [
+          "G02",
+          "G03",
+          "G04",
+          "G05",
+          "G06",
+          "G07",
+          "G08",
+          "G09",
+          "G10",
+          "G11",
+          "G12",
+          "G13",
+          "G14",
+          "G15",
+          "G16",
+          "G17",
+          "G18",
+          "G19",
+          "G20",
+          "G21",
+          "G22",
+          "G23",
+          "G24",
+          "G25",
+          "G26",
+          "G28",
+          "G29",
+          "G30",
+          "G31",
+          "G32"
+        ],
+        "scope": "TECHNICAL_GEOMETRY_ONLY",
+        "status": "COMPLETE",
+        "virtual_observation_count": 17847,
+        "watermark": "NO VALIDATED INTERPOLATION GAIN"
+      },
+      "artifacts": {
+        "admission.json": "73634dbb604507402027ff6a4b5a8484e617a82c2f310b477ddaac92945bd3f0",
+        "anchor.json": "0ffa8ffa260e26c59374c6ba2881a330837a9a69641bfcbcf2d62e2b8a861b63",
+        "completion.json": "c718b9c7233463e90291989c26933fd07e1231c0dba72b26e7a30a9bd4f0e9cb",
+        "correction-model.json": "b38520a3d8e65760e5b927baafea18e746f2b09bd07dc50dfb46122e66d15fdb",
+        "definition.json": "2c5ae75e11e028ec14dba7e112a7982d2cd5e3abae917686a822f3051c76bec0",
+        "exclusions.json": "d03aea139a6bba0350e2d32fdd7cfb28f5ed8ff266e9ba30bd39b9410d1ad384",
+        "metrics.json": "cb768889a2f300720548671a7bf83d79b030ea7eb9b965feea7b792a7b90a585",
+        "provenance.json": "8e8cffcbcc5c37d3738b6646fb124b3c2e389e1eef87bf928e0c0cd9b3b0511f",
+        "target.json": "b92660956f7fd56508a1ce48d4622811af97e596a82c86dea4165a7c6b629232",
+        "validation-residuals.csv": "b71074994183a9da1e1e844202542a395f44241b070776ff63b2f7b3cc654d59",
+        "validation.json": "44bafa5c3d292ff713058b4ce9d86a88aa36205d460cd9eae3efdb80afd86d1c",
+        "virtual-observations.csv": "12b9819a3fa83683a09f8201ebc585d284856e6b468db8d0f58e9de668de46ef"
+      }
+    },
+    {
+      "target": "MGBO00NGA",
+      "experiment_id": "vrs-2024d026-mgbo-geometry-v3",
+      "virtual_observation_count": 17893,
+      "epochs": 480,
+      "satellites": 30,
+      "codes": [
+        "C1",
+        "L1",
+        "L2",
+        "P2"
+      ],
+      "anchor": "ABFC00NGA",
+      "metrics": {
+        "C1": {
+          "bias_m": 1.6192301109623146e-13,
+          "count": 4471,
+          "generated_count": 4501,
+          "mae_m": 2.4613095259819553,
+          "match_coverage": 0.9933348144856698,
+          "matched_count": 4471,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": 3.749013628062277,
+          "std_m": 3.7494329573659835,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        },
+        "L1": {
+          "bias_m": -0.05623122307428454,
+          "count": 3922,
+          "generated_count": 4484,
+          "mae_m": 0.2827207035498793,
+          "match_coverage": 0.9921944692239072,
+          "matched_count": 4449,
+          "method": "PHASE_TIME_DIFFERENCED_DOUBLE_DIFFERENCE",
+          "rmse_m": 0.6558397846943598,
+          "std_m": 0.6535080445689567,
+          "time_difference_interval_s": 180.0,
+          "unit": "m"
+        },
+        "L2": {
+          "bias_m": -0.05988911340218153,
+          "count": 3880,
+          "generated_count": 4454,
+          "mae_m": 0.3601738161812762,
+          "match_coverage": 0.9928154467894028,
+          "matched_count": 4422,
+          "method": "PHASE_TIME_DIFFERENCED_DOUBLE_DIFFERENCE",
+          "rmse_m": 1.249317675531554,
+          "std_m": 1.248042224530734,
+          "time_difference_interval_s": 180.0,
+          "unit": "m"
+        },
+        "P2": {
+          "bias_m": -2.893846778368408e-13,
+          "count": 4422,
+          "generated_count": 4454,
+          "mae_m": 3.0570662100108685,
+          "match_coverage": 0.9928154467894028,
+          "matched_count": 4422,
+          "method": "CODE_SD_EPOCH_MEAN_REMOVED",
+          "rmse_m": 4.442921643118601,
+          "std_m": 4.443424093970433,
+          "time_difference_interval_s": null,
+          "unit": "m"
+        }
+      },
+      "comparison_vs_v2": "observation/geometry columns identical except virtual ID/provenance; metrics exactly equal",
+      "generation": {
+        "anchor": {
+          "distance_m": 689686.987874908,
+          "reason": "nearest admitted reference by ECEF chord; lexical station tie break",
+          "station": "ABFC00NGA"
+        },
+        "code_satellites_per_epoch_max": 13,
+        "code_satellites_per_epoch_min": 7,
+        "correction_mode": "ZERO",
+        "epoch_count": 480,
+        "epoch_coverage": 1.0,
+        "expected_epoch_count": 480,
+        "experiment_id": "vrs-2024d026-mgbo-geometry-v3",
+        "fingerprint": "89bd6116d7ac9445c5649690f91798d71c42fedb556feb2c20c7f7ca41337817",
+        "first_epoch_gpst": "2024-01-26T00:00:00.000000",
+        "last_epoch_gpst": "2024-01-26T23:57:00.000000",
+        "observation_codes": {
+          "C1": 4501,
+          "L1": 4484,
+          "L2": 4454,
+          "P2": 4454
+        },
+        "observation_nature": "VIRTUAL / SYNTHETIC DERIVED OBSERVATION",
+        "rinex_generated": false,
+        "satellite_count": 30,
+        "satellites": [
+          "G02",
+          "G03",
+          "G04",
+          "G05",
+          "G06",
+          "G07",
+          "G08",
+          "G09",
+          "G10",
+          "G11",
+          "G12",
+          "G13",
+          "G14",
+          "G15",
+          "G16",
+          "G17",
+          "G18",
+          "G19",
+          "G20",
+          "G21",
+          "G22",
+          "G23",
+          "G24",
+          "G25",
+          "G26",
+          "G28",
+          "G29",
+          "G30",
+          "G31",
+          "G32"
+        ],
+        "scope": "TECHNICAL_GEOMETRY_ONLY",
+        "status": "COMPLETE",
+        "virtual_observation_count": 17893,
+        "watermark": "NO VALIDATED INTERPOLATION GAIN"
+      },
+      "artifacts": {
+        "admission.json": "cf09a15d2362094498c351646f6381ae5d3bf380d3edfe24730803b85d9a2ddc",
+        "anchor.json": "2b00976a85a583a8912671a3d588ecb31dd697701722a3c49bb75c94308066ca",
+        "completion.json": "92002eeff346fb4291e2ca3ae341199aa5237fd983635dbc42585130f1e5b5f8",
+        "correction-model.json": "b38520a3d8e65760e5b927baafea18e746f2b09bd07dc50dfb46122e66d15fdb",
+        "definition.json": "355401072726659c79a868b9edeec9b1b4055e85e915e039c6c05a13522dafce",
+        "exclusions.json": "450680fe2286718b1852604c7b88fb3470f1d2b8f10a1f35c3cef58f9ee83265",
+        "metrics.json": "113bfb6553f6b4fa07a89ad582a3794aefc2b20555f82d219dc92f16a2e36d00",
+        "provenance.json": "0ee9fdef90ab5d9387612c5f1279870a6159c6395767677a2df92b6cff76bdef",
+        "target.json": "e9674c10dd41fc6ae909cc59c0f40439df05530707dbdc2aa3c72532ee67dda5",
+        "validation-residuals.csv": "ba47511622564023a6ed982addebd5d217a13c66ecca9e66e948ad612ec8a01f",
+        "validation.json": "870227de03c5f261e72146b9a16354de71f7a14d6843b80ff3f9520c66648b37",
+        "virtual-observations.csv": "64d9eb1510c312deeb9dc08ee6b31127bce69dc55fa33a961f0949b075595dd1"
+      }
+    }
+  ],
+  "virtual_observations_total": 78060,
+  "historical_preservation": {
+    "unchanged_artifacts": 119,
+    "changed_aggregate_catalogs": [
+      "processed/atmospheric-model/summaries/model-experiments.csv",
+      "processed/atmospheric-model/summaries/spatial-gradients.csv",
+      "processed/atmospheric-model/summaries/validation-results.csv"
+    ],
+    "changed_old_experiment_rerun": [
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/derive-status.json",
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/figures/loocv-rmse.png",
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/metrics.json",
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/models/target-predictions.csv",
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/residuals/spatial-records.csv",
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/tables/loocv-summary.csv",
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/troposphere/apriori.csv",
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/troposphere/summary.json",
+      "processed/atmospheric-model/experiments/atm-2024d026-phri-target/validation/loocv.json"
+    ],
+    "incident": "old Phase 6 pilot directory re-run under its own ID after the freeze (2026-09-08 ~14:10 local); frozen hashes in before-review.json remain the authoritative historical record; pre-refresh summary snapshots corroborate the documented pilot (n=17768, zero 2.9843 m); comparison `previous` column is the post-freeze reproduction state, original-pilot baselines appended as `.original_pilot` rows"
+  },
+  "phase6_artifacts": {
+    "admission.json": "f7b959611ead296b0451a1a85ea7691d3346ba8bcd65f4793a8a716e30bd11e1",
+    "common-observations/per-epoch-common.csv": "6afb11db5d3761eb6825c8cf9b962e1952af98f913a5e0de7753c3c01dc6af26",
+    "common-observations/summary.json": "7204fe98921fd3edc997f0abfb5f95897358e76bcc4c575ef2ac543dc60781d5",
+    "definition.json": "c61a099921e5debd821d78e81d1ad1dc50318ec2938d95eda364dfabfefc98b1",
+    "derive-status.json": "08cb8b15d14da856837d6a637531c362f6272e157ee3b9e0ff22eb177c6e0930",
+    "figures/common-satellites.png": "e8b2c2461362996dab966f067993d87e85a35ab92ecbba98e750a1f14c4b224f",
+    "figures/decorrelation.png": "093710fa795db0c4797bd1c76cdb795d7796eb71a6f46e27e455137d491c890f",
+    "figures/loocv-rmse.png": "a4f107e3ecc3d46845000a0804af77e07d405d58e5925c5a8b7891146cdd3307",
+    "ionosphere/pair-sd.csv": "d745887ee46d5d75fc153fa4bccaa25c158d0f574c98813ec61a0d9623e51533",
+    "ionosphere/station-gf.csv": "9006fcd4c5e9e6dfa786b256023c04bde70c36bb4cc3d985c24b6ee70f2949d6",
+    "ionosphere/summary.json": "1fd3517043abfb64faac38c6e84d5addd5f1af7fea4163b36c630f8ff5c934b1",
+    "metrics.json": "3a2e79db023566ce1b33c088b1bac8eb37027d9c98c4578525b30fc33c47a310",
+    "models/fits.json": "21649f157cfa9c6edbaabeb525fb77c0f1de2d04be6cf8e2212c18cec754c868",
+    "models/target-predictions.csv": "46c4b4ccf98ff5d89b798a4aeb59cd5b17b94ca67e93edc8c4c08a4e0395e673",
+    "residuals/spatial-records.csv": "5fbf16343be10b723c9dfe0be26e1df633e33ad67cf82cb3bb21b0828f6b1a69",
+    "residuals/station-fields.csv": "ae5a03362e363377e31b19d8c242326de12b22cf360497b7b5cd2c195f78303a",
+    "tables/baseline-matrix.csv": "542e3874b486975cabcc9ba755a70036a0bd839e1a8eef8c74b39261460ba651",
+    "tables/decorrelation.csv": "23017c7dcb9058ad71014979ee97e34503072a3cedacafc187403a32f7b00263",
+    "tables/loocv-summary.csv": "cb16b42c2856450b262d8f21514c748fa94ff1c741d6d994e9225af7d4341c00",
+    "troposphere/apriori.csv": "547c853d18466f56dcdc7db0c72ac773d1a28c9c35dfc732a1a724070eeabf01",
+    "troposphere/geometry-exclusions.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "troposphere/summary.json": "9c1c4053406a4fd09d83a98dbfe26cbc81317c9d1ca07d7d2b5a9ae1d858dff0",
+    "validation/comparison-samples.csv": "06bcd6d33d0c510348ac88db28bd120e8da9652c9098a9597b4ae8e85f4eadbb",
+    "validation/loocv.json": "b377f98f16d66504d5332d2c52512af75d1b39850f1528a18de07e77e079cb7e"
+  },
+  "source_head": "59c986a8d1f426002918bd9a5abd5af32623408b",
+  "positioning_validation": "NOT_PERFORMED; RINEX export not certified"
+}
