@@ -2,23 +2,22 @@
 
 ## Active Phase
 
-Phase 10 — Live CORS / NTRIP Ingestion
+Interim Scientific Expansion Sprint (Phases 2/3/5/6 evidence)
 
 ## Current Milestone
 
-Phase 10 engineering COMPLETE (fail-closed live ingestion layer +
-synthetic loopback pilot);
-REAL LIVE INGESTION = BLOCKED (no authorized source)
+Stages A–G COMPLETE with a LIMITED EXPANSION result; Phase 11 remains
+NOT STARTED
 
 ## Status
 
-Phase 10 closure: engineering COMPLETE, synthetic loopback pilot
-COMPLETE (87 Python + 30 Go synthetic-only tests, `make check` PASS);
-REAL LIVE INGESTION = BLOCKED — no authorized reachable NTRIP source
-exists (no public endpoint documented, no `NLGCP_NTRIP_*` credentials
-configured, endpoint checks are web pages not casters, home-directory
-`.rtcm3` files lack capture provenance and were NOT admitted);
-Phase 11 NOT STARTED
+Sprint closure: 1290 canonical station-days on 294 observed days; 220/220
+planned BKG/IGS BRDC products validated after nine corrupt HTTP-200 files
+were replaced; 266 days have >=2 observed stations, 222 have >=3, and 198
+have >=4. Frozen coordinate/QC gates admit only DOY 2024/026, so the
+positioning evidence remains one day. Six single-base baselines and the
+reviewed four-fold Phase 6 evidence were retained and reported; no
+multi-day positioning or interpolation evidence was manufactured.
 
 Reviewed science (authoritative, from `main` @ `cabcfbb`):
 
@@ -394,10 +393,8 @@ scientific scope representative DOY 026 only).
 
 ## In Progress
 
-- Phase 10 branch hygiene and merge readiness (engineering green;
-  update handoff docs before stopping). Do not begin Phase 11 (live
-  RTCM correction generation, MSM encoding, rover service) in this
-  task.
+- Final branch hygiene complete; full `make check` passed. Do not begin
+  Phase 11 (live RTCM correction generation, MSM encoding, or rover service).
 
 ## Phase 5 Integration Record (2026-09-07)
 
@@ -462,10 +459,10 @@ None for the current Phase 3 baseline. Deriving a fixed-ambiguity (RTK-fixed) re
 
 ## Next Action
 
-Obtain an authorized NTRIP source (public endpoint or approved
-credentials via `NLGCP_NTRIP_*`) and run the bounded Phase 10
-capture → Phase 9 admission/index/replay feedback loop. Do not begin
-Phase 11 in this sprint.
+Obtain authorized precise-product access and derive observation-epoch
+verified coordinates for additional station-days; then rerun the frozen
+single-base, network, and Phase 6 pipelines. Keep Phase 7/8 policy
+unchanged and do not begin Phase 11 in this sprint.
 
 ## Consolidation Record (2026-09-07)
 
@@ -477,15 +474,15 @@ Phase 11 in this sprint.
 
 ## Last Verified State
 
-Phase 10 closure on `phase10/live-cors-ntrip-ingestion`: Go ntrip
-transport + Python bridge + CLI + 117 tests (87 Python + 30 Go);
-synthetic loopback pilot COMPLETE (probe 8/8, capture COMPLETE 8/0,
-VALID, Phase 9 framing 8/8); real live ingestion BLOCKED (no
-authorized source; zero network attempts); pytest 569 passed
-(RTKLIB_SOURCE unset, 6 skipped); `make check` PASS. Phase 9 record
-preserved (74 tests; real replay still BLOCKED pending authentic
-capture). Phase 11 NOT STARTED.
+Scientific expansion closure: navigation inventory 220/220 ACCEPTED with
+SHA-256 and RINEX-level validation; coverage/catalog regenerated; six
+DOY-026 single-base runs complete (17,280 solution epochs, 2 isolated FIX
+epochs); one DOY-026 network experiment with four EXTRAPOLATION folds; Phase
+6 ZERO remains the aggregate winner (3.076 m vs IDW 3.352 m, nearest 3.757 m,
+planar 14.373 m on 15,948 identical samples). Final report is under
+`${NLGCP_DATA_ROOT}/validation/scientific-expansion-2024/reports/`.
+Phase 7–10 conclusions remain unchanged. Phase 11 NOT STARTED.
 
 ## Last Updated
 
-2026-09-09 (Phase 10 engineering + synthetic loopback pilot closure)
+2026-09-10 (interim scientific expansion closure; full quality gate passed)

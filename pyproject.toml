@@ -36,6 +36,7 @@ packages = [
   "research/hybrid_decision_engine/src/nlgcp_hybrid_decision",
   "research/rtcm_replay/src/nlgcp_rtcm_replay",
   "research/ntrip_ingestion/src/nlgcp_ntrip_ingest",
+  "research/scientific_expansion/src/nlgcp_scientific_expansion",
 ]
 
 [tool.pytest.ini_options]
@@ -49,6 +50,7 @@ testpaths = [
   "research/hybrid_decision_engine/tests",
   "research/rtcm_replay/tests",
   "research/ntrip_ingestion/tests",
+  "research/scientific_expansion/tests",
 ]
 
 [tool.ruff]
@@ -86,6 +88,8 @@ files = [
   "research/rtcm_replay/tests",
   "research/ntrip_ingestion/src",
   "research/ntrip_ingestion/tests",
+  "research/scientific_expansion/src",
+  "research/scientific_expansion/tests",
   "scripts/run_gnss_qc.py",
   "scripts/run_single_base_rtk.py",
   "scripts/run_network_rtk.py",
@@ -94,4 +98,5 @@ files = [
   "scripts/run_hybrid_decision.py",
   "scripts/run_rtcm_replay.py",
   "scripts/run_ntrip_ingest.py",
+  "scripts/run_scientific_expansion.py",
 ]
