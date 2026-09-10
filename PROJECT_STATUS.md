@@ -4,6 +4,7 @@ Allowed statuses: Not Started, Planning, In Progress, Blocked, Testing, Validati
 
 | Phase | Status | Scope |
 |---|---|---|
+| Interim Scientific Expansion Sprint | Complete | Stages A–G completed on `interim/scientific-expansion`: 1290 canonical station-days, 294 observed days, 220/220 BKG/IGS BRDC products validated, 266/222/198 days with >=2/>=3/>=4 observed stations; frozen coordinate/QC gates admit only DOY 026, so six single-base runs and one-day Phase 6 evidence remain the scientific result. No Phase 7/8 policy change; Phase 11 not started |
 | Phase 0 — Documentation & Architecture | Complete | Authoritative bootstrap architecture and phase plan |
 | Phase 1 — Engineering Foundation | Complete | Engineering foundation verified: toolchains, Compose services, health checks, GNSS tool provenance, and project-wide quality gates pass |
 | Phase 2 — Data Acquisition & Station Registry | In Progress | Approved data acquisition and authoritative station metadata; P2-S1 metadata import foundation, P2-S2 RINEX inventory, and P2-S3 file manifest complete |
@@ -25,3 +26,16 @@ Allowed statuses: Not Started, Planning, In Progress, Blocked, Testing, Validati
 | Phase 17 — Controlled MVP Pilot | Not Started | Limited real-user pilot |
 
 Phase completion is evidence-based. Compilation or synthetic tests are not scientific validation.
+
+## Interim Scientific Expansion Result (2026-09-10)
+
+The 2024 archive expansion is complete with a limited, fail-closed result.
+Navigation acquisition reached 220 validated BKG/IGS BRDC products after nine
+corrupt HTTP-200 downloads were replaced. The broader observation archive has
+266 days with at least two stations, but only DOY 2024/026 has the matching
+verified IGS20 PRIDE PPP-AR coordinate evidence required by the existing
+Phase 3/5/6 gates. Therefore Phase 2 remains In Progress, Phase 3 remains
+Validation, and the scientific scope of Phases 5 and 6 remains representative
+DOY 026 only. See the external report at
+`${NLGCP_DATA_ROOT}/validation/scientific-expansion-2024/reports/` and the
+thesis-ready summary at `docs/thesis/scientific-expansion-2024-evidence.md`.
