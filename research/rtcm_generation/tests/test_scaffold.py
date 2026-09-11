@@ -5,7 +5,6 @@ from __future__ import annotations
 from dataclasses import replace
 
 import pytest
-
 from nlgcp_rtcm_generation import ENCODER_VERSION
 from nlgcp_rtcm_generation.admission import admit_request
 from nlgcp_rtcm_generation.bitstream import BitReader, BitWriter

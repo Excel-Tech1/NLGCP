@@ -8,8 +8,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from nlgcp_rtcm_generation.models import GeneratedCorrectionFrame, OutputClassification
 from nlgcp_rtcm_replay.models import CorrectionFrame
+
+from nlgcp_rtcm_generation.models import GeneratedCorrectionFrame, OutputClassification
 
 
 def to_phase9_frame(

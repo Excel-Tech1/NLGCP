@@ -12,7 +12,6 @@ from nlgcp_rtcm_generation.models import (
     CorrectionGenerationResult,
     GenerationMode,
     GenerationStatus,
-    OutputClassification,
     ReasonCode,
 )
 from nlgcp_rtcm_generation.provenance import build_provenance, fingerprint

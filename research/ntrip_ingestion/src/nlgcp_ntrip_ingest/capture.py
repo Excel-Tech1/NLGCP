@@ -108,8 +108,10 @@ def recover_incomplete_capture(capture_dir: Path) -> dict[str, object]:
     """
     metadata_path = capture_dir / "capture.json"
     if metadata_path.exists():
-        payload = json.loads(metadata_path.read_text(encoding="utf-8"))
-        return payload
+        existing_payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+        if not isinstance(existing_payload, dict):
+            raise ValueError(f"Invalid capture metadata object: {metadata_path}")
+        return dict(existing_payload)
     stream_path = capture_dir / "stream.rtcm3"
     if not stream_path.is_file():
         raise FileNotFoundError(stream_path)
