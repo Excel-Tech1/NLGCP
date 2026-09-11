@@ -2,6 +2,19 @@
 
 Only observed results belong here. Commands are reproducible from the repository root.
 
+Latest sprint evidence (2026-09-11) is recorded below. Synthetic entries are
+explicitly labelled and do not support scientific GNSS claims.
+
+| Date | Phase | Contribution | Evidence | Result |
+|---|---|---|---|---|
+| 2026-09-11 | 10 | Operational health/readiness boundary | `services/gnss-ingestor/internal/health/health_test.go`; `go test ./...` | PASS: liveness, disabled-service readiness, invalid configured readiness, and existing Go NTRIP tests; readiness explicitly reports scientific validity as not assessed |
+| 2026-09-11 | 10 | Python hardening/fault harness | `research/ntrip_ingestion/tests/` plus deterministic local test harness (project `.venv` unavailable) | PASS: 94 Phase 10 tests executed, including the existing transport matrix and new health/readiness, shutdown, capture recovery/rotation, disk, publisher and redaction coverage; SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS |
+| 2026-09-11 | 10 | Capture lifecycle hardening | `research/ntrip_ingestion/src/nlgcp_ntrip_ingest/capture.py`; `test_operational_hardening.py` | SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS: frame-safe rotation policy, minimum-free-disk guard, interrupted-capture manifest recovery, raw-byte preservation |
+| 2026-09-11 | 10 | Optional publishing boundary | `research/ntrip_ingestion/src/nlgcp_ntrip_ingest/publisher.py`; `test_operational_hardening.py` | SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS: bounded local publisher preserves `correction.live.<STATION>` envelope and counts overflow; no NATS connection opened |
+| 2026-09-11 | 11 | Correction-generation research scaffold | `research/rtcm_generation/`; `docs/phase11-correction-generation-scaffold.md` | Interface-ready: fail-closed request/result contracts, current VRS/single-base blockers, registry statuses, Phase 12 artifact schema; no operational encoder claim |
+| 2026-09-11 | 11 | Synthetic encoder and Phase 9 compatibility | `research/rtcm_generation/tests/test_scaffold.py`; shared Phase 9 framing adapter | PASS: 14 deterministic tests; SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS: lab-only frame, CRC/framing parse compatibility, field/bit bounds and round-trip checks; semantic RTCM validation not performed |
+| 2026-09-11 | repository | Quality-gate environment | `make check` | BLOCKED BY ENVIRONMENT: repository `.venv/bin/python` is absent, so configured Ruff/mypy/pytest gate could not start; Go tests/vet/gofmt, Python compileall, direct focused harnesses, Compose config, and `git diff --check` passed |
+
 | Date | Phase | Contribution | Evidence | Result |
 |---|---|---|---|---|
 | 2026-08-22 | 1 | Workspace inspection | `rg --files`, `git status` | Empty workspace; no Git repository existed |

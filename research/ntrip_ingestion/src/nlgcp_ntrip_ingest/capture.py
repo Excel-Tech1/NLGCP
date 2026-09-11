@@ -17,7 +17,9 @@ from __future__ import annotations
 
 import csv
 import hashlib
+import json
 import re
+import shutil
 import time
 from datetime import UTC, datetime
 from pathlib import Path
@@ -36,6 +38,106 @@ INDEX_HEADER = [
 ]
 
 _UNSAFE = re.compile(r"[^A-Za-z0-9._-]+")
+
+
+class CaptureLimitExceeded(RuntimeError):
+    """Capture must stop before a configured evidence/resource limit."""
+
+
+class CaptureRotationPolicy:
+    """Rotation boundaries are evaluated before writing a complete frame."""
+
+    def __init__(
+        self,
+        *,
+        max_bytes: int | None = None,
+        max_frames: int | None = None,
+        max_seconds: float | None = None,
+        minimum_free_bytes: int = 0,
+    ) -> None:
+        if max_bytes is not None and max_bytes < 1:
+            raise ValueError("max_bytes must be >= 1")
+        if max_frames is not None and max_frames < 1:
+            raise ValueError("max_frames must be >= 1")
+        if max_seconds is not None and max_seconds <= 0:
+            raise ValueError("max_seconds must be > 0")
+        if minimum_free_bytes < 0:
+            raise ValueError("minimum_free_bytes must be >= 0")
+        self.max_bytes = max_bytes
+        self.max_frames = max_frames
+        self.max_seconds = max_seconds
+        self.minimum_free_bytes = minimum_free_bytes
+
+    def requires_rotation(
+        self,
+        *,
+        current_bytes: int,
+        current_frames: int,
+        elapsed_seconds: float,
+        next_frame_bytes: int,
+    ) -> bool:
+        return bool(
+            (self.max_bytes is not None and current_bytes + next_frame_bytes > self.max_bytes)
+            or (self.max_frames is not None and current_frames >= self.max_frames)
+            or (self.max_seconds is not None and elapsed_seconds >= self.max_seconds)
+        )
+
+    def disk_allowed(self, path: Path) -> bool:
+        return shutil.disk_usage(path).free >= self.minimum_free_bytes
+
+
+def find_incomplete_captures(root: Path) -> tuple[Path, ...]:
+    """Find raw capture directories without a completed metadata manifest."""
+    found: list[Path] = []
+    if not root.exists():
+        return ()
+    for stream in sorted(root.rglob("stream.rtcm3")):
+        directory = stream.parent
+        metadata = directory / "capture.json"
+        if not metadata.exists():
+            found.append(directory)
+    return tuple(found)
+
+
+def recover_incomplete_capture(capture_dir: Path) -> dict[str, object]:
+    """Write a minimal PARTIAL/INTERRUPTED manifest without touching raw bytes.
+
+    Completed captures are immutable and are never rewritten. The recovery
+    manifest is intentionally conservative; Phase 9 still performs full
+    binary admission and validation later.
+    """
+    metadata_path = capture_dir / "capture.json"
+    if metadata_path.exists():
+        existing_payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+        if not isinstance(existing_payload, dict):
+            raise ValueError(f"Invalid capture metadata object: {metadata_path}")
+        return dict(existing_payload)
+    stream_path = capture_dir / "stream.rtcm3"
+    if not stream_path.is_file():
+        raise FileNotFoundError(stream_path)
+    digest = hashlib.sha256(stream_path.read_bytes()).hexdigest()
+    now = datetime.now(UTC).isoformat()
+    payload: dict[str, object] = {
+        "capture_id": capture_dir.name,
+        "capture_status": "PARTIAL",
+        "interruption_reason": "PROCESS_INTERRUPTED",
+        "start_utc": None,
+        "end_utc": now,
+        "bytes_received": stream_path.stat().st_size,
+        "valid_frames": None,
+        "invalid_frames": None,
+        "stream_sha256": digest,
+        "raw_bytes_preserved": True,
+        "scientific_validation": "DEFERRED_TO_PHASE9",
+    }
+    metadata_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    sums: list[str] = []
+    for name in ("stream.rtcm3", "arrival-index.csv", "source-table.txt", "capture.json"):
+        path = capture_dir / name
+        if path.is_file():
+            sums.append(f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {name}\n")
+    (capture_dir / "SHA256SUMS.txt").write_text("".join(sums), encoding="utf-8")
+    return payload
 
 
 def sanitize_identifier(value: str, *, fallback: str = "unknown") -> str:
@@ -68,6 +170,7 @@ class CaptureWriter:
         software_commit: str,
         source_table_sha256: str,
         source_table_text: str,
+        rotation_policy: CaptureRotationPolicy | None = None,
     ) -> None:
         self.capture_dir = capture_dir
         self.capture_dir.mkdir(parents=True, exist_ok=False)
@@ -81,6 +184,7 @@ class CaptureWriter:
         self._authorization_provenance = authorization_provenance
         self._software_commit = software_commit
         self._source_table_sha256 = source_table_sha256
+        self._rotation_policy = rotation_policy
         self._start_utc = datetime.now(UTC).isoformat()
         self._start_mono = time.monotonic()
         self._bytes = 0
@@ -118,6 +222,7 @@ class CaptureWriter:
         software_commit: str,
         source_table_sha256: str,
         source_table_text: str,
+        rotation_policy: CaptureRotationPolicy | None = None,
     ) -> CaptureWriter:
         capture_dir = (
             root
@@ -139,6 +244,7 @@ class CaptureWriter:
             software_commit=software_commit,
             source_table_sha256=source_table_sha256,
             source_table_text=source_table_text,
+            rotation_policy=rotation_policy,
         )
 
     @property
@@ -159,6 +265,17 @@ class CaptureWriter:
 
     def write_frame(self, raw: bytes, arrival: ArrivalRecord) -> None:
         """Append one frame's bytes plus its arrival-index row (flushed)."""
+        if self._rotation_policy is not None:
+            elapsed = time.monotonic() - self._start_mono
+            if self._rotation_policy.requires_rotation(
+                current_bytes=self._bytes,
+                current_frames=self._valid + self._invalid,
+                elapsed_seconds=elapsed,
+                next_frame_bytes=len(raw),
+            ):
+                raise CaptureLimitExceeded("CAPTURE_ROTATION_REQUIRED")
+            if not self._rotation_policy.disk_allowed(self.capture_dir):
+                raise CaptureLimitExceeded("CAPTURE_BLOCKED_DISK_LIMIT")
         self._stream.write(raw)
         self._stream.flush()
         self._index_writer.writerow(

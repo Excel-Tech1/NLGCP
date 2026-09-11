@@ -17,6 +17,9 @@ const (
 	EnvTLS       = "NLGCP_NTRIP_TLS"
 	EnvUserAgent = "NLGCP_NTRIP_USER_AGENT"
 	EnvGGA       = "NLGCP_NTRIP_GGA"
+	EnvMaxFrames = "NLGCP_NTRIP_MAX_CAPTURE_FRAMES"
+	EnvMinFree   = "NLGCP_NTRIP_MIN_FREE_DISK_BYTES"
+	EnvRotations = "NLGCP_NTRIP_MAX_CAPTURE_ROTATIONS"
 
 	DefaultPort      = 2101
 	DefaultUserAgent = "NLGCP-Phase10/1.0"
@@ -46,6 +49,13 @@ type Config struct {
 	MaxSourcetableBytes int
 	MaxCaptureBytes     int64
 	MaxCaptureSeconds   float64
+	MaxCaptureFrames    int
+	MinFreeDiskBytes    int64
+	MaxCaptureRotations int
+	LogLevel            string
+	MetricsEnabled      bool
+	NATSURL             string
+	NATSSubjectPrefix   string
 	AllowInsecureTLS    bool
 }
 
@@ -68,6 +78,9 @@ func DefaultConfig() Config {
 		MaxSourcetableBytes: 65536,
 		MaxCaptureBytes:     64 << 20,
 		MaxCaptureSeconds:   60,
+		LogLevel:            "INFO",
+		MetricsEnabled:      true,
+		NATSSubjectPrefix:   "correction.live",
 	}
 }
 
@@ -88,7 +101,36 @@ func ConfigFromEnv() Config {
 		cfg.UserAgent = agent
 	}
 	cfg.GGASentence = os.Getenv(EnvGGA)
+	cfg.MaxCaptureFrames = parseInt(os.Getenv(EnvMaxFrames), 0)
+	cfg.MinFreeDiskBytes = parseInt64(os.Getenv(EnvMinFree), 0)
+	cfg.MaxCaptureRotations = parseInt(os.Getenv(EnvRotations), 0)
+	if level := strings.TrimSpace(os.Getenv("NLGCP_INGESTOR_LOG_LEVEL")); level != "" {
+		cfg.LogLevel = strings.ToUpper(level)
+	}
+	if raw := strings.TrimSpace(os.Getenv("NLGCP_INGESTOR_METRICS")); raw != "" {
+		cfg.MetricsEnabled = parseBool(raw)
+	}
+	cfg.NATSURL = strings.TrimSpace(os.Getenv("NLGCP_NATS_URL"))
+	if prefix := strings.TrimSpace(os.Getenv("NLGCP_NATS_SUBJECT_PREFIX")); prefix != "" {
+		cfg.NATSSubjectPrefix = prefix
+	}
 	return cfg
+}
+
+func parseInt(raw string, fallback int) int {
+	value, err := strconv.Atoi(strings.TrimSpace(raw))
+	if err != nil {
+		return fallback
+	}
+	return value
+}
+
+func parseInt64(raw string, fallback int64) int64 {
+	value, err := strconv.ParseInt(strings.TrimSpace(raw), 10, 64)
+	if err != nil {
+		return fallback
+	}
+	return value
 }
 
 func parseBool(raw string) bool {
@@ -105,12 +147,16 @@ func (c Config) Validate() []string {
 	var problems []string
 	if c.Host == "" {
 		problems = append(problems, "host must be non-empty")
+	} else if strings.ContainsAny(c.Host, "/@ \t\r\n") || strings.Contains(c.Host, "://") {
+		problems = append(problems, "host must be a hostname, not a URL or credential-bearing value")
 	}
 	if c.Port < 1 || c.Port > 65535 {
 		problems = append(problems, "port out of range")
 	}
 	if c.Mountpoint == "" || c.Mountpoint == "/" {
 		problems = append(problems, "mountpoint must be non-empty")
+	} else if strings.ContainsAny(c.Mountpoint, "?#@ \t\r\n") {
+		problems = append(problems, "mountpoint contains unsafe characters")
 	}
 	for name, value := range map[string]float64{
 		"dial_timeout_s": c.DialTimeoutS, "tls_timeout_s": c.TLSHandshakeTimeout,
@@ -136,6 +182,23 @@ func (c Config) Validate() []string {
 	if c.MaxCaptureBytes < 1 {
 		problems = append(problems, "max_capture_bytes must be >= 1")
 	}
+	if c.MaxCaptureSeconds <= 0 {
+		problems = append(problems, "max_capture_seconds must be > 0")
+	}
+	if c.MaxCaptureFrames < 0 || c.MinFreeDiskBytes < 0 || c.MaxCaptureRotations < 0 {
+		problems = append(problems, "capture frame/disk/rotation limits must be >= 0")
+	}
+	switch c.LogLevel {
+	case "DEBUG", "INFO", "WARNING", "ERROR":
+	default:
+		problems = append(problems, "log_level must be DEBUG, INFO, WARNING, or ERROR")
+	}
+	if c.NATSURL != "" && !strings.HasPrefix(c.NATSURL, "nats://") && !strings.HasPrefix(c.NATSURL, "tls://") {
+		problems = append(problems, "nats_url must use nats:// or tls://")
+	}
+	if c.NATSSubjectPrefix == "" {
+		problems = append(problems, "nats_subject_prefix must be non-empty")
+	}
 	return problems
 }
 
@@ -151,6 +214,7 @@ func (c Config) RedactedSnapshot() map[string]string {
 	}
 	return map[string]string{
 		"host": c.Host, "port": strconv.Itoa(c.Port), "mountpoint": c.Mountpoint,
-		"username": c.Username, "password": password, "tls": tls, "user_agent": c.UserAgent,
+		"username": map[bool]string{true: Redacted, false: ""}[c.Username != ""],
+		"password": password, "tls": tls, "user_agent": c.UserAgent,
 	}
 }

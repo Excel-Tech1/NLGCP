@@ -23,7 +23,7 @@ from typing import Any
 
 from nlgcp_ntrip_ingest.admission import admit_mountpoint, map_station
 from nlgcp_ntrip_ingest.backoff import ReconnectPolicy, is_terminal
-from nlgcp_ntrip_ingest.capture import CaptureWriter
+from nlgcp_ntrip_ingest.capture import CaptureLimitExceeded, CaptureWriter
 from nlgcp_ntrip_ingest.framing import StreamingFramer
 from nlgcp_ntrip_ingest.handshake import (
     build_sourcetable_request,
@@ -129,7 +129,18 @@ class NtripClient:
         self._global_sequence = 0
         self._metrics = StreamMetrics()
         self._connection_id = ""
+        self._shutdown_requested = False
+        self._active_socket: socket.socket | None = None
         self._set_state(ConnectionState.DISCONNECTED)
+
+    def request_shutdown(self) -> None:
+        """Request bounded capture shutdown and close the active socket."""
+        self._shutdown_requested = True
+        self._set_state(ConnectionState.STOPPED)
+        if self._active_socket is not None:
+            with suppress(OSError):
+                self._active_socket.shutdown(socket.SHUT_RDWR)
+                self._active_socket.close()
 
     def _set_state(self, state: ConnectionState) -> None:
         self.state = state
@@ -448,7 +459,12 @@ class NtripClient:
         reconnects = 0
         final_status = "COMPLETE"
         idle_events = 0
+        last_valid_frame_monotonic: float | None = None
+        capture_limit_hit = False
         while True:
+            if self._shutdown_requested:
+                final_status = "PARTIAL" if writer.bytes_received else "FAILED"
+                break
             if time.monotonic() - capture_start >= budget_s or writer.bytes_received >= budget_b:
                 break
             attempts += 1
@@ -474,6 +490,7 @@ class NtripClient:
             )
             try:
                 sock = self._dial()
+                self._active_socket = sock
             except (OSError, TimeoutError):
                 self._set_state(ConnectionState.RECONNECTING)
                 if policy.attempts_exhausted(attempts):
@@ -571,6 +588,11 @@ class NtripClient:
                             chunk = sock.recv(4096)
                         except TimeoutError:
                             continue
+                        except OSError:
+                            if self._shutdown_requested:
+                                final_status = "PARTIAL" if writer.bytes_received else "FAILED"
+                                break
+                            raise
                         if not chunk:
                             break  # clean EOF: reconnect (transient)
                     if chunk:
@@ -588,7 +610,22 @@ class NtripClient:
                         # connection-local sequence restarts per connection.
                         arrival = _with_global_sequence(arrival, self._global_sequence)
                         self._global_sequence += 1
-                        writer.write_frame(sframe.raw, arrival)
+                        try:
+                            writer.write_frame(sframe.raw, arrival)
+                        except CaptureLimitExceeded as exc:
+                            final_status = "PARTIAL"
+                            capture_limit_hit = True
+                            self._set_state(ConnectionState.DEGRADED)
+                            if str(exc) == "CAPTURE_BLOCKED_DISK_LIMIT":
+                                self._metrics = StreamMetrics(
+                                    **{
+                                        **self._metrics.as_dict(),
+                                        "disk_limit_events": self._metrics.disk_limit_events + 1,
+                                    }
+                                )
+                            break
+                        if sframe.crc_ok:
+                            last_valid_frame_monotonic = time.monotonic()
                         counts = dict(self._metrics.message_type_counts)
                         if sframe.message_number is not None:
                             key = str(sframe.message_number)
@@ -664,6 +701,8 @@ class NtripClient:
                                 producer_waits=self._metrics.producer_waits,
                                 consumer_waits=self._metrics.consumer_waits,
                             )
+                if capture_limit_hit:
+                    break
                 # EOF or stall: transient → reconnect within budget.
                 if (
                     time.monotonic() - capture_start >= budget_s
@@ -682,6 +721,7 @@ class NtripClient:
             finally:
                 with suppress(OSError):
                     sock.close()
+                self._active_socket = None
             break
         self._metrics = StreamMetrics(
             connections_attempted=self._metrics.connections_attempted,
@@ -701,6 +741,23 @@ class NtripClient:
             frames_dropped=buffer.dropped_frames,
             producer_waits=buffer.buffer_waits,
             consumer_waits=self._metrics.consumer_waits,
+            active_connection=False,
+            frames_per_second=(
+                self._metrics.frames_received / (time.monotonic() - capture_start)
+                if time.monotonic() > capture_start else 0.0
+            ),
+            bytes_per_second=(
+                self._metrics.bytes_received / (time.monotonic() - capture_start)
+                if time.monotonic() > capture_start else 0.0
+            ),
+            last_valid_frame_age_s=(
+                time.monotonic() - last_valid_frame_monotonic
+                if last_valid_frame_monotonic is not None else None
+            ),
+            captures_opened=1,
+            captures_finalized=1,
+            partial_captures=1 if final_status == "PARTIAL" else 0,
+            disk_limit_events=self._metrics.disk_limit_events,
         )
         # Drain remaining buffered frames to the counted consumer path.
         while buffer.take() is not None:

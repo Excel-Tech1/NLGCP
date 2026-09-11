@@ -90,6 +90,36 @@ services:
       timeout: 3s
       retries: 12
 
+  gnss-ingestor:
+    build:
+      context: .
+      dockerfile: services/gnss-ingestor/Dockerfile
+    environment:
+      NLGCP_INGESTOR_ADDRESS: ":8081"
+      NLGCP_NTRIP_HOST: ${NLGCP_NTRIP_HOST:-}
+      NLGCP_NTRIP_PORT: ${NLGCP_NTRIP_PORT:-2101}
+      NLGCP_NTRIP_MOUNTPOINT: ${NLGCP_NTRIP_MOUNTPOINT:-}
+      NLGCP_NTRIP_TLS: ${NLGCP_NTRIP_TLS:-false}
+      NLGCP_NTRIP_USER_AGENT: ${NLGCP_NTRIP_USER_AGENT:-NLGCP-Phase10/1.0}
+      NLGCP_INGESTOR_LOG_LEVEL: ${NLGCP_INGESTOR_LOG_LEVEL:-INFO}
+      NLGCP_INGESTOR_METRICS: ${NLGCP_INGESTOR_METRICS:-true}
+      NLGCP_NATS_URL: ${NLGCP_NATS_URL:-}
+      NLGCP_NATS_SUBJECT_PREFIX: ${NLGCP_NATS_SUBJECT_PREFIX:-correction.live}
+    volumes:
+      - type: bind
+        source: "${NLGCP_DATA_ROOT:?NLGCP_DATA_ROOT must be configured}/raw/rtcm-captures"
+        target: /data/nlgcp/raw/rtcm-captures
+        read_only: false
+        bind:
+          create_host_path: false
+    ports:
+      - "127.0.0.1:${INGESTOR_PORT:-8081}:8081"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8081/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
   web:
     build:
       context: .

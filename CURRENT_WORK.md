@@ -2,14 +2,26 @@
 
 ## Active Phase
 
-Interim Scientific Expansion Sprint (Phases 2/3/5/6 evidence)
+Phase 10 Operational Hardening + Phase 11 Correction-Generation Research Scaffold
 
 ## Current Milestone
 
-Stages A–G COMPLETE with a LIMITED EXPANSION result; Phase 11 remains
-NOT STARTED
+Phase 10 hardening and Phase 11 interface/encoder scaffold implemented on
+`pre-cors/phase10-hardening-phase11-scaffold`; authentic-provider and
+operational-correction validation remain BLOCKED.
 
 ## Status
+
+Sprint boundary (2026-09-11):
+
+- Phase 10: engineering and operational hardening implemented; real-provider
+  validation remains BLOCKED because no authorized live CORS/NTRIP source is
+  admitted.
+- Phase 11: research scaffold READY architecturally; only a clearly labelled
+  synthetic test encoder is validated for framing/determinism. Real VRS
+  generation remains BLOCKED by the reviewed ZERO / VRS_GEOMETRY_ONLY state;
+  real single-base generation remains BLOCKED without authentic input.
+- Phase 12: NOT STARTED.
 
 Sprint closure: 1290 canonical station-days on 294 observed days; 220/220
 planned BKG/IGS BRDC products validated after nine corrupt HTTP-200 files
