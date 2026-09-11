@@ -36,6 +36,7 @@ packages = [
   "research/hybrid_decision_engine/src/nlgcp_hybrid_decision",
   "research/rtcm_replay/src/nlgcp_rtcm_replay",
   "research/ntrip_ingestion/src/nlgcp_ntrip_ingest",
+  "research/rtcm_generation/src/nlgcp_rtcm_generation",
   "research/scientific_expansion/src/nlgcp_scientific_expansion",
 ]
 
@@ -50,6 +51,7 @@ testpaths = [
   "research/hybrid_decision_engine/tests",
   "research/rtcm_replay/tests",
   "research/ntrip_ingestion/tests",
+  "research/rtcm_generation/tests",
   "research/scientific_expansion/tests",
 ]
 
@@ -88,6 +90,8 @@ files = [
   "research/rtcm_replay/tests",
   "research/ntrip_ingestion/src",
   "research/ntrip_ingestion/tests",
+  "research/rtcm_generation/src",
+  "research/rtcm_generation/tests",
   "research/scientific_expansion/src",
   "research/scientific_expansion/tests",
   "scripts/run_gnss_qc.py",

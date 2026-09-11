@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import signal
 import sys
 from pathlib import Path
 from typing import Any
@@ -123,6 +124,11 @@ def cmd_capture(args: argparse.Namespace) -> int:
         plan["capture_plan"] = {"capture_id": args.capture_id, "duration_s": args.duration,
                                 "output_root": args.output_root}
         return _emit({"op": "capture", **plan}, secrets)
+    def _shutdown(_signum: int, _frame: Any) -> None:
+        client.request_shutdown()
+
+    previous_term = signal.signal(signal.SIGTERM, _shutdown)
+    previous_int = signal.signal(signal.SIGINT, _shutdown)
     try:
         result = client.capture_stream(
             args.output_root, capture_id=args.capture_id,
@@ -131,6 +137,9 @@ def cmd_capture(args: argparse.Namespace) -> int:
     except (ValueError, PermissionError) as exc:
         return _emit({"op": "capture", "ok": False, "reason": str(exc),
                       "transitions": client.transitions}, secrets)
+    finally:
+        signal.signal(signal.SIGTERM, previous_term)
+        signal.signal(signal.SIGINT, previous_int)
     return _emit({"op": "capture", "ok": True, "status": result.status,
                   "capture_dir": result.capture_dir, "metadata": result.metadata,
                   "metrics": result.metrics, "admission": result.admission,

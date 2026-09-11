@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from enum import StrEnum
 from typing import Any
+from urllib.parse import urlsplit
 
 
 class ConnectionState(StrEnum):
@@ -94,21 +95,46 @@ class NtripConfig:
     max_sourcetable_bytes: int = 65536
     max_capture_bytes: int = 64 * 1024 * 1024
     max_capture_seconds: float = 60.0
+    max_capture_frames: int = 0
+    min_free_disk_bytes: int = 0
+    max_capture_rotations: int = 0
+    log_level: str = "INFO"
+    metrics_enabled: bool = True
+    nats_url: str = ""
+    nats_subject_prefix: str = "correction.live"
     allow_insecure_tls: bool = False
 
     def as_dict_redacted(self) -> dict[str, Any]:
         payload = asdict(self)
+        payload["username"] = "***REDACTED***" if self.username else ""
         payload["password"] = "***REDACTED***" if self.password else ""
+        if self.nats_url:
+            parsed = urlsplit(self.nats_url)
+            host = parsed.hostname or ""
+            try:
+                parsed_port = parsed.port
+            except ValueError:
+                parsed_port = None
+            port = f":{parsed_port}" if parsed_port else ""
+            payload["nats_url"] = f"{parsed.scheme}://***REDACTED***@{host}{port}"
         return payload
 
     def validate(self) -> list[str]:
         problems: list[str] = []
         if not self.host:
             problems.append("host must be non-empty")
+        elif any(token in self.host for token in ("/", "@", "://")) or any(
+            char.isspace() for char in self.host
+        ):
+            problems.append("host must be a hostname, not a URL or credential-bearing value")
         if not 1 <= self.port <= 65535:
             problems.append(f"port out of range: {self.port}")
         if not self.mountpoint or self.mountpoint == "/":
             problems.append("mountpoint must be non-empty")
+        elif any(char.isspace() for char in self.mountpoint) or any(
+            token in self.mountpoint for token in ("?", "#", "@")
+        ):
+            problems.append("mountpoint contains unsafe characters")
         if self.mountpoint.startswith("/") and len(self.mountpoint) < 2:
             problems.append("mountpoint must name a stream")
         for name in (
@@ -130,6 +156,20 @@ class NtripConfig:
             problems.append("max_frame_length must be within 1..1023")
         if self.max_capture_bytes < 1:
             problems.append("max_capture_bytes must be >= 1")
+        if self.max_capture_seconds <= 0:
+            problems.append("max_capture_seconds must be > 0")
+        if self.max_capture_frames < 0:
+            problems.append("max_capture_frames must be >= 0")
+        if self.min_free_disk_bytes < 0:
+            problems.append("min_free_disk_bytes must be >= 0")
+        if self.max_capture_rotations < 0:
+            problems.append("max_capture_rotations must be >= 0")
+        if self.log_level.upper() not in {"DEBUG", "INFO", "WARNING", "ERROR"}:
+            problems.append("log_level must be DEBUG, INFO, WARNING, or ERROR")
+        if self.nats_url and urlsplit(self.nats_url).scheme not in {"nats", "tls"}:
+            problems.append("nats_url must use nats:// or tls://")
+        if not self.nats_subject_prefix:
+            problems.append("nats_subject_prefix must be non-empty")
         return problems
 
 
@@ -159,6 +199,14 @@ def config_from_env(env: dict[str, str]) -> NtripConfig:
         use_tls=tls_raw in ("1", "true", "yes", "on"),
         user_agent=env.get("NLGCP_NTRIP_USER_AGENT", DEFAULT_USER_AGENT),
         gga_sentence=env.get("NLGCP_NTRIP_GGA", ""),
+        max_capture_frames=_int("NLGCP_NTRIP_MAX_CAPTURE_FRAMES", 0),
+        min_free_disk_bytes=_int("NLGCP_NTRIP_MIN_FREE_DISK_BYTES", 0),
+        max_capture_rotations=_int("NLGCP_NTRIP_MAX_CAPTURE_ROTATIONS", 0),
+        log_level=env.get("NLGCP_INGESTOR_LOG_LEVEL", "INFO").strip().upper(),
+        metrics_enabled=env.get("NLGCP_INGESTOR_METRICS", "true").strip().lower()
+        in ("1", "true", "yes", "on"),
+        nats_url=env.get("NLGCP_NATS_URL", "").strip(),
+        nats_subject_prefix=env.get("NLGCP_NATS_SUBJECT_PREFIX", "correction.live").strip(),
         allow_insecure_tls=insecure_raw in ("1", "true", "yes", "on"),
     )
 
@@ -261,6 +309,14 @@ class StreamMetrics:
     frames_dropped: int = 0
     producer_waits: int = 0
     consumer_waits: int = 0
+    active_connection: bool = False
+    frames_per_second: float = 0.0
+    bytes_per_second: float = 0.0
+    last_valid_frame_age_s: float | None = None
+    captures_opened: int = 0
+    captures_finalized: int = 0
+    partial_captures: int = 0
+    disk_limit_events: int = 0
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
