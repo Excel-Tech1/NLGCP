@@ -12,6 +12,21 @@ operational-correction validation remain BLOCKED.
 
 ## Status
 
+Southern Nigeria NIGNET audit sprint (2026-10-30) is active on
+`research/southern-nigeria-data-audit`. The local 2011 archive was read in
+place; 3,018 observation files across 11 stations were inventoried. All 11
+coordinate sets are provisional and the inspected 2024 navigation products
+do not match the 2011 observation dates. Exploratory southern geometry found
+contained held-out cases but insufficient validated coordinates, common
+windows, and navigation evidence for positioning experiments. Overall audit
+state: `AUDIT_BLOCKED_COORDINATE_PROVENANCE`; see
+`docs/research/southern-nigeria-data-audit.md`. No RTK/VRS run or accuracy
+claim was made. The corrected final run is
+`/home/excellence/nlgcp-data/validation/southern-nignet/run-20261030T125136Z/`;
+`make check` passed (Ruff, mypy 215 files, pytest 638 passed/6 skipped, Go,
+CTest, ESLint, TypeScript, and Next.js production build). The sprint is
+committed on this branch; no merge or push was performed.
+
 Sprint boundary (2026-09-11):
 
 - Phase 10: engineering and operational hardening implemented; real-provider

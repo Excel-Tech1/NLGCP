@@ -4,6 +4,7 @@ Allowed statuses: Not Started, Planning, In Progress, Blocked, Testing, Validati
 
 | Phase | Status | Scope |
 |---|---|---|
+| Southern Nigeria NIGNET audit sprint | Complete | Dedicated research branch `research/southern-nigeria-data-audit`; 2011 archive audit completed with 3,018 observations/11 stations and exploratory 3/4/5-reference geometry. All coordinates remain provisional, no inspected navigation products match 2011, and exact common-window support is limited; `AUDIT_BLOCKED_COORDINATE_PROVENANCE`. No RTK/VRS experiments or accuracy claims. Report: `docs/research/southern-nigeria-data-audit.md`; `make check` passed |
 | Interim Scientific Expansion Sprint | Complete | Stages A–G completed on `interim/scientific-expansion`: 1290 canonical station-days, 294 observed days, 220/220 BKG/IGS BRDC products validated, 266/222/198 days with >=2/>=3/>=4 observed stations; frozen coordinate/QC gates admit only DOY 026, so six single-base runs and one-day Phase 6 evidence remain the scientific result. No Phase 7/8 policy change; Phase 11 not started |
 | Phase 0 — Documentation & Architecture | Complete | Authoritative bootstrap architecture and phase plan |
 | Phase 1 — Engineering Foundation | Complete | Engineering foundation verified: toolchains, Compose services, health checks, GNSS tool provenance, and project-wide quality gates pass |
@@ -26,6 +27,21 @@ Allowed statuses: Not Started, Planning, In Progress, Blocked, Testing, Validati
 | Phase 17 — Controlled MVP Pilot | Not Started | Limited real-user pilot |
 
 Phase completion is evidence-based. Compilation or synthetic tests are not scientific validation.
+
+## Southern Nigeria NIGNET audit sprint (2026-10-30)
+
+The read-only audit found 3,018 RINEX observation files from 11 stations across
+2011, with no navigation file in the archive. The inspected external vault has
+220 BKG/IGS navigation products dated in 2024 and no matching 2011 product.
+All 11 station coordinates are provisional RINEX approximate positions. A
+configured ≤8.5°N exploratory screen selects five southern stations. Some
+provisional held-out geometries contain their target, but the best such
+three-reference case has only two common header-window dates; the four-ref
+contained case has none. No scientific positioning or correction experiment
+was run. Overall state remains `AUDIT_BLOCKED_COORDINATE_PROVENANCE`; obtain
+verified coordinate frame/epoch records and matching 2011 navigation data
+before a controlled experiment. Full report and external run details:
+`docs/research/southern-nigeria-data-audit.md`.
 
 ## Interim Scientific Expansion Result (2026-09-10)
 

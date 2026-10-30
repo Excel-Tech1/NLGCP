@@ -5,6 +5,14 @@ Only observed results belong here. Commands are reproducible from the repository
 Latest sprint evidence (2026-09-11) is recorded below. Synthetic entries are
 explicitly labelled and do not support scientific GNSS claims.
 
+## Southern Nigeria NIGNET audit (2026-10-30)
+
+| Date | Phase | Contribution | Evidence | Result |
+|---|---|---|---|---|
+| 2026-10-30 | Research audit | Read-only inventory of local NIGNET2011 archive | `/home/excellence/nlgcp-data/validation/southern-nignet/run-20261030T125136Z/{audit_summary.json,raw_archive_manifest.json,sha256_manifest.json}` | OBSERVED: 3,018/3,018 observation files parsed and hashed; 11 stations; 2011-01-01–2011-12-31; no archive navigation files; raw archive not extracted; SHA-256 recorded |
+| 2026-10-30 | Research audit | Coordinate provenance and exploratory geometry | External run `coordinate_provenance.csv`, `network_geometry.csv`, `held_out_geometry.csv`, `geometry_rankings.csv`; `docs/research/southern-nigeria-data-audit.md` | OBSERVED/CALCULATED: 0 verified, 11 provisional; among screened southern stations, 2/20 three-reference held-outs and 1/5 four-reference held-outs are inside using provisional coordinates; best contained three-ref case has 2 common header-window dates; no 2011 nav match; no positioning claims |
+| 2026-10-30 | Research tooling | Synthetic regression and audit module | `research/southern_network_audit/tests/test_core.py`; `research/southern_network_audit/` | PASS: 15 focused module tests; full `make check` PASS: Ruff, mypy (215 files), pytest (638 passed, 6 skipped), Go, CTest, ESLint, TypeScript, Next.js production build; six native RTKLIB geometry tests skipped because `RTKLIB_SOURCE` was not configured |
+
 | Date | Phase | Contribution | Evidence | Result |
 |---|---|---|---|---|
 | 2026-09-11 | 10 | Operational health/readiness boundary | `services/gnss-ingestor/internal/health/health_test.go`; `go test ./...` | PASS: liveness, disabled-service readiness, invalid configured readiness, and existing Go NTRIP tests; readiness explicitly reports scientific validity as not assessed |
