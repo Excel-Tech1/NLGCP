@@ -229,11 +229,19 @@ def coordinate_provenance_status(
     source: str = "",
     reference_frame: str = "",
     coordinate_epoch: str = "",
+    reference_point: str = "",
+    station_identity_reconciled: bool = True,
 ) -> str:
-    """Classify coordinates using only explicit source/frame/epoch evidence."""
+    """Fail closed unless identity, frame, epoch, and reference point are explicit."""
     if approx_xyz is None:
         return "MISSING"
-    if source.strip() and reference_frame.strip() and coordinate_epoch.strip():
+    if not station_identity_reconciled:
+        return "UNVERIFIED"
+    unavailable = {"UNKNOWN", "NOT STATED", "NOT REPORTED", "UNAVAILABLE", "N/A"}
+    if all(
+        value.strip() and value.strip().upper() not in unavailable
+        for value in (source, reference_frame, coordinate_epoch, reference_point)
+    ):
         return "VERIFIED"
     return "PROVISIONAL"
 

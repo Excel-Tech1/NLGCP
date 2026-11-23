@@ -2,8 +2,12 @@
 
 **Audit state: `AUDIT_BLOCKED_COORDINATE_PROVENANCE`.** The archive was
 inventoried and exploratory geometry was calculated, but no station has
-independently verified coordinates and no matching 2011 navigation products
-were available. No positioning or correction experiment was run.
+independently verified coordinates. At audit time no matching 2011 navigation
+products were present in the audited inventory; the follow-up recovery sprint
+later acquired and validated products for the 33 primary candidate dates.
+Coordinate provenance remains blocked. No positioning or correction experiment
+was run. Follow-up:
+`docs/research/southern-coordinate-provenance-navigation-recovery.md`.
 
 ## Executive summary
 
@@ -21,8 +25,10 @@ coordinates remain provisional. The best contained three-reference case has
 only two common observation-window dates; the best contained four-reference
 case has no common observation window. A four-station southern group has 33
 common window dates, but each tested held-out target is outside its reference
-triangle. No date has matching 2011 navigation evidence. This is not enough to
-justify a controlled VRS or network-RTK experiment yet.
+triangle. At audit time, no date had matching 2011 navigation evidence; the
+follow-up recovery later validated GPS and GLONASS products for the 33 primary
+candidate dates, but the coordinate gate still blocks admission. This is not
+enough to justify a controlled VRS or network-RTK experiment yet.
 
 ## Dataset and integrity
 
@@ -105,8 +111,13 @@ claims or replace the coordinates used in existing NLGCP experiments.
   with the other four stations' common calendar-day set.
 - 220 BKG/IGS broadcast navigation products were found in the external vault,
   with 2024 date labels. There were zero matching navigation dates for the
-  2011 observations; all 365 observation dates lack a matching product in the
-  inspected inventory. No additional product was downloaded.
+  2011 observations in that audit inventory; all 365 observation dates lacked
+  a matching product there. No additional product was downloaded during the
+  audit. The follow-up recovery sprint later acquired 70 BKG/IGS products for
+  35 candidate dates; its automated 2026-11-23 rerun validated 66/66 products
+  for the 33 primary dates. This supersedes the audit-time navigation
+  limitation, not the coordinate-provenance block. Evidence:
+  `/home/excellence/nlgcp-data/validation/southern-nignet/coordinate-navigation-recovery/run-20261123T163056Z/`.
 
 ## Exploratory network geometry
 
@@ -164,16 +175,18 @@ spatial interpolation experiments better than the 2024 baseline.
 
 **Unknown:** authoritative station coordinates and their frames/epochs;
 antenna reference-point consistency; exact usable common-epoch counts after
-full observation parsing and scientific QC; 2011 navigation products; and any
-positioning or correction accuracy. No RTK, network correction, or VRS run was
-performed, and no accuracy or FIX-improvement claim is made.
+full observation parsing and scientific QC; health-screened 2011 navigation
+usability; and any positioning or correction accuracy. The follow-up recovery
+validated 66/66 primary-date navigation products, but coordinate provenance
+still blocks admission. No RTK, network correction, or VRS run was performed,
+and no accuracy or FIX-improvement claim is made.
 
 ## Recommended next experiment
 
 First obtain authoritative coordinates with documented frame, epoch, monument
 or antenna reference point, and station identity for the Southern Nigeria
-sites. Acquire suitable 2011 broadcast navigation data through the documented
-offline process. Then re-run coordinate-gated availability and QC; select a
+sites. Use the 2011 broadcast navigation data already recovered for the 33
+primary dates. Then re-run coordinate-gated availability and QC; select a
 held-out configuration only if verified coordinates preserve containment and
 the station files have adequate same-time-scale common epochs. Freeze a
 reviewed protocol before running a small controlled offline network/held-out
@@ -197,3 +210,8 @@ final `run-20261030T125136Z` for the complete report.
 
 No archive was extracted, no raw observation was modified, and no raw GNSS
 data or credentials were added to Git.
+
+The follow-up recovery utility and evidence are described in
+`docs/research/southern-coordinate-provenance-navigation-recovery.md`. Its
+automated run is
+`/home/excellence/nlgcp-data/validation/southern-nignet/coordinate-navigation-recovery/run-20261123T163056Z/`.

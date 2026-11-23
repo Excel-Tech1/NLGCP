@@ -2,6 +2,17 @@
 
 Only observed results belong here. Commands are reproducible from the repository root.
 
+## Southern Nigeria coordinate/navigation recovery (2026-10-30; automated rerun 2026-11-23)
+
+| Date | Phase | Contribution | Evidence | Result |
+|---|---|---|---|---|
+| 2026-10-30 | Research recovery | Coordinate provenance and exact-code identity review for 11 stations | External run `coordinate-navigation-recovery/run-20261030T132927Z/{coordinate_source_register.csv,coordinate_provenance.csv,station_identity_reconciliation.csv,coordinate_discrepancy_report.csv}` | OBSERVED: OSGoF table provides all 11 station coordinates at 2011-01-01; frame/reference point/uncertainty absent; 0 verified, 11 provisional. |
+| 2026-10-30 | Research recovery | Historical navigation acquisition and validation | External run `{navigation_acquisition_manifest.json,navigation_product_inventory.csv,navigation_date_coverage.csv}` | OBSERVED: 70 public BKG/IGS GPS+GLONASS products acquired and content-checked; both systems validate on all 35 unique candidate dates. |
+| 2026-10-30 | Research recovery | Exact epoch overlap and coordinate-gated geometry | External run `{exact_observation_epoch_overlap.csv,exact_common_epochs.csv,candidate_scientific_admission.csv,provisional_osgof_network_geometry.csv,provisional_osgof_held_out_geometry_all.csv,coordinate_gated_geometry_summary.json}` | CALCULATED: CLBR+RUST+ULAG+UNEC 85,946 exact common epochs/33 dates; GEMB+RUST+ULAG+UNEC 720/2 dates. Provisional geometry has 3 inside/22 outside; both candidate admissions BLOCKED. |
+| 2026-10-30 | Research recovery | Repository quality gate | `make check`; `research/southern_network_audit/tests/` | PASS: Ruff, ESLint, mypy (216 source files), TypeScript, pytest (641 passed, 6 skipped), Go vet/tests, CTest, and Next.js production build. |
+| 2026-11-23 | Research recovery | Reusable automated recovery utility and primary-date rerun | `research/southern_network_audit/src/nlgcp_southern_audit/{archive_access,navigation_recovery,recovery_cli}.py`; `research/southern_network_audit/tests/test_navigation_recovery.py`; external run `coordinate-navigation-recovery/run-20261123T163056Z/{navigation_recovery_manifest.json,navigation_recovery_records.csv,navigation_date_coverage.csv,sha256_manifest.txt}` | OBSERVED: 33/33 dates and 66/66 BKG GPS+GLONASS products VALIDATED; 132 CDDIS attempts AUTHENTICATION_REQUIRED; no credentials used or persisted; no positioning claim. |
+| 2026-11-23 | Research recovery | Repository quality gate with automated recovery tests | `make check` | PASS: Ruff, ESLint, mypy (220 source files), TypeScript, pytest (656 passed, 6 skipped), Go vet/tests, CTest, and Next.js production build. |
+
 Latest sprint evidence (2026-09-11) is recorded below. Synthetic entries are
 explicitly labelled and do not support scientific GNSS claims.
 

@@ -29,6 +29,17 @@ from nlgcp_southern_audit.core import (
     station_code,
 )
 from nlgcp_southern_audit.pipeline import _geometry, _header_from_zip, _record_hash, run_audit
+from nlgcp_southern_audit.recovery import (
+    coordinate_gated_geometry,
+    coordinate_record_status,
+    coordinate_transformation_status,
+    decompress_unix_compress,
+    exact_epoch_intersection,
+    parse_rinex2_epoch_line,
+    parse_rinex2_navigation,
+    reconcile_station_identity,
+    scientific_admission,
+)
 
 
 def _header(version: str, kind: str = "O") -> bytes:
@@ -97,7 +108,12 @@ def test_coordinate_provenance_fails_closed() -> None:
     xyz = (6378137.0, 0.0, 0.0)
     assert coordinate_provenance_status(None) == "MISSING"
     assert coordinate_provenance_status(xyz) == "PROVISIONAL"
-    assert coordinate_provenance_status(xyz, "SINEX", "IGS20", "2024.0") == "VERIFIED"
+    assert coordinate_provenance_status(xyz, "SINEX", "IGS20", "2024.0") == "PROVISIONAL"
+    assert coordinate_provenance_status(xyz, "SINEX", "IGS20", "2024.0", "ARP") == "VERIFIED"
+    assert coordinate_provenance_status(xyz, "SINEX", "UNKNOWN", "2024.0", "ARP") == "PROVISIONAL"
+    assert coordinate_provenance_status(
+        xyz, "SINEX", "IGS20", "2024.0", "ARP", station_identity_reconciled=False
+    ) == "UNVERIFIED"
 
 
 def test_convex_hull_containment_and_combinations() -> None:
@@ -221,6 +237,103 @@ def test_compressed_observation_header_and_epoch_scan(tmp_path: Path) -> None:
     assert first is not None and last is not None
     assert (last - first).total_seconds() == 30
     assert count == 2
+
+
+def test_exact_rinex2_epochs_and_time_system_gate() -> None:
+    # SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS.
+    first = parse_rinex2_epoch_line(" 11  9  9  0  0  0.0000000  0  2G01R04")
+    second = parse_rinex2_epoch_line(" 11  9  9  0  0 30.0000000  0  1G01")
+    assert first and first[1] == 0
+    assert second
+    overlap = exact_epoch_intersection(
+        {"A": {first[0], second[0]}, "B": {first[0]}}, {"A": "GPS", "B": "GPS"}
+    )
+    assert overlap["count"] == 1
+    assert overlap["time_system"] == "GPS"
+    incompatible = exact_epoch_intersection(
+        {"A": {first[0]}, "B": {first[0]}}, {"A": "GPS", "B": "UTC"}
+    )
+    assert incompatible["status"] == "TIME_SYSTEM_INCOMPATIBLE"
+
+
+def test_source_coordinate_classification_and_exact_identity_reconciliation() -> None:
+    # SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS.
+    base = {
+        "coordinate_xyz_m": "1,2,3",
+        "source": "Official",
+        "identity_status": "CODE_MATCH_MONUMENT_UNVERIFIED",
+    }
+    assert coordinate_record_status(base) == "PROVISIONAL"
+    assert coordinate_record_status({**base, "coordinate_epoch": "2011.0"}) == "PROVISIONAL"
+    assert coordinate_record_status(
+        {
+            **base,
+            "reference_frame": "NOT STATED",
+            "coordinate_epoch": "2011.0",
+            "reference_point": "ARP",
+        }
+    ) == "PROVISIONAL"
+    complete = {
+        **base,
+        "identity_status": "IDENTITY_RECONCILED",
+        "reference_frame": "FRAME",
+        "coordinate_epoch": "2011.0",
+        "reference_point": "ARP",
+    }
+    assert coordinate_record_status(complete) == "VERIFIED"
+    assert coordinate_record_status({**complete, "identity_status": "CONFLICT"}) == "UNVERIFIED"
+    assert reconcile_station_identity("ulag", "ULAG")["status"] == "CODE_MATCH_MONUMENT_UNVERIFIED"
+    assert reconcile_station_identity("YLAD", "FUTY")["status"] == "CONFLICT"
+    assert coordinate_gated_geometry({"A": {"xyz": (1, 2, 3), "coordinate_status": "PROVISIONAL"}})[
+        "state"
+    ] == "BLOCKED_COORDINATES_NOT_VERIFIED"
+    assert coordinate_gated_geometry(
+        {
+            "A": {"xyz": (1, 2, 3), "coordinate_status": "VERIFIED", "reference_point": "MONUMENT"},
+            "B": {"xyz": (1, 2, 3), "coordinate_status": "VERIFIED", "reference_point": "ARP"},
+        }
+    )["state"] == "BLOCKED_REFERENCE_POINT_MISMATCH"
+    assert coordinate_transformation_status(None, None) == "TRANSFORMATION_UNAVAILABLE"
+    assert coordinate_transformation_status((float("nan"),), (0.0, 0.0, 0.0)) == (
+        "INVALID_TRANSFORMATION_INPUT"
+    )
+
+
+def test_navigation_header_date_and_coordinate_admission_fail_closed() -> None:
+    # SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC RESULTS.
+    def line(body: str, label: str) -> str:
+        return body.ljust(60)[:60] + label.ljust(20)
+    header = [
+        line("     2.11           N: GPS NAV DATA", "RINEX VERSION / TYPE"),
+        line("", "END OF HEADER"),
+    ]
+    # Minimal synthetic record header exercises epoch/date parsing only.
+    body = " 1 11  9  9  0  0  0.0" + " 0.0" * 3
+    gps_record = [body] + ["    0.000000000000E+00" * 4 for _ in range(7)]
+    parsed = parse_rinex2_navigation("\n".join(header + gps_record), "2011-09-09", "N")
+    assert parsed["status"] == "VALIDATED"
+    wrong_day = parse_rinex2_navigation("\n".join(header + gps_record), "2011-09-10", "N")
+    assert wrong_day["status"] == "NO_EXPECTED_DATE_EPHEMERIS"
+    missing_sat = parse_rinex2_navigation(
+        "\n".join(header + gps_record), "2011-09-09", "N", {"G01", "G02"}
+    )
+    assert missing_sat["status"] == "MISSING_SATELLITE_EPHEMERIDES"
+    with pytest.raises(ValueError, match="corrupt"):
+        decompress_unix_compress(b"SYNTHETIC CORRUPT COMPRESSED DATA")
+    decision = scientific_admission(
+        {"A": "PROVISIONAL", "B": "VERIFIED"},
+        {"2011-09-09": "VALIDATED"},
+        {"A": "GPS", "B": "GPS"},
+        12,
+    )
+    assert decision == {
+        "state": "BLOCKED",
+        "reasons": [
+            "COORDINATES_NOT_ALL_VERIFIED",
+            "STATION_IDENTITY_NOT_RECONCILED",
+            "REFERENCE_POINT_INCOMPATIBLE_OR_UNKNOWN",
+        ],
+    }
 
 
 def test_epoch_scanner_never_treats_partial_line_as_epoch(tmp_path: Path) -> None:
