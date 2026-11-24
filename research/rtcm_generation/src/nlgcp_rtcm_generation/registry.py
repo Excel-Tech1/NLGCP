@@ -61,23 +61,30 @@ DEFAULT_MESSAGE_FAMILIES = (
     MessageFamily(
         "REFERENCE_STATION_1005",
         (1005,),
-        "Reference-station ECEF metadata scaffold; semantic layout not implemented.",
-        MessageFamilyStatus.SCAFFOLDED,
-        "RTKLIB/IGS references recorded in the technical baseline; licensed RTCM text not copied.",
+        "Reference-station ARP ECEF bit-level encoder; synthetic fixtures only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 src/rtcm3e.c encode_type1005 and src/rtcm3.c "
+        "decode_type1005; licensed RTCM text not copied.",
+        encoder_key="rtcm1005",
     ),
     MessageFamily(
         "MSM4_GPS_1074",
         (1074,),
-        "GPS MSM4 observation-generation boundary; authentic observation semantics required.",
-        MessageFamilyStatus.SCAFFOLDED,
-        "RTCM/RTKLIB compatibility boundary only; no production encoder in this sprint.",
+        "GPS MSM4 bit-level encoder; synthetic fixtures only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 src/rtcm3e.c encode_msm_head/encode_msm4 and "
+        "src/rtcm3.c decode_msm_head/decode_msm4; licensed RTCM text not copied.",
+        encoder_key="msm4-gps",
     ),
     MessageFamily(
         "MSM4_GLONASS_1084",
         (1084,),
-        "GLONASS MSM4 observation-generation boundary; authentic observation semantics required.",
-        MessageFamilyStatus.SCAFFOLDED,
-        "RTCM/RTKLIB compatibility boundary only; no production encoder in this sprint.",
+        "GLONASS MSM4 bit-level encoder; synthetic fixtures only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 src/rtcm3e.c encode_msm_head/encode_msm4 and "
+        "src/rtcm3.c decode_msm_head/decode_msm4 plus GLONASS signal table; "
+        "licensed RTCM text not copied.",
+        encoder_key="msm4-glonass",
     ),
     MessageFamily(
         "SYNTHETIC_TEST_FRAME",

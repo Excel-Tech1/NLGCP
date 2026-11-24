@@ -1,16 +1,23 @@
-# Phase 11 RTCM Generation Scaffold
+# Phase 11 RTCM Generation Research Package
 
 This is a Python reference boundary for future correction generation. It is
-not an operational correction engine. The only encoder in this package is a
-deterministic `SYNTHETIC_TEST_FRAME` payload used to prove the request →
-encoder → Phase 9 framing → local-consumer interfaces.
+not an operational correction engine. It provides deterministic bit-level
+encoders for:
 
-The registry entries for reference-station metadata and MSM observation
-families are scaffolds only. They do not copy proprietary RTCM standard text,
-claim message support, or provide a production bit layout. Authentic station
-observations, GNSS epochs, verified coordinates, an approved correction model,
-and independent decoder/positioning validation are required before any real
-generation can be considered.
+- RTCM 1005 reference-station ARP metadata;
+- RTCM 1074 GPS MSM4;
+- RTCM 1084 GLONASS MSM4;
+- the NLGCP lab-only `SYNTHETIC_TEST_FRAME` message 4095.
+
+The 1005/1074/1084 layouts are derived from the pinned RTKLIB v2.4.2-p13
+source. They are validated only against synthetic fixtures and independent
+hardcoded payload/frame vectors. No proprietary RTCM standard text is copied.
+
+`SYNTHETICALLY_VALIDATED` is a test status, not scientific or operational
+validation. No independent decoder, authentic station observation, verified
+coordinate, receiver compatibility test, or positioning evidence has been
+admitted. The 1084 encoder does not transport GLONASS frequency-channel
+numbers. `OPERATIONAL_APPROVED` output remains forbidden.
 
 All fixtures are labelled:
 

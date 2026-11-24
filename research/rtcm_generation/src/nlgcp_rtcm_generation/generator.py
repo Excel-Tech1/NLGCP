@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from nlgcp_rtcm_generation import SCHEMA_VERSION
 from nlgcp_rtcm_generation.admission import admit_request
-from nlgcp_rtcm_generation.encoder import MessageEncoder, SyntheticMessageEncoder
+from nlgcp_rtcm_generation.encoder import MessageEncoder, default_encoders
 from nlgcp_rtcm_generation.handoff import CorrectionStreamArtifact
+from nlgcp_rtcm_generation.messages import MessageInputError
 from nlgcp_rtcm_generation.models import (
     CorrectionGenerationContext,
     CorrectionGenerationRequest,
@@ -26,7 +27,7 @@ class CorrectionGenerator:
         encoders: dict[str, MessageEncoder] | None = None,
     ) -> None:
         self.registry = registry or MessageFamilyRegistry()
-        self.encoders = encoders or {"SYNTHETIC_TEST_FRAME": SyntheticMessageEncoder()}
+        self.encoders = encoders or default_encoders()
 
     def generate(
         self,
@@ -89,17 +90,30 @@ class CorrectionGenerator:
                     observations=observations,
                 )
             )
-        except (ValueError, RuntimeError) as exc:
+        except MessageInputError as exc:
             reason = (
-                ReasonCode.OUT_OF_RANGE_FIELD
-                if "fit" in str(exc) or "range" in str(exc)
-                else ReasonCode.ENCODER_NOT_VALIDATED
+                ReasonCode.MISSING_REQUIRED_FIELD
+                if exc.missing
+                else ReasonCode.OUT_OF_RANGE_FIELD
             )
             return CorrectionGenerationResult(
                 request.request_id,
                 request.decision_id,
                 GenerationStatus.BLOCKED,
                 (reason,),
+                (),
+                request.classification,
+                {**provenance, "encoder_error": type(exc).__name__},
+                request.mode,
+                request.reference_station_id,
+                request.virtual_station_id,
+            )
+        except (ValueError, RuntimeError) as exc:
+            return CorrectionGenerationResult(
+                request.request_id,
+                request.decision_id,
+                GenerationStatus.BLOCKED,
+                (ReasonCode.ENCODER_NOT_VALIDATED,),
                 (),
                 request.classification,
                 {**provenance, "encoder_error": type(exc).__name__},

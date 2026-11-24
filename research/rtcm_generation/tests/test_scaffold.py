@@ -108,11 +108,11 @@ def test_operational_classification_can_never_be_emitted() -> None:
     assert ReasonCode.OPERATIONAL_CLASSIFICATION_FORBIDDEN in result.reason_codes
 
 
-def test_scaffolded_real_message_family_has_no_encoder() -> None:
+def test_real_message_family_requires_validated_encoder_version() -> None:
     request = replace(synthetic_request(), output_message_family="REFERENCE_STATION_1005")
     result = CorrectionGenerator().generate(request)
     assert result.status == GenerationStatus.BLOCKED
-    assert ReasonCode.UNSUPPORTED_MESSAGE_TYPE in result.reason_codes
+    assert ReasonCode.ENCODER_NOT_VALIDATED in result.reason_codes
 
 
 def test_synthetic_frame_is_deterministic_and_phase9_compatible() -> None:
@@ -169,8 +169,9 @@ def test_request_fingerprint_changes_with_input() -> None:
 def test_registry_does_not_claim_operational_support() -> None:
     registry = MessageFamilyRegistry()
     statuses = {row["family_id"]: row["status"] for row in registry.as_dict()}
-    assert statuses["REFERENCE_STATION_1005"] == "SCAFFOLDED"
-    assert statuses["MSM4_GPS_1074"] == "SCAFFOLDED"
+    assert statuses["REFERENCE_STATION_1005"] == "SYNTHETICALLY_VALIDATED"
+    assert statuses["MSM4_GPS_1074"] == "SYNTHETICALLY_VALIDATED"
+    assert statuses["MSM4_GLONASS_1084"] == "SYNTHETICALLY_VALIDATED"
     assert "OPERATIONALLY_APPROVED" not in statuses.values()
 
 

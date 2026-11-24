@@ -46,11 +46,30 @@ class ParseResult:
     bytes_processed: int
 
 
+def encode_payload_frame(payload: bytes) -> bytes:
+    """Frame an already packed RTCM payload, including its message number.
+
+    The payload must begin with the 12-bit message number at bit offset 0.
+    This helper is the byte-exact path for real encoder output; it shares
+    the Phase 9 header and CRC-24Q implementation with ``encode_frame``.
+    """
+    if len(payload) < MIN_PAYLOAD_FOR_MESSAGE_NUMBER:
+        raise ValueError("payload must contain at least the 12-bit message number")
+    if len(payload) > MAX_RTCM_LENGTH:
+        raise ValueError(f"payload too long: {len(payload)}")
+    header = bytes([PREAMBLE, (len(payload) >> 8) & 0x03, len(payload) & 0xFF])
+    body = header + payload
+    crc = crc24q(body)
+    return body + bytes([(crc >> 16) & 0xFF, (crc >> 8) & 0xFF, crc & 0xFF])
+
+
 def encode_frame(message_number: int, payload_suffix: bytes) -> bytes:
     """Build one valid RTCM 3.x frame (fixture encoder, §32).
 
     ``message_number`` holds the 12-bit RTCM message number; the payload
-    is the 12-bit number followed by caller-supplied suffix bytes.
+    is the 12-bit number followed by caller-supplied suffix bytes.  Use
+    ``encode_payload_frame`` when the suffix is an already packed RTCM
+    payload starting at bit 12.
     """
     if not 0 <= message_number <= 4095:
         raise ValueError(f"message_number out of 12-bit range: {message_number}")
@@ -62,12 +81,7 @@ def encode_frame(message_number: int, payload_suffix: bytes) -> bytes:
         payload = bytes([head[0], second]) + payload_suffix
     else:
         payload = head + b"\x00"
-    if len(payload) > MAX_RTCM_LENGTH:
-        raise ValueError(f"payload too long: {len(payload)}")
-    header = bytes([PREAMBLE, (len(payload) >> 8) & 0x03, len(payload) & 0xFF])
-    body = header + payload
-    crc = crc24q(body)
-    return body + bytes([(crc >> 16) & 0xFF, (crc >> 8) & 0xFF, crc & 0xFF])
+    return encode_payload_frame(payload)
 
 
 def extract_message_number(payload: bytes) -> int | None:

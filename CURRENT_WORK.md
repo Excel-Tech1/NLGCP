@@ -1,14 +1,72 @@
 # Current Work
 
+## 14-Day Beta Sprint - Day 3 (2026-11-24)
+
+Day 3 independent RTCM decoder validation is complete on
+`research/nlgcp-14-day-beta-sprint` at `d789da0`; no commit, external network
+connection, raw-data change, or Phase 12 work was performed. Generated
+synthetic RTCM `1005`, `1074` (GPS MSM4), and `1084` (GLONASS MSM4) frames
+were independently decoded using unmodified **RTKLIB v2.4.2-p13** via both the
+external `convbin` binary (SHA-256 `b575f81e…`) and a read-only native C
+`input_rtcm3()` adapter (`research/rtcm_generation/native/rtklib_rtcm_decode.c`
++ `independent_decoder.py` + `tests/test_independent_decoder.py`). All 19 GPS
+and 7 GLONASS corrected 1-based MSM signal IDs decoded cleanly (`L1C,L2P` and
+`L1C,L2C`), reserved Signal ID `1` was proven unknown (`"(1)"`) to RTKLIB,
+1005/1074/1084 coordinates/epochs/pseudoranges/CNRs/half-cycle LLI matched
+within RTCM quantization tolerances, standalone 1084 empirically confirmed
+zero GLONASS phase cycles without FCN (and sub-mm phase match when synthetic
+FCNs are supplied), and all CRC/payload/length/over-64/4095 negative cases
+behaved fail-closed. Focused suite with `RTKLIB_SOURCE=/home/excellence/RTKLIB`:
+`201 passed`; full `make check`: `764 passed, 11 skipped` (mypy 224 source
+files, Ruff, ESLint, TypeScript, Go, CTest, Next.js build). Registry remains
+`SYNTHETICALLY_VALIDATED`; no non-RTKLIB second decoder is installed; authentic
+RTCM, receiver interoperability, and operational claims remain BLOCKED. Report:
+`docs/sprints/14-day-beta-sprint/09-day3-report.md`. Next action requires
+explicit authorization to start Day 4.
+
+## 14-Day Beta Sprint - Day 2 (2026-11-24)
+
+Day 2 implemented, RTKLIB-audited, and unit-tested synthetic-fixture bit-level
+encoders for RTCM 1005, GPS MSM4 1074, and GLONASS MSM4 1084 in
+`research/rtcm_generation` on `research/nlgcp-14-day-beta-sprint` at `d789da0`;
+no commit, external connection, raw-data change, or reference-frame change was
+performed. Continuation audit against pinned RTKLIB v2.4.2-p13 (`src/rtcm3.c`)
+caught and fixed a critical off-by-one MSM signal-ID mapping defect in both
+`GPS_MSM_SIGNAL_IDS` and `GLONASS_MSM_SIGNAL_IDS`, hardened direct-construction
+validation, regenerated independent 1074/1084 vectors with valid RTCM signal
+IDs (`2`/`9` GPS, `2`/`8` GLONASS), and expanded tests to 117 Phase 11 tests
+(103 in `test_rtcm_messages.py` + 14 in `test_scaffold.py`). The registry
+status for the three families is `SYNTHETICALLY_VALIDATED`; no family is
+`REAL_INPUT_VALIDATED` or `OPERATIONALLY_APPROVED`. Semantic validation is
+`NOT_PERFORMED_NO_INDEPENDENT_DECODER`; GLONASS FCN is not transported in 1084.
+`make check` passed (759 passed, 6 skipped; Ruff, ESLint, mypy 222 source
+files, TypeScript, Go vet/tests, CTest, and Next.js production build). Report:
+`docs/sprints/14-day-beta-sprint/08-day2-report.md`. Independent decoder
+validation, authentic input, verified coordinates, and operational correction
+remain blocked. Next action requires explicit authorization to start Day 3.
+
+## 14-Day Beta Sprint - Day 1 (2026-11-23)
+
+Day 1 audit is complete on `research/nlgcp-14-day-beta-sprint` at
+`d789da0`; no implementation, external connection, data change, merge, or
+push was performed. Seven Day 1 deliverables are in
+`docs/sprints/14-day-beta-sprint/`. The defensible beta is an internal,
+local, fixture-fed engineering integration beta: operational correction,
+real-user, field, accuracy, and live-service claims remain unsupported.
+Phase 11 is a synthetic-only scaffold; Phase 12-16 remain not started.
+`make check` passed after the audit (656 passed, 6 skipped; Ruff, ESLint,
+mypy on 220 source files, TypeScript, Go vet/tests, CTest, and Next.js
+production build). Day 2 was subsequently authorized and is recorded above.
+
 ## Active Phase
 
 Phase 10 Operational Hardening + Phase 11 Correction-Generation Research Scaffold
 
 ## Current Milestone
 
-Phase 10 hardening and Phase 11 interface/encoder scaffold implemented on
-`pre-cors/phase10-hardening-phase11-scaffold`; authentic-provider and
-operational-correction validation remain BLOCKED.
+Phase 10 hardening and Phase 11 synthetic 1005/1074/1084 encoders are
+implemented on `research/nlgcp-14-day-beta-sprint`; authentic-input,
+independent-decoder, and operational-correction validation remain BLOCKED.
 
 ## Status
 
@@ -40,10 +98,12 @@ Sprint boundary (2026-09-11):
 - Phase 10: engineering and operational hardening implemented; real-provider
   validation remains BLOCKED because no authorized live CORS/NTRIP source is
   admitted.
-- Phase 11: research scaffold READY architecturally; only a clearly labelled
-  synthetic test encoder is validated for framing/determinism. Real VRS
-  generation remains BLOCKED by the reviewed ZERO / VRS_GEOMETRY_ONLY state;
-  real single-base generation remains BLOCKED without authentic input.
+- Phase 11: research package READY architecturally; synthetic 1005/1074/1084
+  bit-level encoders are tested against hardcoded vectors and the 4095 lab
+  frame remains validated for framing/determinism. No independent decoder or
+  authentic-input validation exists. Real VRS generation remains BLOCKED by
+  the reviewed ZERO / VRS_GEOMETRY_ONLY state; real single-base generation
+  remains BLOCKED without authentic input.
 - Phase 12: NOT STARTED.
 
 Sprint closure: 1290 canonical station-days on 294 observed days; 220/220

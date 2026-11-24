@@ -2,11 +2,12 @@
 
 ## Status and non-goals
 
-The Phase 11 scaffold is **READY architecturally** and **not operationally
-approved**. It defines interfaces, registries, provenance, validation and a
-synthetic reference vector. It does not generate authentic NLGCP corrections,
-serve a caster, claim centimetre accuracy, claim ambiguity fixing, or change
-the Phase 6/7/8 scientific conclusions.
+The Phase 11 package is **READY architecturally** and **not operationally
+approved**. It defines interfaces, registries, provenance, validation and
+synthetic encoders for 1005, 1074, 1084, and the lab-only 4095 test frame. It
+does not generate authentic NLGCP corrections, serve a caster, claim
+centimetre accuracy, claim ambiguity fixing, or change the Phase 6/7/8
+scientific conclusions.
 
 The Python reference package is `research/rtcm_generation`:
 
@@ -50,19 +51,24 @@ forbidden in this sprint.
 
 The registry records `REFERENCE_STATION_1005`, GPS MSM4 `1074`, GLONASS MSM4
 `1084`, and one lab-only `SYNTHETIC_TEST_FRAME` family. Registry presence is
-not support: the real families are `SCAFFOLDED`, while only the synthetic
-family is `SYNTHETICALLY_VALIDATED`. No proprietary RTCM standard text is
-copied. The scaffold does not invent reference-station or MSM bit layouts.
+not support. All four are currently `SYNTHETICALLY_VALIDATED`; none is
+`REAL_INPUT_VALIDATED` or `OPERATIONALLY_APPROVED`.
+
+Bit layouts for 1005/1074/1084 were implemented from the pinned RTKLIB
+v2.4.2-p13 source (`src/rtcm3e.c`, `src/rtcm3.c`, `src/rtklib.h`). No
+proprietary RTCM standard text was copied. The 4095 encoder remains a
+clearly labelled lab payload and is not a navigable RTCM message.
 
 `FieldSpec`, `BitWriter`, and `BitReader` enforce units, scales, bounds,
-signedness, finite values, overflow rejection, and deterministic padding. The
-synthetic encoder emits a clearly labelled test payload under message number
-4095; it is not a navigable RTCM message. Framing delegates to the tested
-Phase 9 `0xD3`/10-bit-length/CRC-24Q implementation, avoiding a second CRC.
+signedness, finite values, overflow rejection, and deterministic padding.
+Framing delegates to the tested Phase 9 `0xD3`/10-bit-length/CRC-24Q
+implementation, avoiding a second CRC.
 
 Phase 9 parsing validates framing, message number and CRC only. It does not
-constitute semantic RTCM or scientific validation. RTKLIB remains an optional
-future compatibility cross-check and is not modified here.
+constitute semantic RTCM or scientific validation. Semantic validation for
+1005/1074/1084 remains `NOT_PERFORMED_NO_INDEPENDENT_DECODER`; no independent
+decoder or receiver compatibility test has been run. The 1084 encoder does
+not transport GLONASS frequency-channel numbers.
 
 ## Provenance, classification, and handoff
 
@@ -82,8 +88,9 @@ mountpoints, and public/private caster service are not started.
 The test path is:
 
 ```text
-synthetic admitted fixture → Phase 11 request → synthetic frame
-→ Phase 9 parser/CRC check → bounded local consumer envelope
+synthetic admitted fixture → Phase 11 request → 4095 test frame or a
+1005/1074/1084 synthetic vector → Phase 9 parser/CRC check → bounded local
+consumer envelope
 ```
 
 Fixtures are labelled **SYNTHETIC TEST DATA — NOT VALID FOR SCIENTIFIC

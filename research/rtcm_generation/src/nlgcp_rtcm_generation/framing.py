@@ -6,12 +6,23 @@ import hashlib
 
 from nlgcp_rtcm_replay.crc import crc24q
 from nlgcp_rtcm_replay.framing import encode_frame as phase9_encode_frame
+from nlgcp_rtcm_replay.framing import encode_payload_frame as phase9_encode_payload_frame
 from nlgcp_rtcm_replay.framing import parse_stream
 
 
 def frame_payload(message_number: int, payload_suffix: bytes) -> bytes:
     """Frame a payload through Phase 9's tested preamble/length/CRC path."""
     return phase9_encode_frame(message_number, payload_suffix)
+
+
+def frame_message_payload(payload: bytes) -> bytes:
+    """Frame a fully packed RTCM payload through the Phase 9 CRC-24Q path.
+
+    The payload must start with the 12-bit message number.  Unlike
+    ``frame_payload`` this takes the complete payload, so real message
+    encoders do not have to split the message number from its fields.
+    """
+    return phase9_encode_payload_frame(payload)
 
 
 def frame_metadata(frame: bytes) -> dict[str, int | str]:

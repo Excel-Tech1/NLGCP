@@ -9,8 +9,9 @@ from nlgcp_rtcm_generation.models import (
     GenerationMode,
     OutputClassification,
     ReasonCode,
+    VerificationState,
 )
-from nlgcp_rtcm_generation.registry import MessageFamilyRegistry
+from nlgcp_rtcm_generation.registry import MessageFamilyRegistry, MessageFamilyStatus
 
 
 @dataclass(frozen=True, slots=True)
@@ -64,8 +65,28 @@ def admit_request(
     family = registry.get(request.output_message_family)
     if family is None or family.encoder_key is None:
         reasons.append(ReasonCode.UNSUPPORTED_MESSAGE_TYPE)
-    elif request.output_message_family == "SYNTHETIC_TEST_FRAME" and not request.synthetic_fixture:
+    elif family.status in {
+        MessageFamilyStatus.DECLARED,
+        MessageFamilyStatus.SCAFFOLDED,
+        MessageFamilyStatus.BLOCKED,
+    } or (
+        family.status != MessageFamilyStatus.OPERATIONALLY_APPROVED
+        and (
+            not request.synthetic_fixture
+            or request.classification != OutputClassification.SYNTHETIC_TEST_ONLY
+        )
+    ):
         reasons.append(ReasonCode.ENCODER_NOT_VALIDATED)
+    if request.synthetic_fixture != (
+        request.classification == OutputClassification.SYNTHETIC_TEST_ONLY
+    ):
+        reasons.append(ReasonCode.ENCODER_NOT_VALIDATED)
+    if request.classification == OutputClassification.SYNTHETIC_TEST_ONLY and (
+        request.coordinate is not None
+        and request.coordinate.verification_state
+        != VerificationState.SYNTHETIC_TEST_ONLY
+    ):
+        reasons.append(ReasonCode.COORDINATE_UNVERIFIED)
     if reasons:
         return AdmissionDecision(False, "BLOCKED", tuple(dict.fromkeys(reasons)))
     return AdmissionDecision(True, "ADMITTED", ())
