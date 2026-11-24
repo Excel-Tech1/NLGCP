@@ -1,5 +1,32 @@
 # Current Work
 
+## 14-Day Beta Sprint - Days 4-5: Phase 12 Local Synthetic NTRIP Service (2026-11-24)
+
+Days 4–5 implemented the loopback-only (`127.0.0.1`) Phase 12 NTRIP correction
+distribution service under `services/correction-service/src/nlgcp_correction_service/`
+and CLI runner `scripts/run_phase12_lab_demo.py` on
+`research/nlgcp-14-day-beta-sprint` above checkpoint `8d10f30`; no commit,
+push, public exposure, or operational claim was made. Reuses Phase 9 CRC-24Q/
+framing, Phase 10 `StreamingFramer`/handshake/redaction/`ReconnectPolicy`, and
+Phase 11 `CorrectionGenerator`/`CorrectionStreamArtifact`/RTKLIB decoders.
+Implemented: fail-closed loopback-only config (`127.0.0.1` enforced), constant-
+time Basic auth (`hmac.compare_digest`), synthetic mountpoint `NLGCP_TEST`
+explicitly labelled `SYNTHETIC TEST DATA — NOT VALID FOR NAVIGATION OR
+SCIENTIFIC POSITIONING RESULTS.`, NTRIP v2/v1 caster (`GET /`, `GET /NLGCP_TEST`,
+`POST`, `SOURCE`) with `select`/`MSG_PEEK` disconnect cleanup, authenticated
+client with bounded exponential backoff, 5-dimension health diagnostics, and 29
+Phase 12 unit/integration/negative tests covering AC-01 through AC-18.
+End-to-end demo (`Phase 11 1005/1074/1084 -> NLGCP_TEST -> Client -> RTKLIB
+convbin & input_rtcm3`) verified byte-exact and semantically within RTCM
+quantization limits. Focused suite (`RTKLIB_SOURCE=/home/excellence/RTKLIB`):
+`230 passed` (29 Phase 12 + 127 Phase 11 + 74 Phase 9); full `make check`:
+`792 passed, 12 skipped` (mypy 237 source files, Ruff, ESLint, TypeScript, Go,
+CTest, Next.js build). Report:
+`docs/sprints/14-day-beta-sprint/10-phase12-ntrip-implementation.md`.
+Operational correction distribution, authentic CORS/RTCM, VRS, commercial
+receiver interoperability, and field validation remain BLOCKED. Next action
+requires explicit authorization before committing or starting Day 6.
+
 ## 14-Day Beta Sprint - Day 3 (2026-11-24)
 
 Day 3 independent RTCM decoder validation is complete on

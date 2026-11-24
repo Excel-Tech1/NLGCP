@@ -12,7 +12,7 @@
 | 1 | Audit, scope freeze, Day 1 deliverables | Repository baseline | Complete |
 | 2 | RTCM 1005/1074/1084 synthetic encoder implementation | Day 1; RTKLIB reference layout | Complete |
 | 3 | Independent RTCM conformance review | Day 2; synthetic vectors; independent decoder if available | Complete (RTKLIB v2.4.2-p13; non-RTKLIB second decoder unavailable) |
-| 4-5 | Local Phase 12 lab caster | Day 3; synthetic artifact | Not Started |
+| 4-5 | Local Phase 12 lab caster | Day 3; synthetic artifact | Complete (loopback `127.0.0.1` caster + client + RTKLIB E2E; synthetic-only) |
 | 6 | End-to-end synthetic loopback integration | Day 4-5 | Not Started |
 | 7 | Backend checkpoint and scope review | Day 6 | Not Started |
 | 8 | Read-only Phase 13 status surface | Day 7 | Not Started |
@@ -147,42 +147,52 @@ inventing message layouts or receiver behaviour.
 - no second non-RTKLIB decoder (`pyrtcm`, BKG BNC, or hardware receiver)
   installed/available.
 
-### Day 4-5 - Local Phase 12 lab caster
+### Day 4-5 - Local Phase 12 lab caster and client integration
+
+**Status:** Complete (2026-11-24). Report: `10-phase12-ntrip-implementation.md`.
 
 **Objective**
 
-Implement a loopback-only NTRIP caster for the synthetic mountpoint, or document a reviewed no-go.
+Implement a loopback-only (`127.0.0.1`) NTRIP v2/v1 caster and authenticated
+local client connecting the Phase 11 synthetic RTCM `1005`/`1074`/`1084`
+pipeline to independent RTKLIB validation.
 
-**Tasks**
+**Tasks completed**
 
-- choose and document the minimal implementation approach;
-- implement source-table and one synthetic mountpoint;
-- enforce loopback binding and bounded sessions;
-- reject unauthorized or unknown sources;
-- expose explicit session state;
-- add tests for connect, reject, disconnect, stale session, and buffer limits;
-- keep all secrets outside version control.
+- implemented loopback-only `LocalNtripCaster` (`GET /`, `GET /NLGCP_TEST`,
+  `POST`, `SOURCE`), constant-time Basic auth (`CredentialStore`), synthetic
+  mountpoint registry (`NLGCP_TEST`), Phase 9 CRC-24Q/framing publication gate,
+  bounded FIFO `MountpointBroker`, 5-dimension diagnostics, and `LocalNtripClient`
+  with bounded exponential backoff under `services/correction-service/`;
+- created safe local example config `services/correction-service/.env.example`
+  and reproducible CLI demo `scripts/run_phase12_lab_demo.py`;
+- verified end-to-end synthetic `1005/1074/1084 -> NLGCP_TEST -> Client ->
+  RTKLIB convbin & input_rtcm3` over NTRIP v2 and v1 plus 1-byte TCP splits
+  and all 12 required negative/resilience scenarios (AC-01 through AC-18).
 
 **Deliverables**
 
-- local correction-service implementation and tests;
-- mountpoint catalogue limited to a synthetic name;
-- operator configuration recorded outside secrets;
-- service evidence transcript.
+- `services/correction-service/src/nlgcp_correction_service/` and `tests/` (29 tests);
+- `services/correction-service/.env.example`, `services/correction-service/README.md`,
+  `scripts/run_phase12_lab_demo.py`;
+- `docs/sprints/14-day-beta-sprint/10-phase12-ntrip-implementation.md`;
+- updated `CURRENT_WORK.md`, `PROJECT_STATUS.md`, `EVIDENCE_INDEX.md`, and
+  `02-phase-readiness-matrix.md`.
 
-**Acceptance criteria**
+**Acceptance evidence**
 
-- no public bind or real credential;
-- source table never advertises an operational/high-precision service;
-- unknown mountpoints fail closed;
-- no silent frame loss;
-- local client can connect and receive labelled synthetic frames;
-- Phase 12 status remains synthetic-only.
+- CLI demo `ok=true`, `byte_exact_match=true`, RTKLIB `convbin` + native
+  `input_rtcm3` semantic verification PASS;
+- 230 focused Phase 9/11/12 tests passed with `RTKLIB_SOURCE=/home/excellence/RTKLIB`;
+- `make check` passed (792 passed, 12 skipped; Ruff, ESLint, mypy 237 files,
+  TypeScript, Go vet/tests, CTest, Next.js build);
+- strictly `127.0.0.1` loopback-only and `SYNTHETIC_TEST_ONLY`; no commit created.
 
-**Primary dependencies**
+**Primary blockers**
 
-- Day 2-3 RTCM implementation and conformance findings;
-- Phase 11 synthetic fixture.
+- operational caster exposure, TLS, production auth/entitlements (Phases 13/15),
+  authentic CORS/RTCM source, non-RTKLIB decoder, and commercial receiver/field
+  validation remain blocked.
 
 ### Day 6 - End-to-end synthetic loopback integration
 
