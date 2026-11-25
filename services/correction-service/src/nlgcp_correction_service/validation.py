@@ -17,6 +17,7 @@ import hashlib
 from dataclasses import dataclass
 
 from nlgcp_rtcm_generation.models import GeneratedCorrectionFrame, OutputClassification
+from nlgcp_rtcm_generation.registry import MessageFamilyRegistry, MessageFamilyStatus
 from nlgcp_rtcm_replay.crc import crc24q
 from nlgcp_rtcm_replay.framing import (
     CRC_LENGTH,
@@ -111,8 +112,25 @@ def validate_generated_frame(
     frame: GeneratedCorrectionFrame,
     *,
     source_id: str = "phase11-generator",
+    registry: MessageFamilyRegistry | None = None,
 ) -> ValidatedRtcmFrame:
     """Validate a Phase 11 ``GeneratedCorrectionFrame`` before publication."""
+    active_registry = registry if registry is not None else MessageFamilyRegistry()
+    family = active_registry.get(frame.message_family)
+    if family is None:
+        raise FrameValidationError(
+            f"unsupported Phase 11 message family: {frame.message_family!r}"
+        )
+    if family.status != MessageFamilyStatus.SYNTHETICALLY_VALIDATED:
+        raise FrameValidationError(
+            f"message family {frame.message_family!r} has status {family.status}; "
+            "Phase 12 lab mode permits SYNTHETICALLY_VALIDATED families only"
+        )
+    if frame.message_number not in family.message_numbers:
+        raise FrameValidationError(
+            f"message number {frame.message_number} is not permitted for family "
+            f"{frame.message_family!r}"
+        )
     validated = validate_rtcm_bytes(
         frame.raw_bytes,
         classification=frame.classification,

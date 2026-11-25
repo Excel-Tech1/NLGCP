@@ -38,6 +38,7 @@ from nlgcp_ntrip_ingest.framing import StreamingFramer
 from nlgcp_ntrip_ingest.handshake import parse_head, split_head
 from nlgcp_rtcm_generation.handoff import CorrectionStreamArtifact
 from nlgcp_rtcm_generation.models import CorrectionGenerationResult, OutputClassification
+from nlgcp_rtcm_generation.registry import MessageFamilyRegistry
 
 from nlgcp_correction_service import SERVICE_VERSION
 from nlgcp_correction_service.auth import CredentialStore
@@ -208,6 +209,7 @@ class LocalNtripCaster:
         *,
         mountpoint: str | None = None,
         artifact: CorrectionStreamArtifact | None = None,
+        registry: MessageFamilyRegistry | None = None,
         retain_in_backlog: bool = True,
     ) -> tuple[ValidatedRtcmFrame, ...]:
         target = mountpoint or self.config.mountpoint
@@ -215,6 +217,7 @@ class LocalNtripCaster:
             target,
             result,
             artifact=artifact,
+            registry=registry,
             retain_in_backlog=retain_in_backlog,
         )
 
@@ -417,15 +420,13 @@ class LocalNtripCaster:
             self._send_http_error(conn, "404 Not Found", "Unknown mountpoint\n")
             return
 
-        if self.diagnostics.active_clients >= self.config.max_clients:
+        if not self.diagnostics.try_acquire_client_slot(self.config.max_clients):
             self.diagnostics.record_connection_error()
             self._send_http_error(
                 conn, "503 Service Unavailable", "Caster client capacity reached\n"
             )
             return
 
-        self.diagnostics.record_auth_success()
-        self.diagnostics.client_connected()
         client_id = str(uuid.uuid4())
         sub: ClientSubscription | None = None
         try:

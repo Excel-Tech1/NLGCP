@@ -188,7 +188,7 @@ class LocalNtripClient:
                 last_status = handshake.status_code
                 last_failure = handshake.failure
                 last_reason = handshake.reason
-            elif session_err is not None:
+            if session_err is not None:
                 last_failure = session_err[0]
                 last_reason = session_err[1]
 

@@ -12,8 +12,8 @@
 | 1 | Audit, scope freeze, Day 1 deliverables | Repository baseline | Complete |
 | 2 | RTCM 1005/1074/1084 synthetic encoder implementation | Day 1; RTKLIB reference layout | Complete |
 | 3 | Independent RTCM conformance review | Day 2; synthetic vectors; independent decoder if available | Complete (RTKLIB v2.4.2-p13; non-RTKLIB second decoder unavailable) |
-| 4-5 | Local Phase 12 lab caster | Day 3; synthetic artifact | Complete (loopback `127.0.0.1` caster + client + RTKLIB E2E; synthetic-only) |
-| 6 | End-to-end synthetic loopback integration | Day 4-5 | Not Started |
+| 4-5 | Local Phase 12 lab caster | Day 3; synthetic artifact | Complete (loopback `127.0.0.1` caster + client + RTKLIB E2E; synthetic-only; committed at `459143e`) |
+| 6 | End-to-end synthetic loopback integration | Day 4-5 | Complete (Phase 9/10/11/12 integration, admission & fault verification; 6 defects fixed; AC-01–AC-20 PASS) |
 | 7 | Backend checkpoint and scope review | Day 6 | Not Started |
 | 8 | Read-only Phase 13 status surface | Day 7 | Not Started |
 | 9 | API/caster/local diagnostics integration | Day 8 | Not Started |
@@ -196,29 +196,33 @@ pipeline to independent RTKLIB validation.
 
 ### Day 6 - End-to-end synthetic loopback integration
 
+**Status:** Complete (2026-11-25). Report: `11-day6-integration-assurance.md`.
+
 **Objective**
 
-Exercise Phase 11 -> Phase 9 -> local caster -> local client without a network dependency.
+Exercise and verify Phase 9 -> Phase 10 -> Phase 11 -> Phase 12 local loopback integration, admission controls, fault propagation, diagnostics separation, and lifecycle resource safety without external network dependencies.
 
-**Tasks**
+**Tasks completed**
 
-- wire the synthetic generator/replay path to the local caster;
-- run the local test client;
-- capture request/response, frame counts, CRC results, and failure behavior;
-- verify labels survive every boundary.
+- verified Day 1–3 (`8d10f30`) and Day 4–5 (`459143e`) Git checkpoints cleanly before edits;
+- audited Phase 9/10/11/12 boundaries and fixed 6 discovered admission/concurrency/fault-propagation defects (`validation.py`, `publisher.py`, `caster.py`, `diagnostics.py`, `client.py`);
+- added 26 Day 6 integration assurance tests (`services/correction-service/tests/test_day6_integration_assurance.py`; 55 Phase 12 tests total) covering multi-client byte-exact isolation, irregular TCP splits, recovery+RTKLIB decode, all 12 admission gates, all 14 fault scenarios, 5 distinct diagnostic categories, and 10-step resource cleanup;
+- enhanced `pipeline.py` and `scripts/run_phase12_lab_demo.py` with 10-stage human + machine-readable output carrying the explicit synthetic data notice;
+- ran focused `RTKLIB_SOURCE` verification (`350 passed, 0 skipped`), CLI demo, `make check` (`817 passed, 13 skipped`), and `git diff --check`.
 
 **Deliverables**
 
-- integration transcript and machine-readable counters;
-- reproducible command sequence.
+- `docs/sprints/14-day-beta-sprint/11-day6-integration-assurance.md`;
+- `services/correction-service/tests/test_day6_integration_assurance.py`;
+- targeted hardening in `services/correction-service/src/nlgcp_correction_service/{validation,publisher,caster,diagnostics,client,pipeline}.py` and `scripts/run_phase12_lab_demo.py`;
+- updated `CURRENT_WORK.md`, `PROJECT_STATUS.md`, `EVIDENCE_INDEX.md`, and `02-phase-readiness-matrix.md`.
 
-**Acceptance criteria**
+**Acceptance evidence**
 
-- no internet/external NTRIP connection;
-- synthetic classification is preserved end to end;
-- no CRC-invalid frame is forwarded as valid;
-- disconnect/reconnect behavior is explicit;
-- no positioning or accuracy claim.
+- all 20 Day 6 acceptance criteria (AC-01–AC-20) PASS;
+- focused Phase 9/10/11/12 suite with `RTKLIB_SOURCE=/home/excellence/RTKLIB`: `350 passed, 0 skipped`;
+- `make check`: PASS (`817 passed, 13 skipped`, mypy 238 source files, Ruff, ESLint, TypeScript, Go vet/tests, CTest, Next.js build);
+- no external network connection, no operational/VRS/accuracy claim, no commit or push created.
 
 ### Day 7 - Backend checkpoint
 

@@ -107,6 +107,15 @@ class CasterDiagnostics:
         with self._lock:
             self.active_clients += 1
 
+    def try_acquire_client_slot(self, max_clients: int) -> bool:
+        """Atomically check capacity and increment active_clients under lock."""
+        with self._lock:
+            if self.active_clients >= max_clients:
+                return False
+            self.active_clients += 1
+            self.authenticated_clients_total += 1
+            return True
+
     def client_disconnected(self) -> None:
         with self._lock:
             self.active_clients = max(0, self.active_clients - 1)

@@ -1,5 +1,40 @@
 # Current Work
 
+## 14-Day Beta Sprint - Day 6: End-to-End Synthetic Loopback Integration and Fault Verification (2026-11-25)
+
+Day 6 integration assurance and fault verification completed across Phases 9,
+10, 11, and 12 on `research/nlgcp-14-day-beta-sprint` above Day 4–5 commit
+`459143e` (`Complete Phase 12 local synthetic NTRIP service`, parent `8d10f30`,
+22 approved files verified clean and unpushed). No commit, push, Phase 6/7
+modification, or Day 7 / Phase 13 work was performed. Audited all Phase 11/12
+interfaces and discovered and fixed six real boundary/fault defects with
+regression coverage: (1) required valid `CorrectionStreamArtifact` with full
+provenance/fingerprint/mode/status/classification/family validation in
+`MountpointBroker.publish_phase11_result()`; (2) fail-closed rejection of
+crafted `GenerationMode.VRS` results and non-empty `reason_codes`; (3) Phase 12
+`MessageFamilyRegistry` status (`SYNTHETICALLY_VALIDATED` only) and family
+message-number validation in `validate_generated_frame()`; (4) atomic
+pre-validation for multi-frame batches before publication; (5) lock-atomic
+`CasterDiagnostics.try_acquire_client_slot()` capacity check; and (6)
+post-handshake `session_err` propagation fix in `LocalNtripClient.receive_frames()`
+so read timeouts surface as `FailureClass.TIMEOUT` rather than
+`CONNECTION_LOST`. Enhanced `pipeline.py` and `scripts/run_phase12_lab_demo.py`
+with 10-stage verification (including source-table mountpoint check and
+post-shutdown cleanup) and human + JSON output carrying the explicit
+`SYNTHETIC TEST DATA — NOT VALID FOR NAVIGATION OR SCIENTIFIC POSITIONING RESULTS.`
+notice. Added 26 Day 6 integration assurance tests in
+`services/correction-service/tests/test_day6_integration_assurance.py` (55
+Phase 12 tests total). Focused verification (`RTKLIB_SOURCE=/home/excellence/RTKLIB`):
+`350 passed, 0 skipped` (55 Phase 12 + 127 Phase 11 + 74 Phase 9 + 94 Phase 10);
+CLI demo passed all 10 stages including RTKLIB `convbin` and native
+`input_rtcm3()`; full `make check` passed (`817 passed, 13 skipped`, mypy 238
+source files, Ruff, ESLint, TypeScript, Go, CTest, Next.js build); `git diff
+--check` passed. All 20 acceptance criteria (AC-01–AC-20) PASS. Report:
+`docs/sprints/14-day-beta-sprint/11-day6-integration-assurance.md`. Scientific
+readiness remains NOT READY / BLOCKED; operational readiness remains NOT
+APPROVED. Next action requires explicit authorization before committing Day 6
+or starting Day 7.
+
 ## 14-Day Beta Sprint - Days 4-5: Phase 12 Local Synthetic NTRIP Service (2026-11-24)
 
 Days 4–5 implemented the loopback-only (`127.0.0.1`) Phase 12 NTRIP correction

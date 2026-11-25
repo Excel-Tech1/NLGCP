@@ -12,7 +12,7 @@ received frames through unmodified RTKLIB (``convbin`` and/or native
 from __future__ import annotations
 
 import secrets
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -249,6 +249,7 @@ class EndToEndDemoReport:
     client_result: ClientReceiveResult
     rtklib_validation: dict[str, Any]
     scientific_readiness: str
+    stages: dict[str, Any] = field(default_factory=dict)
 
 
 def run_local_end_to_end_demo(
@@ -272,10 +273,16 @@ def run_local_end_to_end_demo(
         mountpoint=mountpoint,
         client_credentials={ephemeral_user: ephemeral_pass},
     )
-    with LocalNtripCaster(caster_cfg) as caster:
+    caster = LocalNtripCaster(caster_cfg)
+    with caster:
+        caster_started = caster.is_running and caster.host == LOOPBACK_HOST and caster.port > 0
+        published_count = 0
         for res in phase11_results:
             artifact = generator.handoff(res)
-            caster.publish_phase11_result(res, mountpoint=mountpoint, artifact=artifact)
+            published = caster.publish_phase11_result(
+                res, mountpoint=mountpoint, artifact=artifact
+            )
+            published_count += len(published)
 
         client_cfg = ClientConfig(
             host=LOOPBACK_HOST,
@@ -289,8 +296,21 @@ def run_local_end_to_end_demo(
             ),
         )
         client = LocalNtripClient(client_cfg)
+        st_code, st_body = client.fetch_sourcetable()
+        mountpoint_available = (
+            st_code == 200
+            and f"STR;{mountpoint};" in st_body
+            and "ENDSOURCETABLE" in st_body
+        )
         client_res = client.receive_frames(max_frames=len(phase11_results))
         caster_snap = caster.status_snapshot()
+
+    post_shutdown_snap = caster.status_snapshot()
+    clean_shutdown = (
+        not caster.is_running
+        and post_shutdown_snap["caster_status"] == "STOPPED"
+        and post_shutdown_snap["active_clients"] == 0
+    )
 
     sent_raw = [r.frames[0].raw_bytes for r in phase11_results]
     recv_raw = [f.raw for f in client_res.valid_frames]
@@ -333,8 +353,76 @@ def run_local_end_to_end_demo(
     recv_nums = tuple(
         f.message_number for f in client_res.valid_frames if f.message_number is not None
     )
+    crc_valid = (
+        len(client_res.invalid_frames) == 0
+        and client_res.diagnostics["crc_failures"] == 0
+        and caster_snap["crc_failures"] == 0
+        and len(client_res.valid_frames) == len(phase11_results)
+    )
+    stages: dict[str, Any] = {
+        "caster_startup": {
+            "ok": caster_started,
+            "bind_host": caster_snap["listen_host"],
+            "bind_port": caster_snap["listen_port"],
+        },
+        "mountpoint_availability": {
+            "ok": mountpoint_available,
+            "mountpoint": mountpoint,
+            "sourcetable_status": st_code,
+        },
+        "authentication": {
+            "ok": client_res.status_code == 200
+            and caster_snap["authenticated_clients_total"] == 1
+            and caster_snap["failed_auth_attempts"] == 0,
+            "status_code": client_res.status_code,
+            "ntrip_version": ntrip_version,
+        },
+        "rtcm_publication": {
+            "ok": published_count == len(phase11_results),
+            "published_frames": published_count,
+            "message_numbers": list(sent_nums),
+        },
+        "client_reception": {
+            "ok": client_res.ok and len(client_res.valid_frames) == len(phase11_results),
+            "received_frames": len(client_res.valid_frames),
+            "bytes_received": client_res.diagnostics["bytes_received"],
+        },
+        "byte_exact_comparison": {
+            "ok": byte_exact,
+            "sent_bytes": sum(len(b) for b in sent_raw),
+            "received_bytes": sum(len(b) for b in recv_raw),
+        },
+        "crc_validation": {
+            "ok": crc_valid,
+            "caster_crc_failures": caster_snap["crc_failures"],
+            "client_crc_failures": client_res.diagnostics["crc_failures"],
+        },
+        "message_type_identification": {
+            "ok": sent_nums == recv_nums,
+            "expected": list(sent_nums),
+            "observed": list(recv_nums),
+        },
+        "independent_rtklib_decoding": {
+            "convbin_performed": rtklib_summary["convbin_performed"],
+            "native_input_rtcm3_performed": rtklib_summary["native_input_rtcm3_performed"],
+        },
+        "clean_shutdown": {
+            "ok": clean_shutdown,
+            "caster_status": post_shutdown_snap["caster_status"],
+            "active_clients": post_shutdown_snap["active_clients"],
+        },
+    }
+    overall_ok = (
+        caster_started
+        and mountpoint_available
+        and client_res.ok
+        and byte_exact
+        and crc_valid
+        and sent_nums == recv_nums
+        and clean_shutdown
+    )
     return EndToEndDemoReport(
-        ok=client_res.ok and byte_exact and sent_nums == recv_nums,
+        ok=overall_ok,
         mountpoint=mountpoint,
         sent_message_numbers=sent_nums,
         received_message_numbers=recv_nums,
@@ -343,4 +431,5 @@ def run_local_end_to_end_demo(
         client_result=client_res,
         rtklib_validation=rtklib_summary,
         scientific_readiness=SCIENTIFIC_READINESS_STATUS,
+        stages=stages,
     )

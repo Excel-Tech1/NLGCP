@@ -20,9 +20,12 @@ from dataclasses import dataclass
 from nlgcp_rtcm_generation.handoff import CorrectionStreamArtifact
 from nlgcp_rtcm_generation.models import (
     CorrectionGenerationResult,
+    GenerationMode,
     GenerationStatus,
     OutputClassification,
 )
+from nlgcp_rtcm_generation.provenance import fingerprint
+from nlgcp_rtcm_generation.registry import MessageFamilyRegistry
 
 from nlgcp_correction_service.diagnostics import CasterDiagnostics
 from nlgcp_correction_service.mountpoints import MountpointDefinition, MountpointRegistry
@@ -197,15 +200,21 @@ class MountpointBroker:
         result: CorrectionGenerationResult,
         *,
         artifact: CorrectionStreamArtifact | None = None,
+        registry: MessageFamilyRegistry | None = None,
         retain_in_backlog: bool = True,
     ) -> tuple[ValidatedRtcmFrame, ...]:
         """Publish frames from a Phase 11 ``CorrectionGenerationResult``."""
         definition = self._require_mountpoint(mountpoint)
-        if result.status != GenerationStatus.ENCODED or not result.frames:
+        if result.mode == GenerationMode.VRS:
             self._diagnostics.record_rejected_frame()
             raise PublicationError(
-                f"cannot publish Phase 11 result with status={result.status} "
-                f"and {len(result.frames)} frame(s)"
+                "operational VRS publication is forbidden under current Phase 7/11 gates"
+            )
+        if result.status != GenerationStatus.ENCODED or not result.frames or result.reason_codes:
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                f"cannot publish Phase 11 result with status={result.status}, "
+                f"frames={len(result.frames)}, reason_codes={result.reason_codes}"
             )
         if not definition.accepts_classification(result.classification):
             self._diagnostics.record_rejected_frame()
@@ -213,21 +222,59 @@ class MountpointBroker:
                 f"mountpoint {definition.name!r} rejected Phase 11 classification "
                 f"{result.classification}"
             )
-        if artifact is not None:
-            if artifact.decision_id != result.decision_id:
-                self._diagnostics.record_rejected_frame()
-                raise PublicationError("Phase 12 handoff artifact decision_id mismatch")
-            if not definition.accepts_classification(artifact.classification):
+        if artifact is None:
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                "Phase 12 handoff CorrectionStreamArtifact is required for Phase 11 publication"
+            )
+        if not isinstance(artifact, CorrectionStreamArtifact):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError("Phase 12 handoff artifact must be a CorrectionStreamArtifact")
+        if (
+            not artifact.schema_version
+            or not artifact.stream_id
+            or not artifact.provenance_fingerprint
+        ):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError("Phase 12 handoff artifact provenance is incomplete")
+        if result.provenance and artifact.provenance_fingerprint != fingerprint(result.provenance):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError("Phase 12 handoff artifact provenance_fingerprint mismatch")
+        if artifact.decision_id != result.decision_id:
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError("Phase 12 handoff artifact decision_id mismatch")
+        if artifact.mode == str(GenerationMode.VRS) or artifact.mode != str(result.mode):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                f"Phase 12 handoff artifact mode {artifact.mode!r} is invalid or mismatched"
+            )
+        if artifact.generation_status != str(GenerationStatus.ENCODED):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                f"Phase 12 handoff artifact generation_status={artifact.generation_status!r} "
+                "is not ENCODED"
+            )
+        if not definition.accepts_classification(artifact.classification):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                f"mountpoint {definition.name!r} rejected artifact classification "
+                f"{artifact.classification}"
+            )
+        for frame in result.frames:
+            if frame.message_family not in artifact.message_families:
                 self._diagnostics.record_rejected_frame()
                 raise PublicationError(
-                    f"mountpoint {definition.name!r} rejected artifact classification "
-                    f"{artifact.classification}"
+                    f"frame family {frame.message_family!r} is absent from "
+                    "Phase 12 handoff artifact message_families"
                 )
-        published: list[ValidatedRtcmFrame] = []
+        # Validate every frame before publishing any frame (atomic fail-closed).
+        validated_frames: list[ValidatedRtcmFrame] = []
         for frame in result.frames:
             try:
                 validated = validate_generated_frame(
-                    frame, source_id=f"phase11:{result.request_id}"
+                    frame,
+                    source_id=f"phase11:{result.request_id}",
+                    registry=registry,
                 )
             except FrameValidationError as exc:
                 if "CRC-24Q" in str(exc):
@@ -235,6 +282,9 @@ class MountpointBroker:
                 else:
                     self._diagnostics.record_rejected_frame()
                 raise PublicationError(str(exc)) from exc
+            validated_frames.append(validated)
+        published: list[ValidatedRtcmFrame] = []
+        for validated in validated_frames:
             published.append(
                 self.publish_validated(
                     definition.name,
