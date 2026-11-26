@@ -1,5 +1,184 @@
 # Current Work
 
+## B-02 Offline Rover Positioning Benchmark for Experimental VRS (2026-11-26)
+
+Offline rover positioning benchmark (**B-02**) implemented and executed on
+`research/nlgcp-14-day-beta-sprint` above `0cea5ba` (preserving Day 7 audits,
+Phase 6/7 sprint work, all prior reports, and immutable raw archives; no Phase 13
+UI work, no Git commit or push performed).
+
+- **Implementation (`IMPLEMENTED` / `UNIT_TESTED`):** Added
+  `research/rover_benchmark/src/nlgcp_rover_benchmark/{models,rtklib_pipeline,metrics,benchmark}.py`,
+  CLI runner `scripts/run_b02_rover_benchmark.py`, and 13 unit/pipeline tests in
+  `research/rover_benchmark/tests/test_rover_benchmark.py`. Enforces pinned
+  RTKLIB `v2.4.2-p13` binary SHA-256 verification (`rnx2rtkp` `b4a96cd0…`,
+  `convbin` `b575f81e…`), fail-closed `RoverTruthRecord` provenance checks,
+  programmatic zero-leakage guards (`assert_no_rover_leakage()`), autonomous
+  epoch-0 SPP GGA virtual station placement (zero truth-coordinate leakage),
+  all 19 required positioning metrics + truth-independent repeatability + 6-hour
+  UTC stratification, and 40-epoch moving-block bootstrap 95% CIs.
+- **Defects Caught & Fixed with Regression Coverage:**
+  1. Decompressed `BRDC00IGS_R_20240260000_01D_MN.rnx.gz` once into derived
+     storage to prevent parallel `rnx2rtkp` `uncompress()` races (recording both
+     source `.rnx.gz` and plain `.rnx` SHA-256 hashes).
+  2. Fixed a real tropospheric ZWD interpolation defect in
+     `research/vrs_generator/src/nlgcp_vrs/experimental_vrs.py` (`line 517`)
+     where `spatial_model="zero"` + `tropo_mode="network_ztd"` passed
+     `model_name="zero"` to ZWD interpolation (zeroing target ZWD against
+     anchor `EKAK` `0.229 m` and injecting `+0.54–0.74 m` vertical bias); fixed
+     with unit regression test (`test_experimental_vrs_and_integration.py`).
+  3. Added explicit `FAILED_EPOCH_MISMATCH` classification when `rnx2rtkp`
+     reports `no obs data` with no output `.pos` file.
+  4. Verified directly in `/home/excellence/RTKLIB/src/rtkpos.c:883–1110` that
+     RTKLIB `v2.4.2-p13` `zdres()` unconditionally applies hydrostatic
+     Saastamoinen at rover and base regardless of `tropopt=saas/off` and
+     ignores `ionoopt=brdc` in `relpos()`, explaining why `kinematic_brdc_saas`
+     and `kinematic_vrs_iono_off` are bit-identical and why `vrs_zero_geom_only`
+     degrades relative to a physical anchor until differential troposphere is
+     restored.
+- **Authentic Full-24-Hour Positioning Results (`52/52` runs, `2,880/2,880` ep, `30.0 s`):**
+  - **Dataset B (`2024-01-26`, `PHRI00NGA`, `VERIFIED_IGS20_PPP_AR`, 3-ref
+    extrapolation, `105.553 km` anchor `EKAK00NGA`, VRS GGA offset `4.564 m` —
+    `EXPERIMENTALLY_VALIDATED` for FLOAT):** Static `physical_anchor_ekak00nga`
+    reproduced Phase 3 exact (`0.9677 / 0.5838 / 1.1301 m`). `vrs_idw2_unb3m`
+    improved static FLOAT H RMSE by **`+8.23%`** (`0.9677 → 0.8881 m`, 95% CI
+    `[+0.0468, +0.1213] m`, win `94.8%`) and 3D by **`+8.14%`** (`1.1301 →
+    1.0382 m`); kinematic 3D improved **`+14.14%`** (`2.5449 → 2.1851 m`), V
+    **`+17.37%`**, and median H `-29.0%` (`0.4879 → 0.3464 m`), while full-day
+    kinematic H gain (`+5.70%`, CI `[-0.0847, +0.2399] m`) was statistically
+    inconclusive under 3-ref extrapolation (`-0.53` sats/epoch). In `dgps`,
+    `vrs_tropo_pride_ztd_only` (`1.3419 m` 3D) and `vrs_tropo_unb3m_only`
+    (`1.3429 m` 3D) beat both anchor (`1.3452 m`) and `vrs_zero_geom_only`
+    (`1.3820 m`). **RTK FIX rate = `0.0%` (`0/2,880`, `100%` FLOAT).**
+  - **Dataset A (`2011-03-20`, `OSGF`, `PROVISIONAL_OSGOF_LIMITED`, interior
+    8-ref hull, `216.320 km` anchor `CGGT`, VRS GGA offset `0.840 m`, `8.01` vs
+    `8.02` sats/epoch — `TECHNICALLY_VALIDATED` / exploratory):**
+    `vrs_ipp_idw2_unb3m` slashed kinematic FLOAT H RMSE by **`+56.65%`** vs
+    anchor (`1.4562 → 0.6313 m`, 95% CI `[+0.5899, +1.0148] m`, win `97.5%`) and
+    **`+57.50%`** vs `vrs_zero_geom_only`, slashed static H RMSE by
+    **`+57.06%`** (`0.9166 → 0.3935 m`, `100%` win vs geom-only), and slashed
+    truth-independent centered scatter by **`-57.2%`** (`1.4521 → 0.6218 m`),
+    winning all four 6-hour UTC windows (`48–63%`, including `18–24 UTC`
+    scintillation). In `dgps`, `vrs_nighttime_ipp_idw2_unb3m` cut H RMSE by
+    **`+45.38%`** (`0.7891 → 0.4310 m`, `>2 m` epochs `52 → 0`). **Genuine RTK
+    FIX rate = `0.0%`** (the 7 `Q=1` epochs on non-ionospheric `zero_geom_only`
+    and `tropo_unb3m_only` were forensically confirmed wrong-integer false fixes
+    at `1.30–2.43 m` H error; `0` false fixes on atmospheric VRS).
+  - **Preserved Phase 7 120 s RTCM Probes & Phase H Failure Suite:** Both
+    preserved `sprint-phase67/*.rtcm3` files were probed read-only (`30` decoded
+    epochs, `59` FLOAT / `58` SINGLE / `29` resets due to `120 s > maxage 30 s`).
+    All **`12/12`** Phase H failure scenarios passed fail-closed (`all_passed=True`).
+- **Verification & Deliverables:** Machine-readable outputs archived under
+  `/home/excellence/nlgcp-data/processed/rover-benchmark/b02/` (`311` hashed
+  artifacts); reports written at
+  `docs/research/{b02_rover_benchmark_preflight,b02_rover_dataset_selection,b02_offline_rover_positioning_benchmark,b02_rover_benchmark_limitations}.md`.
+  Focused `RTKLIB_SOURCE=/home/excellence/RTKLIB` suite passed **`559 passed, 0
+  failed, 0 skipped`**; Phase 12 `NLGCP_TEST` demo passed `10/10` stages; full
+  `make check` passed (**`840 passed, 13 skipped`**, mypy strict `256` source
+  files, Ruff, ESLint, TypeScript, Go `gofmt`/`vet`/`test`, CTest `1/1`, Next.js
+  build). Operational gates remain strictly intact (`OPERATIONAL_APPROVED =
+  FORBIDDEN`, operational Phase 6 `BEST = ZERO`, operational Phase 7
+  `VRS_GEOMETRY_ONLY`). Stopping without committing or pushing for user review.
+
+## Atmospheric Modelling & VRS Generation Sprint - Phases 6 & 7 Engineering, Real-Data Validation & E2E Integration (2026-11-25)
+
+Intensive Phase 6 and Phase 7 research, engineering, integration, and real-data
+validation sprint completed on `research/nlgcp-14-day-beta-sprint` at `0cea5ba`
+(preserving Day 7's uncommitted backend audit deliverables and all prior Day 1–6
+commits `8d10f30` -> `459143e` -> `0cea5ba`; no Phase 13 UI/dashboard work, no
+raw-data modification, and no Git commit or push performed).
+
+- **Content-Level Dataset Audit (Experiment 1):** Audited all `3,018` RINEX 2.11
+  files in immutable `NIGNET2011.zip` (`8ccb0045…`, 11 stations), all 35
+  validated 2011 BKG navigation dates, and verified-IGS20 `2024-01-26` + PRIDE
+  PPP-AR 3.2.8 ZTD (`4` stations). Caught silent December 2011 L2/P2 outage at
+  `RUST` (`L1=1.00, L2=0.00, P2=0.00`) and GPS `P1=0%` across 2011. Selected 6
+  full-day 9-station dual-frequency windows (`2011-03-20..21`, `2011-12-05..08`,
+  hull area `607,707–623,401 km²`) with 4 true interior convex-hull stations
+  (`ABUZ, CGGT, OSGF, UNEC`; coordinates explicitly tagged
+  `PROVISIONAL_OSGOF_2011_01_01`).
+- **Phase 6 Atmospheric & Spatial Modelling (Experiments 2–4):** Implemented
+  `atmospheric_schema.py`, `dataset_audit.py`, `ionosphere_estimation.py`,
+  `troposphere_estimation.py`, `spatial_estimation.py`, ZIP/RINEX2 nav readers,
+  and `scripts/run_phase6_atmospheric_sprint.py`.
+  - Fixed mismatched-arc median bias (`common_arc_sd_l1_iono`, slashing baseline
+    RMSE 4.3×–4.7×) and added nighttime receiver-DCB-aligned STEC
+    (`nighttime_leveled_sd_l1_iono`) plus bias-free 30 s Pi et al. ROTI (capturing
+    5×–6× post-sunset equatorial plasma-bubble surge `19–23 UTC`: `19.71%` of
+    `ULAG` and `15.73%` of `RUST` epochs `> 0.5 TECU/min`, peak `3.07 TECU/min`).
+  - Benchmarked UNB3m climatology against 11,520 epochs of independent PRIDE
+    PPP-AR 3.2.8 ZTD on 2024 DOY 026: UNB3m ZHD RMSE = `1.85 mm` (`100%` within
+    5 cm), while exposing a real `12.6 cm` coastal-moist (`EKAK 0.229 m`) vs.
+    dry Harmattan (`MGBO 0.103 m`) ZWD gradient.
+  - Stratified LOOCV (`stride=4`) across `2011-03-20`, `2011-03-21`,
+    `2011-12-05`, and `2024-01-26` decisively resolved why `zero` won in 2024:
+    inside the 9-station convex hull (`19,854–23,113` identical samples/day),
+    `idw2` and `ipp_idw2` beat `zero` by **`+26.1%` to `+30.0%`** (up to
+    **`+47.66%`** at Abuja `OSGF`), whereas on perimeter extrapolation (`2011`
+    edges & all 4 `2024` folds) `zero` generally outperformed or matched
+    extrapolators.
+- **Phase 7 Experimental VRS + RTCM 1005/1074 + Isolated NTRIP + Non-RTKLIB gLAB
+  Cross-Decoder (Experiments 5–8):** Implemented `experimental_vrs.py` (12
+  fail-closed quality gates, physically signed `C1/P2/L1/L2` dispersion),
+  `rtcm_bridge.py` (reusing Phase 11 `1005/1074` + Phase 9 `encode_payload_frame`
+  with exact integer-cycle per-arc alignment), read-only non-RTKLIB C adapter
+  `research/rtcm_generation/native/glab_rtcm1005_decode.c` against unmodified
+  ESA/gAGE-UPC **gLAB v6.0.0**, isolated Phase 12 research mountpoint
+  `NLGCP_VRS_EXP` (`experimental_vrs_only=True`, strictly segregated from
+  synthetic `NLGCP_TEST`), and `scripts/run_phase7_vrs_sprint.py`.
+  - **Experiment 5A (`2011-03-20` interior `OSGF`, 5,755 obs):** `ipp_idw2_unb3m`
+    cut `C1` RMSE `-23.0%` (`0.693 → 0.534 m`) and `P2` `-21.8%` (`1.004 → 0.786 m`);
+    `idw2_unb3m` cut `GF` TD `-21.8%` (`4.40 → 3.44 cm`) and `L2` TD-DD `-38.1%`.
+  - **Experiment 5B (`2024-01-26` verified `PHRI00NGA`, 5,389 obs):**
+    `idw2_pride_ztd` reduced `C1` `-9.4%`, `P2` `-7.9%`, `L1` TD-DD `-7.5%`, and
+    `GF` TD `-11.1%` over `zero_geom_only`.
+  - **Experiments 6 & 7:** Streamed 31-frame (`1×1005 + 30×1074`) authentic
+    experimental VRS bundles byte-exact (`4,045/4,045` B 2011; `3,914/3,914` B
+    2024) over `127.0.0.1 /NLGCP_VRS_EXP`; decoded cleanly via RTKLIB `convbin`
+    (`30/30` epochs, `0.000000–0.000054 m` ECEF err), RTKLIB native
+    `input_rtcm3()` (`31/31` frames, `0` CRC/decode errors), and **non-RTKLIB
+    gLAB v6.0.0** (`31/31` CRC-24Q pass, `1005` ECEF `0.000000–0.000054 m`,
+    `ref_sta_ind=1`; MSM4 `1074` honestly reported `NOT_SUPPORTED_BY_GLAB_V6`).
+  - **Experiment 8:** All `11/11` failure-mode and operational-isolation cases
+    passed fail-closed.
+- **Verification & Deliverables:** Focused Phase 6/7/9/10/11/12 suite with
+  `RTKLIB_SOURCE=/home/excellence/RTKLIB` passed `546 passed, 0 failed, 0 skipped`;
+  Phase 12 `NLGCP_TEST` demo passed `10/10` stages (zero regression). Seven
+  research reports written under `docs/research/{phase6_7_dataset_audit,phase6_atmospheric_modelling_implementation_report,phase6_spatial_validation_report,phase7_vrs_generation_implementation_report,phase7_vrs_validation_report,phase6_7_end_to_end_integration_report,phase6_7_remaining_blockers_and_next_steps}.md`.
+  All operational approval gates remain strictly intact (`OPERATIONAL_APPROVED =
+  FORBIDDEN`, operational Phase 6 `ZERO`, operational Phase 7 `VRS_GEOMETRY_ONLY`).
+  Stopping without committing or pushing for user review.
+
+## 14-Day Beta Sprint - Day 7: Backend Checkpoint and Scope Review (2026-11-25)
+
+Day 7 backend checkpoint and scope review completed on
+`research/nlgcp-14-day-beta-sprint` at Day 6 commit `0cea5ba` (`Complete Day 6
+synthetic integration assurance`, parent `459143e`, grandparent `8d10f30`;
+`origin` untouched at `8d10f30`, ahead 2). No source-code features, Phase 13
+dashboard work, Phase 6/7 scientific changes, commits, or pushes were
+performed. Audited the end-to-end backend architecture across Phases 2–12,
+completed a detailed Phase 9–12 integration review, catalogued 14 security and
+reliability findings (2 CRITICAL, 4 HIGH, 4 MEDIUM, 3 LOW, 1 INFORMATIONAL)
+blocking non-loopback deployment, assessed backend readiness for future
+atmospheric modelling and VRS generation (8 explicit boundary gaps; modular
+architecture can accommodate them without structural rewrite), formally
+recorded Phase 13 dashboard deferral alongside 10 future read-only `/api/v1`
+API prerequisites, evaluated Local Engineering Integration Beta v0.1 across 14
+readiness categories, and built the prioritized 5-track technical debt matrix.
+Fresh Day 7 verification passed: focused Phase 9–12 suite
+(`RTKLIB_SOURCE=/home/excellence/RTKLIB`) `350 passed, 0 skipped` (55 Phase 12
++ 127 Phase 11 + 74 Phase 9 + 94 Phase 10); Go ingestor tests PASS; CLI demo
+`scripts/run_phase12_lab_demo.py` exit `0` (`ok=true`, `byte_exact_match=true`,
+all 10 stages PASS, RTKLIB `convbin` + native `input_rtcm3()` PASS); full
+`make check` PASS (`817 passed, 13 skipped`, mypy 238 source files, Ruff,
+ESLint, TypeScript, Go, CTest, Next.js build); `git diff --check` PASS.
+Deliverables: `docs/sprints/14-day-beta-sprint/{12-day7-backend-architecture-audit.md,13-day7-backend-security-review.md,14-day7-beta-readiness-assessment.md}`.
+Preserved controls unchanged: Phase 6 `BEST = ZERO`, Phase 7 `VRS_GEOMETRY_ONLY`
+/ `VRS_GENERATION = ZERO`, Phase 11 `SYNTHETICALLY_VALIDATED`,
+`OPERATIONAL_APPROVED = FORBIDDEN`. Stopping at Day 7 checkpoint for
+project-owner review and explicit authorization before committing or choosing
+the next milestone.
+
 ## 14-Day Beta Sprint - Day 6: End-to-End Synthetic Loopback Integration and Fault Verification (2026-11-25)
 
 Day 6 integration assurance and fault verification completed across Phases 9,

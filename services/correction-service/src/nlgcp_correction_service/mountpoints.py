@@ -12,6 +12,8 @@ from nlgcp_rtcm_generation.models import OutputClassification
 
 from nlgcp_correction_service import (
     DEFAULT_MOUNTPOINT,
+    EXPERIMENTAL_VRS_MOUNTPOINT,
+    EXPERIMENTAL_VRS_MOUNTPOINT_LABEL,
     LOOPBACK_HOST,
     SYNTHETIC_MOUNTPOINT_LABEL,
 )
@@ -43,17 +45,29 @@ class MountpointDefinition:
     fee_required: bool = False
     bitrate: int = 9600
     synthetic_only: bool = True
+    experimental_vrs_only: bool = False
     label: str = SYNTHETIC_MOUNTPOINT_LABEL
 
     def validate(self) -> None:
         if not self.name or "/" in self.name or ";" in self.name or " " in self.name:
             raise MountpointError(f"invalid mountpoint name: {self.name!r}")
-        if not self.synthetic_only:
+        if self.synthetic_only and self.experimental_vrs_only:
+            raise MountpointError(
+                "mountpoint cannot be both synthetic_only and experimental_vrs_only"
+            )
+        if not self.synthetic_only and not self.experimental_vrs_only:
             raise MountpointError(
                 "non-synthetic / operational mountpoints are forbidden in Phase 12 lab mode"
             )
-        if "SYNTHETIC" not in self.label.upper():
+        if self.synthetic_only and "SYNTHETIC" not in self.label.upper():
             raise MountpointError("synthetic mountpoint label must explicitly state SYNTHETIC")
+        if self.experimental_vrs_only:
+            upper = self.label.upper()
+            if "EXPERIMENTAL" not in upper or "NOT OPERATIONAL" not in upper:
+                raise MountpointError(
+                    "experimental VRS mountpoint label must explicitly state "
+                    "EXPERIMENTAL and NOT OPERATIONAL"
+                )
 
     def accepts_classification(self, classification: OutputClassification | str) -> bool:
         value = str(classification)
@@ -61,6 +75,8 @@ class MountpointDefinition:
             return False
         if self.synthetic_only:
             return value == str(OutputClassification.SYNTHETIC_TEST_ONLY)
+        if self.experimental_vrs_only:
+            return value == str(OutputClassification.RESEARCH_VALIDATION)
         return False
 
     def sourcetable_str_line(self) -> str:
@@ -108,3 +124,29 @@ class MountpointRegistry:
             lines.append(mp.sourcetable_str_line())
         lines.append("ENDSOURCETABLE")
         return "\r\n".join(lines) + "\r\n"
+
+
+def experimental_vrs_mountpoint(
+    name: str = EXPERIMENTAL_VRS_MOUNTPOINT,
+    *,
+    latitude: float = 0.0,
+    longitude: float = 0.0,
+    format_details: str = "1005(1),1074(1)",
+    label: str = EXPERIMENTAL_VRS_MOUNTPOINT_LABEL,
+) -> MountpointDefinition:
+    """Create an isolated research-only mountpoint for experimental VRS streams."""
+    mp = MountpointDefinition(
+        name=name,
+        identifier="NLGCP_VRS_RESEARCH",
+        format_details=format_details,
+        nav_system="GPS",
+        network="NLGCP-RESEARCH",
+        latitude=latitude,
+        longitude=longitude,
+        generator="NLGCP-Phase7-Experimental-VRS",
+        synthetic_only=False,
+        experimental_vrs_only=True,
+        label=label,
+    )
+    mp.validate()
+    return mp

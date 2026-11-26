@@ -51,13 +51,20 @@ def validate_rtcm_bytes(
     *,
     classification: OutputClassification = OutputClassification.SYNTHETIC_TEST_ONLY,
     source_id: str = "phase11-synthetic",
+    allow_research_validation: bool = False,
 ) -> ValidatedRtcmFrame:
     """Validate one raw RTCM 3.x frame; fail closed on any framing/CRC/policy error."""
     if classification == OutputClassification.OPERATIONAL_APPROVED:
         raise FrameValidationError(
             "OPERATIONAL_APPROVED classification is forbidden in Phase 12 lab mode"
         )
-    if classification != OutputClassification.SYNTHETIC_TEST_ONLY:
+    if allow_research_validation:
+        if classification != OutputClassification.RESEARCH_VALIDATION:
+            raise FrameValidationError(
+                "Phase 12 experimental VRS mountpoints accept RESEARCH_VALIDATION only, "
+                f"got {classification}"
+            )
+    elif classification != OutputClassification.SYNTHETIC_TEST_ONLY:
         raise FrameValidationError(
             f"Phase 12 synthetic mountpoints accept SYNTHETIC_TEST_ONLY only, "
             f"got {classification}"
@@ -113,6 +120,7 @@ def validate_generated_frame(
     *,
     source_id: str = "phase11-generator",
     registry: MessageFamilyRegistry | None = None,
+    allow_research_validation: bool = False,
 ) -> ValidatedRtcmFrame:
     """Validate a Phase 11 ``GeneratedCorrectionFrame`` before publication."""
     active_registry = registry if registry is not None else MessageFamilyRegistry()
@@ -135,6 +143,7 @@ def validate_generated_frame(
         frame.raw_bytes,
         classification=frame.classification,
         source_id=source_id,
+        allow_research_validation=allow_research_validation,
     )
     if validated.message_number != frame.message_number:
         raise FrameValidationError(

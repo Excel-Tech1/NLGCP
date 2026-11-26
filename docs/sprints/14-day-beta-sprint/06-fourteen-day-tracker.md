@@ -13,9 +13,9 @@
 | 2 | RTCM 1005/1074/1084 synthetic encoder implementation | Day 1; RTKLIB reference layout | Complete |
 | 3 | Independent RTCM conformance review | Day 2; synthetic vectors; independent decoder if available | Complete (RTKLIB v2.4.2-p13; non-RTKLIB second decoder unavailable) |
 | 4-5 | Local Phase 12 lab caster | Day 3; synthetic artifact | Complete (loopback `127.0.0.1` caster + client + RTKLIB E2E; synthetic-only; committed at `459143e`) |
-| 6 | End-to-end synthetic loopback integration | Day 4-5 | Complete (Phase 9/10/11/12 integration, admission & fault verification; 6 defects fixed; AC-01–AC-20 PASS) |
-| 7 | Backend checkpoint and scope review | Day 6 | Not Started |
-| 8 | Read-only Phase 13 status surface | Day 7 | Not Started |
+| 6 | End-to-end synthetic loopback integration | Day 4-5 | Complete (Phase 9/10/11/12 integration, admission & fault verification; 6 defects fixed; AC-01–AC-20 PASS; committed at `0cea5ba`) |
+| 7 | Backend checkpoint and scope review | Day 6 | Complete (architecture/security/readiness audits in docs `12`–`14`; Phase 13 dashboard deferred; fresh `350` focused + `817` repo checks PASS) |
+| 8 | Read-only Phase 13 status surface | Day 7 | Deferred (Phase 13 dashboard deferred by project owner on Day 7) |
 | 9 | API/caster/local diagnostics integration | Day 8 | Not Started |
 | 10 | Local observability and security hardening | Day 9 | Not Started |
 | 11 | Compose deployment and field-readiness preparation | Day 10 | Not Started; hardware `UNKNOWN` |
@@ -226,26 +226,76 @@ Exercise and verify Phase 9 -> Phase 10 -> Phase 11 -> Phase 12 local loopback i
 
 ### Day 7 - Backend checkpoint
 
+**Status:** Complete (2026-11-25). Reports: `12-day7-backend-architecture-audit.md`, `13-day7-backend-security-review.md`, `14-day7-beta-readiness-assessment.md`.
+
 **Objective**
 
-Stop and review before building the status surface.
+Consolidate and review backend engineering across Phases 2–12, assess security, scientific preparedness, and Beta v0.1 readiness, and formalize Phase 13 dashboard deferral before deciding the next milestone.
 
-**Tasks**
+**Tasks completed**
 
-- run focused Python/Go/web tests relevant to the beta;
-- review the Day 6 transcript and any gaps;
-- confirm the local caster is genuinely loopback-only;
-- decide: continue, reduce scope, or stop.
+- verified Git checkpoints `8d10f30` -> `459143e` -> `0cea5ba` clean and unpushed (`origin` at `8d10f30`);
+- audited the full backend pipeline architecture and Phase 9–12 integration (`12-day7-backend-architecture-audit.md`);
+- completed backend security and reliability review with 14 classified findings and controlled-network prerequisites (`13-day7-backend-security-review.md`);
+- assessed scientific readiness for future atmospheric/VRS integration, 14-category Beta v0.1 readiness matrix, and 5-track technical debt matrix (`14-day7-beta-readiness-assessment.md`);
+- recorded Phase 13 dashboard deferral and documented 10 future read-only `/api/v1` API requirements without implementing frontend/UI code;
+- executed fresh Day 7 verification (`350 passed, 0 skipped` focused Phase 9–12 with `RTKLIB_SOURCE`, Go tests PASS, CLI demo 10/10 stages PASS, `make check` `817 passed, 13 skipped`, `git diff --check` PASS).
 
-**Deliverable**
+**Deliverables**
 
-- checkpoint record with test results, open gaps, and decision.
+- `docs/sprints/14-day-beta-sprint/12-day7-backend-architecture-audit.md`;
+- `docs/sprints/14-day-beta-sprint/13-day7-backend-security-review.md`;
+- `docs/sprints/14-day-beta-sprint/14-day7-beta-readiness-assessment.md`;
+- updated `CURRENT_WORK.md`, `PROJECT_STATUS.md`, `EVIDENCE_INDEX.md`, `02-phase-readiness-matrix.md`, and `06-fourteen-day-tracker.md`.
 
-**Acceptance criteria**
+**Acceptance evidence**
 
-- no open Must failure;
-- no accidental operational capability;
-- scope remains synthetic-only.
+- no open Must failure within the local backend lab scope (13 Must criteria met; AC-08/AC-09 deferred with Phase 13; AC-16 reserved for Day 14);
+- local caster verified strictly loopback-only (`127.0.0.1`); no accidental operational capability;
+- scope remains strictly synthetic-only (`OPERATIONAL_APPROVED = FORBIDDEN`; Phase 6 `BEST = ZERO`; Phase 7 `VRS_GEOMETRY_ONLY`/`ZERO`);
+- no commit or push created; awaiting project-owner review.
+
+### Phase 6 & 7 Parallel Scientific/Engineering Sprint - Atmospheric Modelling & Experimental VRS (2026-11-25)
+
+**Status:** Complete (2026-11-25; Phase 13 dashboard remains deferred). Reports under `docs/research/`: `phase6_7_dataset_audit.md`, `phase6_atmospheric_modelling_implementation_report.md`, `phase6_spatial_validation_report.md`, `phase7_vrs_generation_implementation_report.md`, `phase7_vrs_validation_report.md`, `phase6_7_end_to_end_integration_report.md`, `phase6_7_remaining_blockers_and_next_steps.md`.
+
+**Objective**
+
+Advance Phase 6 atmospheric/spatial modelling and Phase 7 observation-based experimental VRS through real-data auditing, implementation, isolated RTCM/NTRIP integration, non-RTKLIB cross-decoding, and evidence-based validation while preserving all operational approval gates.
+
+**Tasks completed**
+
+- audited all 3,018 RINEX 2.11 files in `NIGNET2011.zip` at observation-body level (catching silent Dec 2011 `RUST` L2/P2=0% outage & GPS `P1=0%`) and selected 6 nine-station interior-hull windows (`2011-03-20..21`, `2011-12-05..08`) alongside verified-IGS20 `2024-01-26` + PRIDE PPP-AR ZTD;
+- implemented Phase 6 MW+GF cycle-slip/STEC/VTEC/SLM-IPP/30 s ROTI, common-pair-arc & nighttime-leveled L1 ionosphere, UNB3m climatology vs. PRIDE ZTD (`1.85 mm` ZHD RMSE; `12.6 cm` coastal-vs-Harmattan ZWD gradient), and stratified interior-vs-perimeter LOOCV proving `+26.1%` to `+30.0%` interior RMSE reduction (`+47.7%` at `OSGF`) while `zero` still dominates perimeter extrapolation;
+- implemented Phase 7 observation-based experimental VRS (`experimental_vrs.py`), RTCM `1005/1074` bridge with exact integer-cycle arc alignment (`rtcm_bridge.py`), non-RTKLIB ESA/gAGE-UPC gLAB v6.0.0 `1005`/CRC-24Q C cross-decoder (`glab_rtcm1005_decode.c`), and isolated Phase 12 loopback research mountpoint `NLGCP_VRS_EXP` (keeping `NLGCP_TEST` and all operational gates strictly intact);
+- validated held-out experimental VRS (`-23.0%` C1 / `-21.8%` GF TD on 2011 interior `OSGF`; `-9.4%` C1 / `-11.1%` GF TD on 2024 verified `PHRI00NGA`), byte-exact 31-frame loopback NTRIP streaming decoded by RTKLIB `convbin`, RTKLIB native `input_rtcm3`, and gLAB v6.0.0 (`1005` + CRC-24Q), and all `11/11` failure-mode scenarios;
+- executed focused Phase 6/7/9–12 verification (`546 passed, 0 skipped` with `RTKLIB_SOURCE`), `NLGCP_TEST` demo (`10/10` stages PASS), and full `make check` + `git diff --check`.
+
+**Acceptance evidence**
+
+- operational approval gates strictly preserved (`OPERATIONAL_APPROVED = FORBIDDEN`; operational Phase 6 `ZERO`; operational Phase 7 `VRS_GEOMETRY_ONLY`);
+- no Phase 13 UI/dashboard work performed; raw datasets untouched; no commit or push created.
+
+### Milestone B-02 — Offline Rover Positioning Benchmark for Experimental VRS (2026-11-26)
+
+**Status:** Complete (2026-11-26; `EXPERIMENTALLY_VALIDATED` for verified-2024 FLOAT/DGPS, `TECHNICALLY_VALIDATED` / exploratory for provisional-2011 interior hull; genuine RTK FIX = `0.0%`; `OPERATIONAL_APPROVED = FORBIDDEN`). Reports under `docs/research/`: `b02_rover_benchmark_preflight.md`, `b02_rover_dataset_selection.md`, `b02_offline_rover_positioning_benchmark.md`, `b02_rover_benchmark_limitations.md`.
+
+**Objective**
+
+Evaluate actual downstream offline rover ENU positioning accuracy, repeatability, and integer ambiguity resolution (`rnx2rtkp` + `convbin`, pinned RTKLIB `v2.4.2-p13`) comparing physical-anchor single-base vs. geometry-only VRS vs. atmospheric-model-assisted VRS on authentic withheld Nigerian GNSS rovers without target leakage.
+
+**Tasks completed**
+
+- implemented `research/rover_benchmark/` (`models.py`, `rtklib_pipeline.py`, `metrics.py`, `benchmark.py`), CLI runner `scripts/run_b02_rover_benchmark.py`, and 13 unit/pipeline tests;
+- audited RTKLIB `v2.4.2-p13` (`src/rtkpos.c:883–1110`), fixed parallel `.rnx.gz` nav race, fixed `experimental_vrs.py:517` `network_ztd` ZWD interpolation defect (with unit regression test), and probed both preserved Phase 7 `120 s` RTCM files read-only;
+- executed 52 full-24-hour (`2,880` epochs at `30.0 s`) authentic positioning runs across verified-IGS20 `2024-01-26` `PHRI00NGA` (3-ref extrapolation, autonomous SPP GGA virtual ARP `4.564 m` offset) and interior-hull `2011-03-20` `OSGF` (8 refs, `PROVISIONAL_OSGOF_LIMITED`, GGA offset `0.840 m`) with zero target leakage (`assert_no_rover_leakage()` PASS) and `311` SHA-256-hashed output artifacts under `/home/excellence/nlgcp-data/processed/rover-benchmark/b02/`;
+- verified `2024` static FLOAT gain (`+8.23%` H RMSE, 95% CI `[+0.047, +0.121] m`, `94.8%` win) and kinematic 3D gain (`+14.14%`), `2011` interior-hull kinematic H gain (`+56.65%`, centered scatter `-57.2%`), static H gain (`+57.06%`), and DGPS H gain (`+45.38%`), while honestly documenting **`0.0%` genuine RTK FIX** (and forensically exposing `7` wrong-integer false fixes on non-ionospheric 2011 variants);
+- executed all `12/12` Phase H fail-closed failure scenarios (`all_passed=True`), focused `RTKLIB_SOURCE` pytest (`559 passed, 0 failed, 0 skipped`), Phase 12 `NLGCP_TEST` demo (`10/10` stages PASS), and full `make check` (`840 passed, 13 skipped`, mypy strict `256` source files).
+
+**Acceptance evidence**
+
+- all 18 B-02 acceptance criteria (`B02-01` – `B02-18`) satisfied honestly (with `2011` provisional truth and `0.0%` FIX explicitly separated from operational readiness);
+- operational controls unchanged (`OPERATIONAL_APPROVED = FORBIDDEN`, `BEST = ZERO`, `VRS_GEOMETRY_ONLY`, `NLGCP_TEST` and `NLGCP_VRS_EXP` isolated); no commit or push created.
 
 ### Day 8 - Read-only Phase 13 status surface
 

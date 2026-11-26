@@ -14,7 +14,8 @@ have ambiguous band mappings. Exclusions always carry explicit reasons.
 from __future__ import annotations
 
 import math
-from collections.abc import Iterator
+import zipfile
+from collections.abc import Iterator, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -83,74 +84,83 @@ def epoch_iso(year: int, month: int, day: int, hour: int, minute: int, sec: floa
     return f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:{whole:02d}.{micro:06d}"
 
 
-def parse_rinex2_header(path: Path) -> Rinex2Header:
+def parse_rinex2_header_from_lines(lines: Sequence[str], *, source_path: str) -> Rinex2Header:
     obs_types: list[str] = []
     pending_count = 0
     interval: float | None = None
     first_obs: str | None = None
     approx: tuple[float, float, float] | None = None
     time_system = ""
-    with path.open(encoding="utf-8", errors="replace") as handle:
-        for line in handle:
-            if pending_count > 0:
-                for k in range(0, len(line.rstrip("\n")), 6):
-                    token = line[k : k + 6].strip()
-                    if token:
-                        obs_types.append(token)
-                        if len(obs_types) >= pending_count:
-                            break
-                if len(obs_types) >= pending_count:
-                    pending_count = 0
-                continue
-            label = line[60:]
-            if "# / TYPES OF OBSERV" in label:
-                try:
-                    pending_count = int(line[0:6].strip())
-                except ValueError:
-                    pending_count = 0
-                for k in range(0, 54, 6):
-                    token = line[6 + k : 12 + k].strip()
-                    if token:
-                        obs_types.append(token)
-                if len(obs_types) >= pending_count:
-                    pending_count = 0
-            elif "INTERVAL" in label:
-                try:
-                    interval = float(line[0:10].strip())
-                except ValueError:
-                    interval = None
-            elif "TIME OF FIRST OBS" in label:
-                time_system = line[48:51].strip()
-                try:
-                    first_obs = epoch_iso(
-                        _full_year(int(line[0:6])),
-                        int(line[6:12]),
-                        int(line[12:18]),
-                        int(line[18:24]),
-                        int(line[24:30]),
-                        float(line[30:43]),
-                    )
-                except ValueError:
-                    first_obs = None
-            elif "APPROX POSITION XYZ" in label:
-                try:
-                    approx = (
-                        float(line[0:14]),
-                        float(line[14:28]),
-                        float(line[28:42]),
-                    )
-                except ValueError:
-                    approx = None
-            elif "END OF HEADER" in label:
-                break
+    for line in lines:
+        if pending_count > 0:
+            for k in range(0, len(line.rstrip("\n")), 6):
+                token = line[k : k + 6].strip()
+                if token:
+                    obs_types.append(token)
+                    if len(obs_types) >= pending_count:
+                        break
+            if len(obs_types) >= pending_count:
+                pending_count = 0
+            continue
+        label = line[60:]
+        if "# / TYPES OF OBSERV" in label:
+            try:
+                pending_count = int(line[0:6].strip())
+            except ValueError:
+                pending_count = 0
+            for k in range(0, 54, 6):
+                token = line[6 + k : 12 + k].strip()
+                if token:
+                    obs_types.append(token)
+            if len(obs_types) >= pending_count:
+                pending_count = 0
+        elif "INTERVAL" in label:
+            try:
+                interval = float(line[0:10].strip())
+            except ValueError:
+                interval = None
+        elif "TIME OF FIRST OBS" in label:
+            time_system = line[48:51].strip()
+            try:
+                first_obs = epoch_iso(
+                    _full_year(int(line[0:6])),
+                    int(line[6:12]),
+                    int(line[12:18]),
+                    int(line[18:24]),
+                    int(line[24:30]),
+                    float(line[30:43]),
+                )
+            except ValueError:
+                first_obs = None
+        elif "APPROX POSITION XYZ" in label:
+            try:
+                approx = (
+                    float(line[0:14]),
+                    float(line[14:28]),
+                    float(line[28:42]),
+                )
+            except ValueError:
+                approx = None
+        elif "END OF HEADER" in label:
+            break
     return Rinex2Header(
-        path=str(path),
+        path=source_path,
         obs_types=tuple(obs_types),
         interval_s=interval,
         time_of_first_obs=first_obs,
         approx_xyz_m=approx,
         time_system=time_system,
     )
+
+
+def parse_rinex2_header(path: Path) -> Rinex2Header:
+    with path.open(encoding="utf-8", errors="replace") as handle:
+        header_lines: list[str] = []
+        for line in handle:
+            header_lines.append(line)
+            if "END OF HEADER" in line[60:]:
+                break
+    return parse_rinex2_header_from_lines(header_lines, source_path=str(path))
 
 
 def _parse_epoch_line(line: str) -> tuple[str, int, list[str]] | None:
@@ -195,16 +205,17 @@ def _parse_obs_value(field16: str) -> tuple[float | None, int | None]:
     return value, lli
 
 
-def read_rinex2_observations(path: Path, station_id: str, *, stride: int = 1) -> StationDataset:
-    """Parse a RINEX 2 observation file into a station dataset.
-
-    ``stride`` keeps every Nth epoch (deterministic decimation for expensive
-    pilots); stride=1 keeps all epochs. No interpolation across missing
-    observations is performed.
-    """
+def read_rinex2_observations_from_lines(
+    raw_lines: Sequence[str],
+    station_id: str,
+    *,
+    source_path: str,
+    stride: int = 1,
+) -> StationDataset:
+    """Parse RINEX 2 observation lines in memory (supports read-only ZIP access)."""
     if stride < 1:
         raise ValueError("stride must be >= 1")
-    header = parse_rinex2_header(path)
+    header = parse_rinex2_header_from_lines(raw_lines, source_path=source_path)
     dataset = StationDataset(station_id=station_id, header=header)
     ntypes = len(header.obs_types)
     if ntypes == 0:
@@ -214,9 +225,6 @@ def read_rinex2_observations(path: Path, station_id: str, *, stride: int = 1) ->
         raise ValueError("explicit GPS observation time system required")
     lines_per_sat = (ntypes + 4) // 5
     epoch_index = 0
-    with path.open(encoding="utf-8", errors="replace") as handle:
-        raw_lines = handle.read().splitlines()
-    # Skip header.
     body_start = 0
     for pos, line in enumerate(raw_lines):
         if "END OF HEADER" in line[60:]:
@@ -232,11 +240,6 @@ def read_rinex2_observations(path: Path, station_id: str, *, stride: int = 1) ->
     while pos < total:
         line = raw_lines[pos]
         pos += 1
-        # Blank lines and receiver-clock special records are only ever
-        # skipped while an epoch record is expected. Inside a satellite
-        # observation block every line (including blank lines for absent
-        # observables) is structural and is consumed exactly below, so
-        # skipping here can never desynchronise the record layout.
         if not line.strip():
             continue
         if line.startswith("%"):
@@ -249,11 +252,10 @@ def read_rinex2_observations(path: Path, station_id: str, *, stride: int = 1) ->
         iso, flag, sats = parsed
         if flag in (2, 3, 5):
             note_skip(f"epoch flag {flag} excluded")
-            pos += int(line[29:32])  # event count is special records, NOT satellites
+            pos += int(line[29:32])
             continue
         if flag not in (0, 1):
             raise ValueError(f"unsupported RINEX header/slip event {flag}")
-        # Satellite-id continuation lines (more than 12 satellites listed).
         for _ in range(_satellite_overflow_count(line)):
             if pos >= total:
                 break
@@ -263,12 +265,6 @@ def read_rinex2_observations(path: Path, station_id: str, *, stride: int = 1) ->
                 token = cont[k : k + 3].strip()
                 if token:
                     sats.append(token)
-        if flag not in (0, 1):
-            note_skip(f"epoch flag {flag} excluded")
-            # Still must consume the satellite data lines exactly so the
-            # next epoch record starts at the correct line.
-            pos += len(sats) * lines_per_sat
-            continue
         keep = epoch_index % stride == 0
         epoch_index += 1
         truncated = False
@@ -298,6 +294,33 @@ def read_rinex2_observations(path: Path, station_id: str, *, stride: int = 1) ->
             break
     dataset.epochs.sort()
     return dataset
+
+
+def read_rinex2_observations(path: Path, station_id: str, *, stride: int = 1) -> StationDataset:
+    """Parse a RINEX 2 observation file into a station dataset.
+
+    ``stride`` keeps every Nth epoch (deterministic decimation for expensive
+    pilots); stride=1 keeps all epochs. No interpolation across missing
+    observations is performed.
+    """
+    if stride < 1:
+        raise ValueError("stride must be >= 1")
+    with path.open(encoding="utf-8", errors="replace") as handle:
+        raw_lines = handle.read().splitlines()
+    return read_rinex2_observations_from_lines(
+        raw_lines, station_id, source_path=str(path), stride=stride
+    )
+
+
+def read_rinex2_from_zip(
+    zip_path: Path, member: str, station_id: str, *, stride: int = 1
+) -> StationDataset:
+    """Read one RINEX 2 observation file directly from an immutable ZIP archive."""
+    with zipfile.ZipFile(zip_path, "r") as zf:
+        raw_lines = zf.read(member).decode("utf-8", errors="replace").splitlines()
+    return read_rinex2_observations_from_lines(
+        raw_lines, station_id, source_path=f"{zip_path}::{member}", stride=stride
+    )
 
 
 def _satellite_overflow_count(line: str) -> int:

@@ -33,6 +33,8 @@ from nlgcp_rtcm_generation.provenance import fingerprint
 
 RTKLIB_COMMIT = "71db0ffa0d9735697c6adfd06fdf766d0e5ce807"
 RTKLIB_DECODER_SOURCES = ("rtcm.c", "rtcm2.c", "rtcm3.c", "rtcm3e.c", "rtkcmn.c")
+GLAB_DEFAULT_SOURCE = Path("/opt/gLAB/source/core")
+GLAB_DECODER_SOURCES = ("input.c", "dataHandling.c", "output.c")
 
 CLIGHT = 299_792_458.0
 GPS_FREQ_HZ: dict[int, float] = {
@@ -371,5 +373,88 @@ def decode_with_rtklib_native(
         raise RuntimeError(
             f"native RTKLIB decoder failed (rc={proc.returncode}): {proc.stderr}"
         )
+    parsed: dict[str, Any] = json.loads(proc.stdout)
+    return parsed
+
+
+def glab_decoder_provenance(source: Path = GLAB_DEFAULT_SOURCE) -> dict[str, Any]:
+    """Verify unmodified ESA/gAGE-UPC gLAB v6.0.0 C sources for RTCM 1005 cross-decoding."""
+    if not source.is_dir():
+        raise IndependentDecoderUnavailable(f"gLAB core source directory not found: {source}")
+    hashes: dict[str, str] = {}
+    for name in (*GLAB_DECODER_SOURCES, "input.h", "dataHandling.h", "output.h"):
+        path = source / name
+        if not path.is_file():
+            raise IndependentDecoderUnavailable(f"missing gLAB source file: {path}")
+        hashes[name] = sha256_file(path)
+    compiler = subprocess.check_output(["cc", "--version"], text=True).splitlines()[0]
+    return {
+        "decoder_name": "ESA/gAGE-UPC gLAB v6.0.0 input.c (readMSG1005 + crc24q)",
+        "source_dir": str(source),
+        "source_sha256": hashes,
+        "compiler": compiler,
+        "non_rtklib_decoder_available": True,
+        "rtcm1005_supported": True,
+        "msm4_supported": False,
+    }
+
+
+def build_glab_rtcm1005_decoder(
+    repo: Path, source: Path = GLAB_DEFAULT_SOURCE
+) -> tuple[Path, dict[str, Any]]:
+    """Build a read-only C harness against unmodified gLAB v6.0.0 input.c."""
+    provenance = glab_decoder_provenance(source)
+    adapter = repo / "research/rtcm_generation/native/glab_rtcm1005_decode.c"
+    provenance["adapter_sha256"] = sha256_file(adapter)
+    build_dir = repo / "build/glab-rtcm-decoder" / fingerprint(provenance)
+    build_dir.mkdir(parents=True, exist_ok=True)
+    executable = build_dir / "glab_rtcm1005_decode"
+    if not executable.is_file():
+        command = [
+            "cc",
+            "-O2",
+            "-std=gnu99",
+            "-ffunction-sections",
+            "-fdata-sections",
+            "-Wl,--gc-sections",
+            "-DREADNOLOCK",
+            "-DRANGECASE",
+            "-I",
+            str(source),
+            str(adapter),
+            *(str(source / name) for name in GLAB_DECODER_SOURCES),
+            "-lm",
+            "-o",
+            str(executable),
+        ]
+        with tempfile.TemporaryDirectory(prefix=".compile-", dir=build_dir) as tmpdir:
+            staged = Path(tmpdir) / "glab_rtcm1005_decode"
+            command[-1] = str(staged)
+            proc = subprocess.run(
+                command, capture_output=True, text=True, check=False, timeout=120
+            )
+            if proc.returncode:
+                raise IndependentDecoderUnavailable(
+                    "gLAB native RTCM 1005 decoder build failed: " + proc.stderr[-2000:]
+                )
+            staged.replace(executable)
+    provenance["executable_sha256"] = sha256_file(executable)
+    return executable, provenance
+
+
+def decode_rtcm1005_with_glab(executable: Path, rtcm_bytes: bytes) -> dict[str, Any]:
+    """Decode RTCM 1005 and verify CRC-24Q across frames via gLAB v6.0.0."""
+    with tempfile.TemporaryDirectory(prefix="nlgcp-glab-dec-") as tmpdir:
+        inp = Path(tmpdir) / "stream.rtcm3"
+        inp.write_bytes(rtcm_bytes)
+        proc = subprocess.run(
+            [str(executable), str(inp)],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=60,
+        )
+    if proc.returncode != 0:
+        raise RuntimeError(f"gLAB RTCM 1005 decoder failed (rc={proc.returncode}): {proc.stderr}")
     parsed: dict[str, Any] = json.loads(proc.stdout)
     return parsed

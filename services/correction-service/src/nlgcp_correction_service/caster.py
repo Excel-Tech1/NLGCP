@@ -37,7 +37,11 @@ from typing import Any
 from nlgcp_ntrip_ingest.framing import StreamingFramer
 from nlgcp_ntrip_ingest.handshake import parse_head, split_head
 from nlgcp_rtcm_generation.handoff import CorrectionStreamArtifact
-from nlgcp_rtcm_generation.models import CorrectionGenerationResult, OutputClassification
+from nlgcp_rtcm_generation.models import (
+    CorrectionGenerationResult,
+    GeneratedCorrectionFrame,
+    OutputClassification,
+)
 from nlgcp_rtcm_generation.registry import MessageFamilyRegistry
 
 from nlgcp_correction_service import SERVICE_VERSION
@@ -216,6 +220,24 @@ class LocalNtripCaster:
         return self.broker.publish_phase11_result(
             target,
             result,
+            artifact=artifact,
+            registry=registry,
+            retain_in_backlog=retain_in_backlog,
+        )
+
+    def publish_experimental_vrs_frames(
+        self,
+        frames: tuple[GeneratedCorrectionFrame, ...],
+        *,
+        mountpoint: str,
+        artifact: CorrectionStreamArtifact | None = None,
+        registry: MessageFamilyRegistry | None = None,
+        retain_in_backlog: bool = True,
+    ) -> tuple[ValidatedRtcmFrame, ...]:
+        """Publish isolated RESEARCH_VALIDATION experimental VRS frames."""
+        return self.broker.publish_experimental_vrs_frames(
+            mountpoint,
+            frames,
             artifact=artifact,
             registry=registry,
             retain_in_backlog=retain_in_backlog,

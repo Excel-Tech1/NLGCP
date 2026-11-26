@@ -39,12 +39,14 @@ packages = [
   "research/rtcm_generation/src/nlgcp_rtcm_generation",
   "research/scientific_expansion/src/nlgcp_scientific_expansion",
   "research/southern_network_audit/src/nlgcp_southern_audit",
+  "research/rover_benchmark/src/nlgcp_rover_benchmark",
   "services/correction-service/src/nlgcp_correction_service",
 ]
 
 [tool.pytest.ini_options]
 pythonpath = [
   "research/southern_network_audit/src",
+  "research/rover_benchmark/src",
   "services/correction-service/src",
 ]
 testpaths = [
@@ -60,6 +62,7 @@ testpaths = [
   "research/rtcm_generation/tests",
   "research/scientific_expansion/tests",
   "research/southern_network_audit/tests",
+  "research/rover_benchmark/tests",
   "services/correction-service/tests",
 ]
 
@@ -104,6 +107,8 @@ files = [
   "research/scientific_expansion/tests",
   "research/southern_network_audit/src",
   "research/southern_network_audit/tests",
+  "research/rover_benchmark/src",
+  "research/rover_benchmark/tests",
   "services/correction-service/src",
   "services/correction-service/tests",
   "scripts/run_gnss_qc.py",
@@ -116,4 +121,7 @@ files = [
   "scripts/run_ntrip_ingest.py",
   "scripts/run_scientific_expansion.py",
   "scripts/run_phase12_lab_demo.py",
+  "scripts/run_phase6_atmospheric_sprint.py",
+  "scripts/run_phase7_vrs_sprint.py",
+  "scripts/run_b02_rover_benchmark.py",
 ]

@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from nlgcp_rtcm_generation.handoff import CorrectionStreamArtifact
 from nlgcp_rtcm_generation.models import (
     CorrectionGenerationResult,
+    GeneratedCorrectionFrame,
     GenerationMode,
     GenerationStatus,
     OutputClassification,
@@ -275,6 +276,98 @@ class MountpointBroker:
                     frame,
                     source_id=f"phase11:{result.request_id}",
                     registry=registry,
+                )
+            except FrameValidationError as exc:
+                if "CRC-24Q" in str(exc):
+                    self._diagnostics.record_crc_failure()
+                else:
+                    self._diagnostics.record_rejected_frame()
+                raise PublicationError(str(exc)) from exc
+            validated_frames.append(validated)
+        published: list[ValidatedRtcmFrame] = []
+        for validated in validated_frames:
+            published.append(
+                self.publish_validated(
+                    definition.name,
+                    validated,
+                    retain_in_backlog=retain_in_backlog,
+                )
+            )
+        return tuple(published)
+
+    def publish_experimental_vrs_frames(
+        self,
+        mountpoint: str,
+        frames: tuple[GeneratedCorrectionFrame, ...],
+        *,
+        artifact: CorrectionStreamArtifact | None = None,
+        registry: MessageFamilyRegistry | None = None,
+        retain_in_backlog: bool = True,
+    ) -> tuple[ValidatedRtcmFrame, ...]:
+        """Publish RESEARCH_VALIDATION experimental VRS frames to an isolated VRS mountpoint.
+
+        Strictly isolated from synthetic-only mountpoints (e.g. ``NLGCP_TEST``) and
+        strictly rejects ``OPERATIONAL_APPROVED`` or ``SYNTHETIC_TEST_ONLY`` frames.
+        """
+        definition = self._require_mountpoint(mountpoint)
+        if not definition.experimental_vrs_only:
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                f"mountpoint {definition.name!r} is not an isolated experimental_vrs_only "
+                "research mountpoint"
+            )
+        if not frames:
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError("experimental VRS publication requires at least one frame")
+        if artifact is None or not isinstance(artifact, CorrectionStreamArtifact):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                "CorrectionStreamArtifact is required for experimental VRS publication"
+            )
+        if (
+            not artifact.schema_version
+            or not artifact.stream_id
+            or not artifact.virtual_station_id
+            or not artifact.provenance_fingerprint
+        ):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError("experimental VRS artifact provenance is incomplete")
+        if artifact.mode != "VRS_EXPERIMENTAL":
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                f"experimental VRS artifact mode must be 'VRS_EXPERIMENTAL', got {artifact.mode!r}"
+            )
+        if artifact.generation_status != str(GenerationStatus.ENCODED):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                f"experimental VRS artifact generation_status={artifact.generation_status!r} "
+                "is not ENCODED"
+            )
+        if not definition.accepts_classification(artifact.classification):
+            self._diagnostics.record_rejected_frame()
+            raise PublicationError(
+                f"mountpoint {definition.name!r} rejected experimental VRS artifact "
+                f"classification {artifact.classification!r}"
+            )
+        validated_frames: list[ValidatedRtcmFrame] = []
+        for frame in frames:
+            if frame.message_family not in artifact.message_families:
+                self._diagnostics.record_rejected_frame()
+                raise PublicationError(
+                    f"frame family {frame.message_family!r} is absent from artifact"
+                )
+            if not definition.accepts_classification(frame.classification):
+                self._diagnostics.record_rejected_frame()
+                raise PublicationError(
+                    f"mountpoint {definition.name!r} rejected frame classification "
+                    f"{frame.classification}"
+                )
+            try:
+                validated = validate_generated_frame(
+                    frame,
+                    source_id=f"phase7-vrs:{artifact.virtual_station_id}",
+                    registry=registry,
+                    allow_research_validation=True,
                 )
             except FrameValidationError as exc:
                 if "CRC-24Q" in str(exc):

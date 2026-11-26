@@ -17,6 +17,8 @@ from __future__ import annotations
 import gzip
 import math
 import re
+import subprocess
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -198,16 +200,12 @@ def _fortran_float(text: str) -> float:
 FLOAT_TOKEN = re.compile(r"[+-]?\d\.\d+[EDed][+-]?\d+")
 
 
-def _orbit_values(block: list[str]) -> list[float] | None:
-    """Read RINEX 3 GPS D19.12 fields; blank fit/spare fields are optional.
-
-    Adjacent signed fields are valid fixed columns. Regex requiring 28
-    numeric tokens silently discarded records with blank trailing spares.
-    """
+def _orbit_values_at_offset(block: Sequence[str], *, start_col: int) -> list[float] | None:
+    """Read GPS broadcast orbit 7x4 D19.12 fields starting at ``start_col`` (3=RINEX2, 4=RINEX3)."""
     values: list[float] = []
     for row, line in enumerate(block):
         for col in range(4):
-            field = line[4 + 19 * col : 4 + 19 * (col + 1)].strip()
+            field = line[start_col + 19 * col : start_col + 19 * (col + 1)].strip()
             if not field and row * 4 + col >= 25:
                 values.append(0.0)  # unused optional fit interval / spares only
                 continue
@@ -219,6 +217,111 @@ def _orbit_values(block: list[str]) -> list[float] | None:
                 return None
             values.append(value)
     return values if len(values) == 28 else None
+
+
+def _orbit_values(block: list[str]) -> list[float] | None:
+    """Read RINEX 3 GPS D19.12 fields; blank fit/spare fields are optional."""
+    return _orbit_values_at_offset(block, start_col=4)
+
+
+def parse_rinex2_gps_nav_lines(lines: Sequence[str]) -> dict[str, list[BroadcastEphemeris]]:
+    """Parse GPS broadcast ephemeris records from RINEX 2.xx navigation lines."""
+    records: dict[str, list[BroadcastEphemeris]] = {}
+    idx = 0
+    while idx < len(lines) and "END OF HEADER" not in lines[idx]:
+        idx += 1
+    idx += 1
+    while idx < len(lines):
+        line = lines[idx]
+        idx += 1
+        if len(line) < 22 or not line[:2].strip().isdigit():
+            continue
+        try:
+            prn = int(line[0:2].strip())
+            if not 1 <= prn <= 32:
+                continue
+            sat = f"G{prn:02d}"
+            yy = int(line[3:5].strip())
+            year = 2000 + yy if yy < 80 else 1900 + yy
+            sec_f = float(line[17:22].strip())
+            toc = datetime(
+                year,
+                int(line[6:8].strip()),
+                int(line[9:11].strip()),
+                int(line[12:14].strip()),
+                int(line[15:17].strip()),
+                int(sec_f),
+                tzinfo=UTC,
+            )
+            af0 = _fortran_float(line[22:41])
+            af1 = _fortran_float(line[41:60])
+            af2 = _fortran_float(line[60:79])
+            block = lines[idx : idx + 7]
+            idx += 7
+            if len(block) < 7:
+                break
+            vals = _orbit_values_at_offset(block, start_col=3)
+            if vals is None:
+                continue
+            week, tow = gps_datetime_to_tow(toc)
+            eph = BroadcastEphemeris(
+                satellite_id=sat,
+                toc_week=week,
+                toc_tow_s=tow,
+                af0_s=af0,
+                af1_s_s=af1,
+                af2_s_s2=af2,
+                iode=vals[0],
+                crs_m=vals[1],
+                delta_n_rad_s=_rinex_rad(vals[2]),
+                m0_rad=_rinex_rad(vals[3]),
+                cuc_rad=vals[4],
+                e=vals[5],
+                cus_rad=vals[6],
+                sqrt_a_m_sqrt=vals[7],
+                toe_tow_s=vals[8],
+                toe_week=int(vals[18]),
+                cic_rad=vals[9],
+                omega0_rad=_rinex_rad(vals[10]),
+                cis_rad=vals[11],
+                i0_rad=_rinex_rad(vals[12]),
+                crc_m=vals[13],
+                omega_rad=_rinex_rad(vals[14]),
+                omega_dot_rad_s=_rinex_rad(vals[15]),
+                idot_rad_s=_rinex_rad(vals[16]),
+                health=int(vals[21]),
+            )
+            records.setdefault(sat, []).append(eph)
+        except (ValueError, IndexError):
+            continue
+    return records
+
+
+def parse_rinex2_gps_nav(path: Path) -> dict[str, list[BroadcastEphemeris]]:
+    """Parse a RINEX 2 GPS broadcast nav file (plain, ``.gz``, or Unix-compressed ``.Z``)."""
+    if path.suffix == ".Z":
+        proc = subprocess.run(
+            ["gzip", "-dc", str(path)],
+            capture_output=True,
+            check=False,
+            timeout=30,
+        )
+        if proc.returncode != 0:
+            raise ValueError(f"failed to decompress Unix-compressed RINEX 2 nav: {path}")
+        lines = proc.stdout.decode("utf-8", errors="replace").splitlines()
+    elif path.suffix == ".gz":
+        with gzip.open(path, "rt", encoding="utf-8", errors="replace") as gz_handle:
+            lines = gz_handle.read().splitlines()
+    else:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    return parse_rinex2_gps_nav_lines(lines)
+
+
+def parse_gps_nav_auto(path: Path) -> dict[str, list[BroadcastEphemeris]]:
+    """Detect RINEX 2 vs RINEX 3 GPS broadcast navigation and parse accordingly."""
+    if path.suffix == ".Z" or path.name.lower().endswith(("n", "n.gz", "n.z")):
+        return parse_rinex2_gps_nav(path)
+    return parse_rinex3_gps_nav(path)
 
 
 def parse_rinex3_gps_nav(path: Path) -> dict[str, list[BroadcastEphemeris]]:
