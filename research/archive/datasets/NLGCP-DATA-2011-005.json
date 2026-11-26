@@ -1,0 +1,58 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2011-005",
+  "name": "B-02 Extracted 2011-03-20 Physical Anchor Observation (CGGT0790.11O)",
+  "dataset_type": "RINEX_OBSERVATION",
+  "source_classification": "DERIVED_DATA",
+  "source_provider": "OSGoF / NIGNET (extracted read-only from NIGNET2011.zip)",
+  "description": "Unmodified RINEX 2.11 observation file for nearest physical anchor station CGGT (216.320 km NE of OSGF) on 2011-03-20 (DOY 079), extracted outside raw storage for B-02 RTKLIB execution.",
+  "acquisition_method": "Read-only extraction from NLGCP-DATA-2011-001 during B-02",
+  "immutable_source": false,
+  "storage": {
+    "location": "${NLGCP_DATA_ROOT}/processed/rover-benchmark/b02/inputs/2011_03_20/CGGT0790.11O",
+    "storage_type": "EXTERNAL_FILESYSTEM",
+    "original_filename": "CGGT0790.11O",
+    "file_size_bytes": 6418001
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "95f3bad2e2eb116ba5af89e0eb5d9d6c1741597d00492ccd43934143dba06672",
+    "verification_status": "VERIFIED",
+    "last_verified_utc": "2026-11-26T12:00:00Z"
+  },
+  "metadata": {
+    "format": "RINEX 2.11 OBS",
+    "temporal_coverage": {
+      "start": "2011-03-20T00:00:00Z",
+      "end": "2011-03-20T23:59:30Z"
+    },
+    "station_coverage": [
+      "CGGT"
+    ],
+    "constellations": [
+      "GPS",
+      "GLONASS"
+    ],
+    "coordinate_reference_status": "PROVISIONAL_OSGOF_2011_01_01",
+    "reference_frame": "UNKNOWN_ITRF_REALIZATION"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Registered directly from observed repository and external data-root audit."
+  },
+  "relationships": {
+    "derived_from_datasets": [
+      "NLGCP-DATA-2011-001"
+    ],
+    "derived_datasets": [],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-017"
+    ]
+  }
+}

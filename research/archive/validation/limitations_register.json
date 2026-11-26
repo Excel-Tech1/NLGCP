@@ -1,0 +1,114 @@
+{
+  "schema_version": "nlgcp.archive.validation_register.v1",
+  "recorded_utc": "2026-11-26T12:40:00Z",
+  "limitations": [
+    {
+      "limitation_id": "NLGCP-LIM-001",
+      "title": "Zero genuine RTK integer ambiguity resolution (FIX = 0.0%)",
+      "severity": "CRITICAL",
+      "blocker_code": "B-03",
+      "description": "Across 52 full-24h B-02 RTKLIB runs (149,760 epochs) and all Phase 3/5 baselines, genuine centimetre RTK FIX rate is 0.0%. Experimental VRS phases remain ANCHOR_RELATIVE_FLOAT without network double-difference IAR.",
+      "affected_claims": ["Centimetre RTK accuracy", "Operational RTK FIX capability"],
+      "related_experiments": ["NLGCP-EXP-2026-002", "NLGCP-EXP-2026-004", "NLGCP-EXP-2026-016", "NLGCP-EXP-2026-017"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-002",
+      "title": "Provisional 2011 OSGoF coordinate provenance (no verified ITRF realization or offline 2011 PPP products)",
+      "severity": "CRITICAL",
+      "blocker_code": "B-01",
+      "description": "All 11 stations in NIGNET2011.zip have OSGoF 2011-01-01 coordinates lacking documented ITRF realization, ARP continuity, and uncertainty. Zero 2011 SP3/CLK/ERP/OSB products exist on disk, blocking offline PRIDE PPP-AR verification.",
+      "affected_claims": ["Verified accuracy on 2011 interior-hull datasets"],
+      "related_experiments": ["NLGCP-EXP-2026-001", "NLGCP-EXP-2026-007", "NLGCP-EXP-2026-009", "NLGCP-EXP-2026-017"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-003",
+      "title": "Single-day verified 2024 coordinate scope and sparse 3-reference extrapolation geometry",
+      "severity": "CRITICAL",
+      "blocker_code": "B-05",
+      "description": "Only DOY 2024/026 admits 4 verified IGS20 stations (ABFC, EKAK, MGBO, PHRI, 105-1,029 km spacing), forcing extrapolation in every held-out rotation and causing -0.53 fewer satellites/epoch on 2024 atmospheric VRS.",
+      "affected_claims": ["Multi-day verified generalization", "Verified interior-hull positioning accuracy"],
+      "related_experiments": ["NLGCP-EXP-2026-001", "NLGCP-EXP-2026-003", "NLGCP-EXP-2026-006", "NLGCP-EXP-2026-016"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-004",
+      "title": "Offline non-causal atmospheric arc leveling (no real-time causal filter)",
+      "severity": "HIGH",
+      "blocker_code": "B-08",
+      "description": "common_arc_sd_l1_iono and nighttime_leveled_sd_l1_iono use full-day carrier-phase arc medians/nighttime windows, incorporating future epochs from the same day. Not directly deployable in real-time causal streaming.",
+      "affected_claims": ["Real-time operational VRS performance"],
+      "related_experiments": ["NLGCP-EXP-2026-007", "NLGCP-EXP-2026-009", "NLGCP-EXP-2026-016", "NLGCP-EXP-2026-017"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-005",
+      "title": "No authorized live or recorded authentic Nigerian CORS / NTRIP stream",
+      "severity": "CRITICAL",
+      "blocker_code": "GN-01",
+      "description": "Zero authorized live or recorded authentic RTCM/NTRIP streams exist under /home/excellence/nlgcp-data; Phases 9, 10, 11, and 12 remain synthetically validated only for transport/encoding.",
+      "affected_claims": ["Live CORS ingestion", "Real-time NTRIP operational service"],
+      "related_experiments": ["NLGCP-EXP-2026-011", "NLGCP-EXP-2026-012", "NLGCP-EXP-2026-013", "NLGCP-EXP-2026-014"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-006",
+      "title": "No independent non-RTKLIB RTCM MSM4 (1074/1084) decoder or second positioning engine",
+      "severity": "HIGH",
+      "blocker_code": "B-06",
+      "description": "ESA/gAGE-UPC gLAB v6.0.0 cross-decoded CRC-24Q and RTCM 1005 only; MSM4 (1074/1084) is unsupported by gLAB v6.0.0. All MSM4 decoding and rover positioning relies exclusively on RTKLIB v2.4.2-p13.",
+      "affected_claims": ["Multi-decoder RTCM MSM4 interoperability", "Commercial receiver compatibility"],
+      "related_experiments": ["NLGCP-EXP-2026-009", "NLGCP-EXP-2026-013", "NLGCP-EXP-2026-016", "NLGCP-EXP-2026-017"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-007",
+      "title": "GPS-only VRS streams and missing GLONASS FCN/1230/antenna RTCM messages",
+      "severity": "HIGH",
+      "blocker_code": "B-07",
+      "description": "Experimental VRS emits GPS-only RTCM 1005+1074; standalone synthetic RTCM 1084 lacks GLONASS FCN/1020/1230 (yielding L_cyc=0 in RTKLIB without external FCN); 1006/1007/1008/1033/Galileo/BeiDou are unimplemented.",
+      "affected_claims": ["Multi-GNSS VRS corrections", "Standalone GLONASS phase interoperability"],
+      "related_experiments": ["NLGCP-EXP-2026-009", "NLGCP-EXP-2026-013", "NLGCP-EXP-2026-016", "NLGCP-EXP-2026-017"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-008",
+      "title": "Day 7 security blockers forbid non-loopback deployment (SEC-01..SEC-10)",
+      "severity": "CRITICAL",
+      "blocker_code": "B-09",
+      "description": "14 security/reliability findings (2 CRITICAL, 4 HIGH, 4 MEDIUM, 3 LOW, 1 INFO) including plaintext Basic/SOURCE auth, static in-memory credentials, missing pre-auth connection limits, missing Go HTTP timeouts, and Compose default passwords block any non-127.0.0.1 exposure.",
+      "affected_claims": ["Production or controlled-network NTRIP caster readiness"],
+      "related_experiments": ["NLGCP-EXP-2026-014", "NLGCP-EXP-2026-015"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-009",
+      "title": "Zero hardware-in-loop (HIL) or field rover validation",
+      "severity": "HIGH",
+      "blocker_code": "B-10",
+      "description": "No commercial GNSS receiver testing, surveyed Nigerian control-point validation, or field campaign has been performed (Phase 16 Not Started).",
+      "affected_claims": ["Field accuracy", "Commercial rover receiver interoperability"],
+      "related_experiments": ["NLGCP-EXP-2026-016", "NLGCP-EXP-2026-017"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-010",
+      "title": "Missing external DCB/IONEX products and incomplete WUM product retention",
+      "severity": "MEDIUM",
+      "blocker_code": "B-01",
+      "description": "external-products/igs/2024/ contains zero files (no external DCB or IONEX). In 2024 PRIDE working runs, WUM0MGXRAP ORB.SP3 persists while companion CLK/BIA/ERP were converted/cleaned into internal PRIDE files.",
+      "affected_claims": ["Calibrated absolute TEC", "Standalone raw WUM archive replay without re-download"],
+      "related_experiments": ["NLGCP-EXP-2026-001", "NLGCP-EXP-2026-007", "NLGCP-EXP-2026-016"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-011",
+      "title": "Equatorial post-sunset scintillation and single-day seasonal coverage",
+      "severity": "MEDIUM",
+      "blocker_code": "B-05",
+      "description": "B-02 tested one Harmattan day (2024-01-26) and one equinox day (2011-03-20). Post-sunset equatorial plasma-bubble activity (18-24 UTC, ROTI up to 3.07 TECU/min) still yielded 1.03-1.33 m kinematic H RMSE even with the best atmospheric VRS.",
+      "affected_claims": ["Year-round equatorial performance", "Scintillation-immune RTK"],
+      "related_experiments": ["NLGCP-EXP-2026-007", "NLGCP-EXP-2026-016", "NLGCP-EXP-2026-017"]
+    },
+    {
+      "limitation_id": "NLGCP-LIM-012",
+      "title": "Provisional Phase 4 QC thresholds and incomplete early-phase CLI provenance",
+      "severity": "LOW",
+      "blocker_code": "GN-05",
+      "description": "Phase 4 QC profile thresholds remain PROVISIONAL pending Level 3 Nigerian field calibration, and several early feature-branch pilots (Phases 3-8) did not record exact runtime shell invocation strings or environment snapshots uniformly.",
+      "affected_claims": ["Calibrated operational QC thresholds", "Full Level-2 automated replay of early feature-branch pilots"],
+      "related_experiments": ["NLGCP-EXP-2026-002", "NLGCP-EXP-2026-003", "NLGCP-EXP-2026-004", "NLGCP-EXP-2026-005", "NLGCP-EXP-2026-006", "NLGCP-EXP-2026-008"]
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-006",
+  "title": "Phase 6 Reviewed Atmospheric LOOCV Pilot (atm-2024d026-phri-target-geometry-v3)",
+  "milestone": "Phase 6/7 Review",
+  "status": "COMPLETED",
+  "data_classification": "AUTHENTIC",
+  "research_question": "After fixing 13 geometry/science defects, does any spatial interpolator beat the ZERO control on DOY 2024/026 identical-sample LOOCV?",
+  "datasets": [
+    "NLGCP-DATA-2024-002",
+    "NLGCP-DATA-2024-003",
+    "NLGCP-DATA-2024-004",
+    "NLGCP-DATA-2024-005",
+    "NLGCP-DATA-2024-006",
+    "NLGCP-DATA-2024-007"
+  ],
+  "software": {
+    "nlgcp_revision": "5225ff8",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "research/atmospheric_spatial_model/config/phase6-pilot-net-2024d026.json",
+    "sha256": "f9828fec1760175ab6567432b8d5bc8a0d423e861ddd6612601a641169bc57ea"
+  },
+  "execution": {
+    "command": "NOT_RECORDED",
+    "environment": "NOT_RECORDED",
+    "executed_date": "2026-09-09"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-009"
+  ],
+  "validation": {
+    "highest_level": "INDEPENDENTLY_VALIDATED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "PARTIALLY_REPRODUCED",
+    "level": "LEVEL_1_RECORD_COMPLETE"
+  },
+  "relationships": [
+    {
+      "type": "SUPERSEDES",
+      "target_id": "NLGCP-EXP-2026-005"
+    },
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-004"
+    }
+  ],
+  "summary_results": "ZERO RMSE 3.076 m beats IDW 3.352 / nearest 3.757 / planar 14.373 m (n=15,948); all 4 folds proven EXTRAPOLATION. Operational BEST MODEL remains ZERO.",
+  "limitations": [
+    "NLGCP-LIM-003",
+    "NLGCP-LIM-012"
+  ]
+}

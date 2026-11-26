@@ -1,0 +1,104 @@
+{
+  "schema_version": "nlgcp.archive.validation_register.v1",
+  "recorded_utc": "2026-11-26T12:40:00Z",
+  "claims": [
+    {
+      "claim_id": "NLGCP-CLM-001",
+      "claim": "On verified IGS20 2024-01-26 PHRI00NGA (3-ref extrapolation, zero rover leakage), atmospheric experimental VRS (vrs_idw2_unb3m) measurably improves static FLOAT horizontal RMSE (+8.23%, 95% CI [+0.047, +0.121] m) and kinematic 3D FLOAT RMSE (+14.14%) over the physical anchor.",
+      "status": "SUPPORTED_WITH_LIMITATIONS",
+      "supporting_findings": ["NLGCP-FIND-001", "NLGCP-FIND-014"],
+      "limitations": ["NLGCP-LIM-001", "NLGCP-LIM-003", "NLGCP-LIM-004", "NLGCP-LIM-006"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-002",
+      "claim": "Inside a dense 8-reference Nigerian convex hull (2011-03-20 OSGF), offline atmospheric VRS (vrs_ipp_idw2_unb3m) reduces kinematic FLOAT horizontal RMSE by +56.65%, static horizontal RMSE by +57.06%, and truth-independent centered scatter by -57.2% relative to the nearest physical anchor.",
+      "status": "SUPPORTED_WITH_LIMITATIONS",
+      "supporting_findings": ["NLGCP-FIND-002", "NLGCP-FIND-007"],
+      "limitations": ["NLGCP-LIM-001", "NLGCP-LIM-002", "NLGCP-LIM-004", "NLGCP-LIM-006"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-003",
+      "claim": "NLGCP experimental VRS currently achieves genuine centimetre-level RTK integer ambiguity resolution (FIX).",
+      "status": "REFUTED_OR_NEGATIVE",
+      "supporting_findings": ["NLGCP-FIND-003", "NLGCP-FIND-004"],
+      "limitations": ["NLGCP-LIM-001"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-004",
+      "claim": "Geometry-only VRS without differential tropospheric modelling underperforms a physical reference anchor in RTKLIB v2.4.2-p13 due to loss of automatic baseline hydrostatic cancellation in zdres().",
+      "status": "SUPPORTED",
+      "supporting_findings": ["NLGCP-FIND-005"],
+      "limitations": ["NLGCP-LIM-006"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-005",
+      "claim": "Full-day 2024 PHRI kinematic horizontal RMSE improvement (+5.70%) is statistically conclusive under 3-station extrapolation.",
+      "status": "REFUTED_OR_NEGATIVE",
+      "supporting_findings": ["NLGCP-FIND-006"],
+      "limitations": ["NLGCP-LIM-003", "NLGCP-LIM-011"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-006",
+      "claim": "Atmospheric spatial interpolation improves ionospheric prediction inside multi-station convex hulls (+26.1% to +30.0% in 2011 9-station LOOCV), whereas sparse perimeter extrapolation remains ZERO-dominated.",
+      "status": "SUPPORTED_WITH_LIMITATIONS",
+      "supporting_findings": ["NLGCP-FIND-008"],
+      "limitations": ["NLGCP-LIM-002", "NLGCP-LIM-003"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-007",
+      "claim": "UNB3m climatology predicts Nigerian zenith hydrostatic delay within 1.85 mm RMSE vs independent PRIDE PPP-AR 3.2.8 ZTD on 2024 DOY 026, while wet delay exhibits a 12.6 cm coastal-to-Harmattan spatial gradient.",
+      "status": "SUPPORTED_WITH_LIMITATIONS",
+      "supporting_findings": ["NLGCP-FIND-015"],
+      "limitations": ["NLGCP-LIM-003", "NLGCP-LIM-011"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-008",
+      "claim": "NLGCP reproduces its Phase 3 single-base RTK control baseline (EKAK->PHRI 105.553 km) numerically to four decimals (0.9677 / 0.5838 / 1.1301 m) using pinned RTKLIB v2.4.2-p13.",
+      "status": "SUPPORTED",
+      "supporting_findings": ["NLGCP-FIND-014"],
+      "limitations": ["NLGCP-LIM-001"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-009",
+      "claim": "NLGCP synthetic RTCM 1005/1074/1084 encoders and loopback NTRIP v2/v1 distribution (NLGCP_TEST) operate byte-exact and decode cleanly with unmodified RTKLIB v2.4.2-p13.",
+      "status": "SUPPORTED_WITH_LIMITATIONS",
+      "supporting_findings": ["NLGCP-FIND-016", "NLGCP-FIND-010"],
+      "limitations": ["NLGCP-LIM-005", "NLGCP-LIM-006", "NLGCP-LIM-007", "NLGCP-LIM-008"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-010",
+      "claim": "NLGCP RTCM 1005/1074 streams are independently verified across multiple non-RTKLIB MSM4 decoders and commercial GNSS rover receivers.",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "supporting_findings": ["NLGCP-FIND-010", "NLGCP-FIND-018"],
+      "limitations": ["NLGCP-LIM-006", "NLGCP-LIM-009"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-011",
+      "claim": "NLGCP supports causal real-time streaming atmospheric VRS generation.",
+      "status": "INSUFFICIENT_EVIDENCE",
+      "supporting_findings": [],
+      "limitations": ["NLGCP-LIM-004", "NLGCP-LIM-005"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-012",
+      "claim": "NLGCP ingests authorized live Nigerian CORS / NTRIP streams in production.",
+      "status": "BLOCKED",
+      "supporting_findings": ["NLGCP-FIND-017"],
+      "limitations": ["NLGCP-LIM-005"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-013",
+      "claim": "NLGCP backend NTRIP caster is hardened and approved for public or controlled-network operational deployment.",
+      "status": "BLOCKED",
+      "supporting_findings": ["NLGCP-FIND-013"],
+      "limitations": ["NLGCP-LIM-008", "NLGCP-LIM-009"]
+    },
+    {
+      "claim_id": "NLGCP-CLM-014",
+      "claim": "NLGCP is approved for operational GNSS correction service delivery (OPERATIONAL_APPROVED).",
+      "status": "BLOCKED",
+      "supporting_findings": ["NLGCP-FIND-003", "NLGCP-FIND-013", "NLGCP-FIND-017"],
+      "limitations": ["NLGCP-LIM-001", "NLGCP-LIM-002", "NLGCP-LIM-003", "NLGCP-LIM-005", "NLGCP-LIM-008", "NLGCP-LIM-009"]
+    }
+  ]
+}

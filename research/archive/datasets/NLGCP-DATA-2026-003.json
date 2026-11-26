@@ -1,0 +1,59 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2026-003",
+  "name": "SYNTHETIC TEST DATA \u2014 Phase 9/10/11/12 Deterministic RTCM Fixture (valid.rtcm3)",
+  "dataset_type": "SYNTHETIC_RTCM_FIXTURE",
+  "source_classification": "SYNTHETIC_TEST_DATA",
+  "source_provider": "NLGCP Synthetic Fixture Generator",
+  "description": "SYNTHETIC TEST DATA \u2014 NOT VALID FOR SCIENTIFIC RESULTS. Deterministic 8-frame synthetic RTCM 3.x fixture used to validate framing, replay, loopback NTRIP, and RTKLIB decoding.",
+  "acquisition_method": "Generated deterministically by Phase 9 fixture tooling",
+  "immutable_source": false,
+  "storage": {
+    "location": "${NLGCP_DATA_ROOT}/working/rtcm-replay-fixtures/valid.rtcm3",
+    "storage_type": "EXTERNAL_FILESYSTEM",
+    "original_filename": "valid.rtcm3",
+    "file_size_bytes": 115
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "0402b7e8a364e9e0cefb5612481fb0d5902cf7abd1b77329c0b62ec9b8756680",
+    "verification_status": "VERIFIED",
+    "last_verified_utc": "2026-11-26T12:00:00Z"
+  },
+  "metadata": {
+    "format": "RTCM 3.x binary (SYNTHETIC)",
+    "temporal_coverage": {
+      "start": "2026-09-01T00:00:00Z",
+      "end": "2026-09-01T00:00:08Z"
+    },
+    "station_coverage": [
+      "SYNTHETIC_STATION"
+    ],
+    "constellations": [
+      "GPS",
+      "GLONASS"
+    ],
+    "coordinate_reference_status": "SYNTHETIC_TEST_ONLY",
+    "reference_frame": "SYNTHETIC_TEST_ONLY"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Strictly segregated from AUTHENTIC experiments; enforced fail-closed by B-00 validator."
+  },
+  "relationships": {
+    "derived_from_datasets": [],
+    "derived_datasets": [],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-011",
+      "NLGCP-EXP-2026-012",
+      "NLGCP-EXP-2026-013",
+      "NLGCP-EXP-2026-014"
+    ]
+  }
+}

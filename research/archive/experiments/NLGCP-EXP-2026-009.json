@@ -1,0 +1,77 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-009",
+  "title": "Phase 7 Experimental VRS Synthesis, RTCM 1005/1074 Bridge, gLAB Cross-Decode & Isolated NLGCP_VRS_EXP",
+  "milestone": "Phase 6/7 Sprint",
+  "status": "COMPLETED",
+  "data_classification": "AUTHENTIC",
+  "research_question": "Do observation-based atmospheric VRS corrections reduce held-out target observation residuals and stream/decode validly across RTKLIB and non-RTKLIB gLAB v6.0.0?",
+  "datasets": [
+    "NLGCP-DATA-2011-001",
+    "NLGCP-DATA-2011-002",
+    "NLGCP-DATA-2011-003",
+    "NLGCP-DATA-2024-002",
+    "NLGCP-DATA-2024-004",
+    "NLGCP-DATA-2024-005",
+    "NLGCP-DATA-2024-006",
+    "NLGCP-DATA-2024-007",
+    "NLGCP-DATA-2024-010"
+  ],
+  "software": {
+    "nlgcp_revision": "5b5217a",
+    "git_dirty": true,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-RTKLIB-CONVBIN",
+      "NLGCP-SW-GLAB-600",
+      "NLGCP-SW-GLAB-INPUTC",
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "NOT_RECORDED",
+    "sha256": "NOT_RECORDED"
+  },
+  "execution": {
+    "command": "RTKLIB_SOURCE=/home/excellence/RTKLIB .venv/bin/python scripts/run_phase7_vrs_sprint.py",
+    "environment": "research/archive/provenance/environment_snapshot_2026-11-26.json",
+    "executed_date": "2026-11-25"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-013"
+  ],
+  "validation": {
+    "highest_level": "INDEPENDENTLY_VALIDATED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "PARTIALLY_REPRODUCED",
+    "level": "LEVEL_4_INDEPENDENT"
+  },
+  "relationships": [
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-007"
+    },
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-008"
+    },
+    {
+      "type": "PRODUCES_DATASET",
+      "target_id": "NLGCP-DATA-2026-001"
+    },
+    {
+      "type": "PRODUCES_DATASET",
+      "target_id": "NLGCP-DATA-2026-002"
+    }
+  ],
+  "summary_results": "Exp 5A (2011 OSGF): C1 -23.0%, P2 -21.8%, GF TD -21.8%; Exp 5B (2024 PHRI): C1 -9.4%, GF TD -11.1%. Streamed byte-exact over isolated 127.0.0.1 /NLGCP_VRS_EXP; decoded cleanly in RTKLIB convbin/input_rtcm3 and gLAB v6.0.0 (1005/CRC-24Q; MSM4 NOT_SUPPORTED_BY_GLAB_V6); 11/11 failure checks PASS.",
+  "limitations": [
+    "NLGCP-LIM-001",
+    "NLGCP-LIM-002",
+    "NLGCP-LIM-004",
+    "NLGCP-LIM-006",
+    "NLGCP-LIM-007"
+  ]
+}

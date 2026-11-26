@@ -1,0 +1,72 @@
+{
+  "schema_version": "nlgcp.archive.reproducibility.v1",
+  "recorded_utc": "2026-11-26T12:40:00Z",
+  "reproductions": [
+    {
+      "reproduction_id": "NLGCP-REPRO-2026-001",
+      "original_experiment_id": "NLGCP-EXP-2026-002",
+      "reproduction_experiment_id": "NLGCP-EXP-2026-016",
+      "reproduction_level": "LEVEL_3_NUMERICAL",
+      "outcome": "REPRODUCED",
+      "reproduction_date": "2026-11-26",
+      "environment_differences": "Executed from research/nlgcp-14-day-beta-sprint via scripts/run_b02_rover_benchmark.py using identical pinned rnx2rtkp v2.4.2-p13 (b4a96cd0...) and identical DOY 2024/026 EKAK/PHRI/BRDC inputs.",
+      "observed_metrics": "B-02 static physical_anchor_ekak00nga produced H=0.9677 m, V=0.5838 m, 3D=1.1301 m (2,880/2,880 FLOAT, 0 FIX), reproducing Phase 3 EKAK->PHRI control (0.968 / 0.584 / 1.130 m) to the fourth decimal place.",
+      "deviation_notes": "Zero numerical deviation within Phase 3 3-decimal reporting precision."
+    },
+    {
+      "reproduction_id": "NLGCP-REPRO-2026-002",
+      "original_experiment_id": "NLGCP-EXP-2026-016",
+      "reproduction_experiment_id": "NLGCP-EXP-2026-016",
+      "reproduction_level": "LEVEL_3_NUMERICAL",
+      "outcome": "REPRODUCED",
+      "reproduction_date": "2026-11-26",
+      "environment_differences": "Deterministic re-execution after fixing experimental_vrs.py:517 network_ztd ZWD interpolation bug and parallel .rnx.gz decompression race; fixed bootstrap seed 20261125.",
+      "observed_metrics": "All 28/28 Dataset B runs and 24/24 Dataset A runs completed deterministically; 311 output artifacts verified via hashes_manifest.json (2a2a921f...) plus 12/12 Phase H failure checks PASS.",
+      "deviation_notes": "Pre-fix run had spurious +0.54-0.74 m Up bias on vrs_tropo_pride_ztd_only; post-fix outputs are authoritative and covered by unit regression test."
+    },
+    {
+      "reproduction_id": "NLGCP-REPRO-2026-003",
+      "original_experiment_id": "NLGCP-EXP-2026-006",
+      "reproduction_experiment_id": "NLGCP-EXP-2026-006",
+      "reproduction_level": "LEVEL_1_RECORD_COMPLETE",
+      "outcome": "PARTIALLY_REPRODUCED",
+      "reproduction_date": "2026-09-09",
+      "environment_differences": "Originally executed on branch phase67/scientific-validation-geometry-hardening (5225ff8); superseded pre-review atm-2024d026-phri-target after 13 geometry/science fixes. Exact shell invocation string was not archived in a single runtime manifest.",
+      "observed_metrics": "Authoritative metrics.json (3a2e79db...) preserved intact on disk (zero 3.076 m vs IDW 3.352 / nearest 3.757 / planar 14.373 m, n=15,948).",
+      "deviation_notes": "Full Level 2/3 re-execution from current branch not re-run during B-00 (read-only archive foundation); all inputs and config (f9828fec...) remain present."
+    },
+    {
+      "reproduction_id": "NLGCP-REPRO-2026-004",
+      "original_experiment_id": "NLGCP-EXP-2026-014",
+      "reproduction_experiment_id": "NLGCP-EXP-2026-014",
+      "reproduction_level": "LEVEL_2_COMPUTATIONAL",
+      "outcome": "REPRODUCED",
+      "reproduction_date": "2026-11-26",
+      "environment_differences": "Repeated across Days 5, 6, 7, Phase 6/7 sprint, and B-02 using RTKLIB_SOURCE=/home/excellence/RTKLIB .venv/bin/python scripts/run_phase12_lab_demo.py --format json.",
+      "observed_metrics": "Exit 0, 10/10 stages PASS, byte_exact_match=true (135/135 B), RTKLIB convbin + native input_rtcm3() PASS across every repeat.",
+      "deviation_notes": "SYNTHETIC TEST DATA ONLY; verifies computational/transport reproducibility, not scientific GNSS positioning."
+    },
+    {
+      "reproduction_id": "NLGCP-REPRO-2026-005",
+      "original_experiment_id": "NLGCP-EXP-2026-009",
+      "reproduction_experiment_id": "NLGCP-EXP-2026-009",
+      "reproduction_level": "LEVEL_4_INDEPENDENT",
+      "outcome": "PARTIALLY_REPRODUCED",
+      "reproduction_date": "2026-11-25",
+      "environment_differences": "Independent non-RTKLIB cross-decoding using ESA/gAGE-UPC gLAB v6.0.0 (/opt/gLAB/gLAB_linux ca530155...) alongside RTKLIB v2.4.2-p13 convbin and native input_rtcm3().",
+      "observed_metrics": "gLAB v6.0.0 independently verified 31/31 CRC-24Q frames and RTCM 1005 ECEF coordinates (0.000000-0.000054 m error, ref_sta_ind=1) on both 2011 and 2024 VRS RTCM streams.",
+      "deviation_notes": "Partial Level 4 only: gLAB v6.0.0 does NOT support RTCM MSM4 (1074/1084); independent non-RTKLIB MSM4 decoding (B-06) remains BLOCKED/NOT_AVAILABLE."
+    },
+    {
+      "reproduction_id": "NLGCP-REPRO-2026-006",
+      "original_experiment_id": "NLGCP-EXP-2026-017",
+      "reproduction_experiment_id": "NLGCP-EXP-2026-017",
+      "reproduction_level": "LEVEL_0_NONE",
+      "outcome": "BLOCKED",
+      "reproduction_date": "2026-11-26",
+      "environment_differences": "Independent offline PPP truth verification of 2011 OSGF and 8 reference stations via PRIDE PPP-AR 3.2.8.",
+      "observed_metrics": "NOT_AVAILABLE — zero 2011 SP3, CLK, ERP, or OSB precise products exist under /home/excellence/nlgcp-data.",
+      "deviation_notes": "Blocked by external precise product availability (NLGCP-DATA-2011-006 / Blocker B-01). Mitigated partially by truth-independent centered repeatability (-57.2% scatter)."
+    }
+  ]
+}

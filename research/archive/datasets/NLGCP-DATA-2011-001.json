@@ -1,0 +1,73 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2011-001",
+  "name": "NIGNET 2011 Southern & National Historical RINEX Archive (NIGNET2011.zip)",
+  "dataset_type": "RINEX_OBSERVATION_ARCHIVE",
+  "source_classification": "AUTHENTIC_RECORDED_CORS",
+  "source_provider": "OSGoF / NIGNET (historical 2011 archive)",
+  "description": "Immutable ZIP archive containing 3,018 RINEX 2.11 observation files across 11 Nigerian GNSS stations for calendar year 2011. No navigation files included; GPS P1=0%; silent Dec 2011 RUST L2/P2 outage observed.",
+  "acquisition_method": "External archival delivery placed in ${NLGCP_DATA_ROOT}/incoming/southern-nignet/",
+  "immutable_source": true,
+  "storage": {
+    "location": "${NLGCP_DATA_ROOT}/incoming/southern-nignet/NIGNET2011.zip",
+    "storage_type": "EXTERNAL_FILESYSTEM",
+    "original_filename": "NIGNET2011.zip",
+    "file_size_bytes": 5820369120
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "8ccb004540c005a2e0df5d436cb6ee402a280116dc22d316fc98ae6d5ef44fcf",
+    "verification_status": "VERIFIED",
+    "last_verified_utc": "2026-11-26T12:00:00Z"
+  },
+  "metadata": {
+    "format": "ZIP (RINEX 2.11 OBS)",
+    "temporal_coverage": {
+      "start": "2011-01-01T00:00:00Z",
+      "end": "2011-12-31T23:59:30Z"
+    },
+    "station_coverage": [
+      "ABUZ",
+      "BKFP",
+      "CGGT",
+      "CLBR",
+      "FUTY",
+      "GEMB",
+      "MDGR",
+      "OSGF",
+      "RUST",
+      "ULAG",
+      "UNEC"
+    ],
+    "constellations": [
+      "GPS",
+      "GLONASS"
+    ],
+    "coordinate_reference_status": "PROVISIONAL_OSGOF_2011_01_01",
+    "reference_frame": "UNKNOWN_ITRF_REALIZATION"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Registered directly from observed repository and external data-root audit."
+  },
+  "relationships": {
+    "derived_from_datasets": [],
+    "derived_datasets": [
+      "NLGCP-DATA-2011-004",
+      "NLGCP-DATA-2011-005",
+      "NLGCP-DATA-2026-002"
+    ],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-001",
+      "NLGCP-EXP-2026-007",
+      "NLGCP-EXP-2026-009",
+      "NLGCP-EXP-2026-017"
+    ]
+  }
+}

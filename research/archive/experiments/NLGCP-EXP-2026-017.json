@@ -1,0 +1,80 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-017",
+  "title": "B-02 Offline Rover Positioning Benchmark \u2014 Dataset A (2011-03-20 OSGF, Interior 8-Ref Hull)",
+  "milestone": "B-02 Rover Positioning Benchmark",
+  "status": "COMPLETED",
+  "data_classification": "AUTHENTIC",
+  "research_question": "Inside an 8-reference Nigerian convex hull (2011-03-20 OSGF, 216.320 km anchor CGGT, provisional OSGoF truth + truth-independent repeatability), how much do atmospheric VRS RTCM streams improve actual RTKLIB rover positioning?",
+  "datasets": [
+    "NLGCP-DATA-2011-001",
+    "NLGCP-DATA-2011-002",
+    "NLGCP-DATA-2011-003",
+    "NLGCP-DATA-2011-004",
+    "NLGCP-DATA-2011-005",
+    "NLGCP-DATA-2011-006",
+    "NLGCP-DATA-2026-002"
+  ],
+  "software": {
+    "nlgcp_revision": "5b5217a",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-RTKLIB-RNX2RTKP",
+      "NLGCP-SW-RTKLIB-CONVBIN",
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "${NLGCP_DATA_ROOT}/processed/rover-benchmark/b02/experiment_config.json",
+    "sha256": "44d22f17b3541593b74792ca4ff4a74f2b30cb219bb2a57a52ab37faca491f1b"
+  },
+  "execution": {
+    "command": ".venv/bin/python scripts/run_b02_rover_benchmark.py",
+    "environment": "research/archive/provenance/environment_snapshot_2026-11-26.json",
+    "executed_date": "2026-11-26"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-020",
+    "NLGCP-ART-2026-021",
+    "NLGCP-ART-2026-022",
+    "NLGCP-ART-2026-023",
+    "NLGCP-ART-2026-024"
+  ],
+  "validation": {
+    "highest_level": "INTEGRATION_TESTED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "REPRODUCED",
+    "level": "LEVEL_3_NUMERICAL"
+  },
+  "relationships": [
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-009"
+    },
+    {
+      "type": "VALIDATES",
+      "target_id": "NLGCP-EXP-2026-009"
+    },
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2011-001"
+    },
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2011-003"
+    }
+  ],
+  "summary_results": "24/24 full-24h runs (2,880 ep, 30 s, 99.95% sat parity). vrs_ipp_idw2_unb3m cut kinematic H +56.65% (1.456 -> 0.631 m, CI [+0.590, +1.015] m), static H +57.06%, and truth-independent centered scatter -57.2%; DGPS H +45.38%. Genuine FIX = 0.0% (7 Q=1 epochs confirmed false fixes at 1.30-2.43 m). Provisional truth blocks verified-accuracy promotion.",
+  "limitations": [
+    "NLGCP-LIM-001",
+    "NLGCP-LIM-002",
+    "NLGCP-LIM-004",
+    "NLGCP-LIM-006",
+    "NLGCP-LIM-007",
+    "NLGCP-LIM-009",
+    "NLGCP-LIM-011"
+  ]
+}

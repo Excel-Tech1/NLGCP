@@ -1,0 +1,71 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2024-001",
+  "name": "Canonical 2024 OSGoF/NIGNET Raw Archive Manifest (1,290 station-days)",
+  "dataset_type": "RINEX_OBSERVATION_ARCHIVE",
+  "source_classification": "AUTHENTIC_RECORDED_CORS",
+  "source_provider": "OSGoF / NIGNET (2024 batch-001 delivery)",
+  "description": "Canonical manifest indexing 1,290 immutable 2024 RINEX observation station-days across 8 Nigerian stations and 294 observed days under ${NLGCP_DATA_ROOT}/raw/nignet/2024/ (1.3 GiB) and 00-deliveries/osgof-2024/batch-001/ (1.3 GiB).",
+  "acquisition_method": "Canonicalized by Phase 2 manifest pipeline from immutable OSGoF delivery",
+  "immutable_source": true,
+  "storage": {
+    "location": "${NLGCP_DATA_ROOT}/manifests/canonical-raw-archive-2024.json",
+    "storage_type": "EXTERNAL_FILESYSTEM",
+    "original_filename": "canonical-raw-archive-2024.json",
+    "file_size_bytes": 537609
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "4f97149bcbf1349e55dea3214f38d0b7592bbcb759ce468feefc24cf1807561f",
+    "verification_status": "VERIFIED",
+    "last_verified_utc": "2026-11-26T12:00:00Z"
+  },
+  "metadata": {
+    "format": "JSON manifest (indexing RINEX OBS)",
+    "temporal_coverage": {
+      "start": "2024-01-01T00:00:00Z",
+      "end": "2024-12-31T23:59:30Z"
+    },
+    "station_coverage": [
+      "ABFC00NGA",
+      "BKFP00NGA",
+      "EKAK00NGA",
+      "FUTY00NGA",
+      "MGBO00NGA",
+      "PHRI00NGA",
+      "ULAG00NGA",
+      "UNEC00NGA"
+    ],
+    "constellations": [
+      "GPS",
+      "GLONASS",
+      "GALILEO",
+      "BEIDOU"
+    ],
+    "coordinate_reference_status": "PARTIALLY_VERIFIED_DOY_026_ONLY",
+    "reference_frame": "IGS20"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Registered directly from observed repository and external data-root audit."
+  },
+  "relationships": {
+    "derived_from_datasets": [],
+    "derived_datasets": [
+      "NLGCP-DATA-2024-004",
+      "NLGCP-DATA-2024-005",
+      "NLGCP-DATA-2024-006",
+      "NLGCP-DATA-2024-007"
+    ],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-001",
+      "NLGCP-EXP-2026-003"
+    ]
+  }
+}

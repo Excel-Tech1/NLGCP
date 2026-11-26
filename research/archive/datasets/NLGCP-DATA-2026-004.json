@@ -1,0 +1,54 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2026-004",
+  "name": "Authorized Live Nigerian CORS / NTRIP Caster Stream (UNAVAILABLE / BLOCKED)",
+  "dataset_type": "LIVE_CORS_NTRIP_STREAM",
+  "source_classification": "AUTHENTIC_LIVE_CORS",
+  "source_provider": "Authorized Nigerian CORS Operator (not yet admitted)",
+  "description": "Explicit provenance placeholder documenting that zero authorized live Nigerian CORS / NTRIP endpoints or credentialed captures are admitted; Phase 9 real replay and Phase 10 real live ingestion remain BLOCKED.",
+  "acquisition_method": "BLOCKED",
+  "immutable_source": true,
+  "storage": {
+    "location": "BLOCKED",
+    "storage_type": "UNAVAILABLE",
+    "original_filename": "NOT_AVAILABLE",
+    "file_size_bytes": null
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "NOT_AVAILABLE",
+    "verification_status": "NOT_AVAILABLE",
+    "last_verified_utc": "NOT_VERIFIED"
+  },
+  "metadata": {
+    "format": "RTCM 3.x over NTRIP",
+    "temporal_coverage": {
+      "start": "NOT_AVAILABLE",
+      "end": "NOT_AVAILABLE"
+    },
+    "station_coverage": [],
+    "constellations": [
+      "NOT_AVAILABLE"
+    ],
+    "coordinate_reference_status": "NOT_AVAILABLE",
+    "reference_frame": "NOT_AVAILABLE"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Explicitly documents absence of live authorized CORS stream (GN-01)."
+  },
+  "relationships": {
+    "derived_from_datasets": [],
+    "derived_datasets": [],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-011",
+      "NLGCP-EXP-2026-012"
+    ]
+  }
+}

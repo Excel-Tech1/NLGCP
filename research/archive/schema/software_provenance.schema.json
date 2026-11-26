@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nlgcp.local/schemas/archive/software_provenance.schema.json",
+  "title": "NLGCP Research Archive Software Inventory (v1)",
+  "type": "object",
+  "required": ["schema_version", "software"],
+  "properties": {
+    "schema_version": { "const": "nlgcp.archive.software_inventory.v1" },
+    "software": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "software_id",
+          "name",
+          "version",
+          "role",
+          "upstream_url",
+          "source_commit",
+          "executable_or_source_path",
+          "expected_sha256",
+          "linked_experiments"
+        ]
+      }
+    }
+  }
+}

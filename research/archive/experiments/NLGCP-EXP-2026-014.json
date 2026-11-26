@@ -1,0 +1,56 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-014",
+  "title": "Phase 12 Loopback NTRIP Caster (NLGCP_TEST) & Day 6 Integration/Fault Assurance (Days 4-6)",
+  "milestone": "14-Day Beta Sprint Days 4-6",
+  "status": "COMPLETED",
+  "data_classification": "SYNTHETIC",
+  "research_question": "Does the loopback-only Phase 12 NTRIP v2/v1 caster deliver synthetic Phase 11 RTCM 1005/1074/1084 streams byte-exact across all fault, admission, and cleanup scenarios?",
+  "datasets": [
+    "NLGCP-DATA-2026-003"
+  ],
+  "software": {
+    "nlgcp_revision": "0cea5ba",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-RTKLIB-CONVBIN",
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "NOT_RECORDED",
+    "sha256": "NOT_RECORDED"
+  },
+  "execution": {
+    "command": "RTKLIB_SOURCE=/home/excellence/RTKLIB .venv/bin/python scripts/run_phase12_lab_demo.py --format json",
+    "environment": "research/archive/provenance/environment_snapshot_2026-11-26.json",
+    "executed_date": "2026-11-25"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-018"
+  ],
+  "validation": {
+    "highest_level": "INTEGRATION_TESTED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "REPRODUCED",
+    "level": "LEVEL_2_COMPUTATIONAL"
+  },
+  "relationships": [
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-013"
+    },
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2026-003"
+    }
+  ],
+  "summary_results": "SYNTHETIC TEST DATA ONLY: 10/10 CLI demo stages PASS, 135/135 B byte-exact, 6 boundary/fault defects caught & fixed, 55 Phase 12 tests + 350 focused Phase 9-12 tests PASS. Strictly 127.0.0.1 loopback lab scope.",
+  "limitations": [
+    "NLGCP-LIM-005",
+    "NLGCP-LIM-008"
+  ]
+}

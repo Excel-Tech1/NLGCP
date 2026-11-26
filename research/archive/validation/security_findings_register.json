@@ -1,0 +1,183 @@
+{
+  "schema_version": "nlgcp.archive.validation_register.v1",
+  "source_report": "docs/sprints/14-day-beta-sprint/13-day7-backend-security-review.md",
+  "audit_date": "2026-11-25",
+  "audit_experiment_id": "NLGCP-EXP-2026-015",
+  "security_findings": [
+    {
+      "security_id": "SEC-01",
+      "severity": "CRITICAL",
+      "area": "Transport security & authentication",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "Plaintext HTTP Basic Auth and NTRIP v1 SOURCE <password> transmit credentials without TLS encryption.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/caster.py",
+        "services/correction-service/src/nlgcp_correction_service/client.py",
+        "services/correction-service/src/nlgcp_correction_service/auth.py"
+      ],
+      "current_lab_mitigation": "Strictly enforced 127.0.0.1 loopback bind (config.py:29-34)."
+    },
+    {
+      "security_id": "SEC-02",
+      "severity": "CRITICAL",
+      "area": "Identity, credential storage & authorization",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "Static in-memory CredentialStore holds plaintext env-var passwords with no hashing, rotation, revocation, expiration, or per-mountpoint ACLs; apps/api has zero authentication.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/config.py",
+        "services/correction-service/src/nlgcp_correction_service/auth.py",
+        "apps/api/src/nlgcp_api/"
+      ],
+      "current_lab_mitigation": "Ephemeral/local test credentials only; .env excluded by .gitignore."
+    },
+    {
+      "security_id": "SEC-03",
+      "severity": "HIGH",
+      "area": "Pre-auth DoS & brute-force resistance",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "LocalNtripCaster._accept_loop() spawns a new thread per accepted TCP socket before authentication; max_clients is enforced post-auth with no pre-auth cap or per-IP auth rate limiting.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/caster.py"
+      ],
+      "current_lab_mitigation": "Loopback-only listener (listen(min(32, max_clients * 2)))."
+    },
+    {
+      "security_id": "SEC-04",
+      "severity": "HIGH",
+      "area": "Source-push concurrency & lifecycle bounds",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "Authenticated POST and v1 SOURCE handlers do not enforce max_sources or exclusive single-writer mountpoint locks.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/caster.py"
+      ],
+      "current_lab_mitigation": "Single local synthetic source in lab tests."
+    },
+    {
+      "security_id": "SEC-05",
+      "severity": "HIGH",
+      "area": "Go ingestor HTTP server timeouts & container bind",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "Go ingestor constructs &http.Server with zero ReadHeaderTimeout, ReadTimeout, WriteTimeout, or IdleTimeout.",
+      "code_locations": [
+        "services/gnss-ingestor/cmd/ingestor/main.go"
+      ],
+      "current_lab_mitigation": "compose.yml binds host port strictly to 127.0.0.1:8081:8081."
+    },
+    {
+      "security_id": "SEC-06",
+      "severity": "HIGH",
+      "area": "Infrastructure secret defaults & unauthenticated internal buses",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "compose.yml defaults POSTGRES_PASSWORD to CHANGE_ME; local NATS JetStream and Redis run without authentication or TLS.",
+      "code_locations": [
+        "compose.yml"
+      ],
+      "current_lab_mitigation": "All Compose host ports bind strictly to 127.0.0.1."
+    },
+    {
+      "security_id": "SEC-07",
+      "severity": "MEDIUM",
+      "area": "Slowloris / per-recv timeout without total header deadline",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "_read_request_head() sets per-recv() timeout (5.0 s) rather than a cumulative monotonic wall-clock deadline across headers.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/caster.py"
+      ],
+      "current_lab_mitigation": "Loopback-only lab access."
+    },
+    {
+      "security_id": "SEC-08",
+      "severity": "MEDIUM",
+      "area": "Unauthenticated source-table disclosure by default",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": false,
+      "summary": "CasterConfig.allow_unauthenticated_sourcetable defaults to True, exposing mountpoint metadata and bound port.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/config.py"
+      ],
+      "current_lab_mitigation": "Standard NTRIP convention on 127.0.0.1."
+    },
+    {
+      "security_id": "SEC-09",
+      "severity": "MEDIUM",
+      "area": "Secret fields visible in dataclass repr()",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "CasterConfig.client_credentials, CasterConfig.source_credentials, and ClientConfig.password lack repr=False.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/config.py"
+      ],
+      "current_lab_mitigation": "StructuredEventLogger redacts configured secrets; Day 6 caplog test verified zero log leaks."
+    },
+    {
+      "security_id": "SEC-10",
+      "severity": "MEDIUM",
+      "area": "Containerization, CI security scanning & dependency governance",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": true,
+      "summary": "services/correction-service has no Dockerfile/Compose definition; CI lacks container vulnerability and secret scanning beyond CodeQL/dependency review.",
+      "code_locations": [
+        "services/correction-service/",
+        "apps/api/Dockerfile",
+        ".github/workflows/"
+      ],
+      "current_lab_mitigation": "Local package tested via make check; all Compose host binds are 127.0.0.1."
+    },
+    {
+      "security_id": "SEC-11",
+      "severity": "LOW",
+      "area": "Incomplete audit logging on 405 and source-push auth/mountpoint failures",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": false,
+      "summary": "405 Method Not Allowed, POST 401/404, and SOURCE bad password/mountpoint rejections do not emit structured audit events.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/caster.py"
+      ],
+      "current_lab_mitigation": "Client GET 401/404 and connect/disconnect are logged with redaction."
+    },
+    {
+      "security_id": "SEC-12",
+      "severity": "LOW",
+      "area": "fetch_sourcetable() error accounting",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": false,
+      "summary": "fetch_sourcetable() returns (None, '') on malformed response without recording an error in ClientDiagnostics.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/client.py"
+      ],
+      "current_lab_mitigation": "Used only for local source-table probes; receive_frames() tracks all errors."
+    },
+    {
+      "security_id": "SEC-13",
+      "severity": "LOW",
+      "area": "Stalled subscriber eviction vs drop accounting",
+      "status": "OPEN",
+      "blocks_non_loopback_deployment": false,
+      "summary": "MountpointBroker drops frames explicitly on subscriber queue overflow rather than evicting chronically stalled TCP subscribers.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/publisher.py"
+      ],
+      "current_lab_mitigation": "Bounded maxsize prevents unbounded memory growth; healthy clients remain unaffected."
+    },
+    {
+      "security_id": "SEC-14",
+      "severity": "INFORMATIONAL",
+      "area": "Verified security & reliability strengths",
+      "status": "VERIFIED_LAB_CONTROL",
+      "blocks_non_loopback_deployment": false,
+      "summary": "Eight verified lab security invariants: strict 127.0.0.1 binding, constant-time hmac.compare_digest auth, default TLS verification in Phase 10, non-root containers, immutable NLGCP_DATA_ROOT, atomic client slot reservation, fail-closed RTCM/VRS admission gates, and zero credential leaks in logs.",
+      "code_locations": [
+        "services/correction-service/src/nlgcp_correction_service/",
+        "research/ntrip_ingestion/src/nlgcp_ntrip_ingest/"
+      ],
+      "current_lab_mitigation": "Regression-tested across 55 Phase 12 + 94 Python Phase 10 + 30 Go Phase 10 tests."
+    }
+  ]
+}

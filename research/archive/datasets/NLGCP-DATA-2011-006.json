@@ -1,0 +1,55 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2011-006",
+  "name": "2011 IGS/MGEX Precise Orbits, Clocks, ERP, and OSB Biases (UNAVAILABLE)",
+  "dataset_type": "PRECISE_PRODUCTS",
+  "source_classification": "AUTHENTIC_RECORDED_CORS",
+  "source_provider": "IGS / Analysis Centers (not acquired locally)",
+  "description": "Explicit provenance placeholder documenting that zero 2011 SP3, CLK, ERP, or OSB precise products exist under /home/excellence/nlgcp-data, blocking offline PRIDE PPP-AR verification of 2011 station coordinates (Blocker B-01).",
+  "acquisition_method": "NOT_AVAILABLE",
+  "immutable_source": true,
+  "storage": {
+    "location": "NOT_AVAILABLE",
+    "storage_type": "UNAVAILABLE",
+    "original_filename": "NOT_AVAILABLE",
+    "file_size_bytes": null
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "NOT_AVAILABLE",
+    "verification_status": "NOT_AVAILABLE",
+    "last_verified_utc": "NOT_VERIFIED"
+  },
+  "metadata": {
+    "format": "SP3 / CLK / ERP / BIA",
+    "temporal_coverage": {
+      "start": "2011-03-20T00:00:00Z",
+      "end": "2011-03-20T23:59:59Z"
+    },
+    "station_coverage": [
+      "GLOBAL_PRECISE"
+    ],
+    "constellations": [
+      "GPS"
+    ],
+    "coordinate_reference_status": "NOT_AVAILABLE",
+    "reference_frame": "NOT_AVAILABLE"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Explicitly registered unavailable external dependency per B-00 Section 2.2."
+  },
+  "relationships": {
+    "derived_from_datasets": [],
+    "derived_datasets": [],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-017"
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-013",
+  "title": "Phase 11 Synthetic RTCM 1005/1074/1084 Encoders & Independent RTKLIB Decoding (Days 2-3)",
+  "milestone": "14-Day Beta Sprint Days 2-3",
+  "status": "COMPLETED",
+  "data_classification": "SYNTHETIC",
+  "research_question": "Do NLGCP bit-level RTCM 1005, GPS MSM4 1074, and GLONASS MSM4 1084 synthetic encoders decode accurately in unmodified RTKLIB v2.4.2-p13?",
+  "datasets": [
+    "NLGCP-DATA-2026-003"
+  ],
+  "software": {
+    "nlgcp_revision": "8d10f30",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-RTKLIB-CONVBIN",
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "NOT_RECORDED",
+    "sha256": "NOT_RECORDED"
+  },
+  "execution": {
+    "command": "RTKLIB_SOURCE=/home/excellence/RTKLIB .venv/bin/python -m pytest research/rtcm_generation research/rtcm_replay -q",
+    "environment": "NOT_RECORDED",
+    "executed_date": "2026-11-24"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-017"
+  ],
+  "validation": {
+    "highest_level": "INDEPENDENTLY_VALIDATED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "REPRODUCED",
+    "level": "LEVEL_2_COMPUTATIONAL"
+  },
+  "relationships": [
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2026-003"
+    },
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-012"
+    }
+  ],
+  "summary_results": "SYNTHETIC TEST DATA ONLY: Fixed off-by-one 1-based MSM signal-ID tables; 1005/1074/1084 decoded via RTKLIB convbin + native input_rtcm3() within half-LSB tolerances (201 tests PASS). Standalone 1084 lacks GLONASS FCN; registry remains SYNTHETICALLY_VALIDATED.",
+  "limitations": [
+    "NLGCP-LIM-005",
+    "NLGCP-LIM-006",
+    "NLGCP-LIM-007"
+  ]
+}

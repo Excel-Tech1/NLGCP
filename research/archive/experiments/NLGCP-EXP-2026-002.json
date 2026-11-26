@@ -1,0 +1,72 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-002",
+  "title": "Phase 3 Offline Single-Base RTK Benchmark & Shorter-Baseline Control (DOY 2024/026)",
+  "milestone": "Phase 3",
+  "status": "COMPLETED",
+  "data_classification": "AUTHENTIC",
+  "research_question": "What baseline positioning accuracy and ambiguity-resolution performance does unmodified RTKLIB v2.4.2-p13 achieve across 105-690 km Nigerian single baselines?",
+  "datasets": [
+    "NLGCP-DATA-2024-002",
+    "NLGCP-DATA-2024-003",
+    "NLGCP-DATA-2024-004",
+    "NLGCP-DATA-2024-005",
+    "NLGCP-DATA-2024-006",
+    "NLGCP-DATA-2024-007"
+  ],
+  "software": {
+    "nlgcp_revision": "4ab8d26",
+    "git_dirty": null,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-RTKLIB-RNX2RTKP",
+      "NLGCP-SW-PRIDE-PDP3",
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "NOT_RECORDED",
+    "sha256": "NOT_RECORDED"
+  },
+  "execution": {
+    "command": "NOT_RECORDED",
+    "environment": "NOT_RECORDED",
+    "executed_date": "2026-09-04"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-004",
+    "NLGCP-ART-2026-005"
+  ],
+  "validation": {
+    "highest_level": "INDEPENDENTLY_VALIDATED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "REPRODUCED",
+    "level": "LEVEL_3_NUMERICAL"
+  },
+  "relationships": [
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2024-003"
+    },
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2024-004"
+    },
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2024-005"
+    },
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-001"
+    }
+  ],
+  "summary_results": "All baselines 100% FLOAT-only (0.0% FIX). Shorter control EKAK->PHRI (105.553 km): H=0.968 m, V=0.584 m, 3D=1.130 m; ABFC baselines (470-690 km): H=1.093-1.377 m.",
+  "limitations": [
+    "NLGCP-LIM-001",
+    "NLGCP-LIM-003",
+    "NLGCP-LIM-012"
+  ]
+}

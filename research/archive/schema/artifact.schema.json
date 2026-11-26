@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nlgcp.local/schemas/archive/artifact.schema.json",
+  "title": "NLGCP Research Archive Artifact Record (v1)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "artifact_id",
+    "experiment_id",
+    "file_path",
+    "storage_type",
+    "file_type",
+    "file_size_bytes",
+    "sha256",
+    "created_at",
+    "generated_by",
+    "source_datasets",
+    "description",
+    "validation_status"
+  ],
+  "properties": {
+    "schema_version": { "const": "nlgcp.archive.artifact.v1" },
+    "artifact_id": { "type": "string", "pattern": "^NLGCP-ART-\\d{4}-\\d{3}$" },
+    "experiment_id": { "type": "string", "pattern": "^NLGCP-EXP-\\d{4}-\\d{3}$" },
+    "storage_type": { "enum": ["REPOSITORY", "EXTERNAL_FILESYSTEM", "UNAVAILABLE"] },
+    "file_size_bytes": { "type": ["integer", "null"] },
+    "contains_nested_hash_manifest": { "type": "boolean" }
+  }
+}

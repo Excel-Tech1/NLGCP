@@ -1,0 +1,60 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2011-002",
+  "name": "BKG/IGS 2011 DOY 079 GPS Broadcast Navigation (brdc0790.11n.Z)",
+  "dataset_type": "BROADCAST_NAVIGATION",
+  "source_classification": "AUTHENTIC_RECORDED_CORS",
+  "source_provider": "BKG / IGS Public Archive",
+  "description": "Public BKG/IGS daily GPS broadcast ephemeris for 2011-03-20 (DOY 079), part of 66/66 validated 2011 GPS+GLONASS navigation files recovered after 132 CDDIS AUTHENTICATION_REQUIRED responses.",
+  "acquisition_method": "Automated public HTTPS download from BKG archive (run-20261123T163056Z)",
+  "immutable_source": true,
+  "storage": {
+    "location": "${NLGCP_DATA_ROOT}/validation/southern-nignet/coordinate-navigation-recovery/run-20261123T163056Z/navigation-products/attempts/bkg/brdc0790.11n.Z",
+    "storage_type": "EXTERNAL_FILESYSTEM",
+    "original_filename": "brdc0790.11n.Z",
+    "file_size_bytes": 56968
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "52cc6c9b5a1864b1463cce1b645c79f98002397c51566c5f8e2b6c09498b587d",
+    "verification_status": "VERIFIED",
+    "last_verified_utc": "2026-11-26T12:00:00Z"
+  },
+  "metadata": {
+    "format": "RINEX 2.11 NAV (LZW .Z)",
+    "temporal_coverage": {
+      "start": "2011-03-20T00:00:00Z",
+      "end": "2011-03-20T23:59:59Z"
+    },
+    "station_coverage": [
+      "GLOBAL_BRDC"
+    ],
+    "constellations": [
+      "GPS"
+    ],
+    "coordinate_reference_status": "NOT_APPLICABLE",
+    "reference_frame": "WGS84_BROADCAST"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Registered directly from observed repository and external data-root audit."
+  },
+  "relationships": {
+    "derived_from_datasets": [],
+    "derived_datasets": [
+      "NLGCP-DATA-2026-002"
+    ],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-001",
+      "NLGCP-EXP-2026-007",
+      "NLGCP-EXP-2026-009",
+      "NLGCP-EXP-2026-017"
+    ]
+  }
+}

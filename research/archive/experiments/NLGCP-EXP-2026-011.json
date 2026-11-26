@@ -1,0 +1,55 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-011",
+  "title": "Phase 9 Synthetic RTCM Replay Pilot & Real-Source Audit",
+  "milestone": "Phase 9",
+  "status": "COMPLETED",
+  "data_classification": "SYNTHETIC",
+  "research_question": "Does the RTCM 3.x replay engine enforce CRC-24Q quarantine, paced replay, checkpointing, and fail-closed admission when no authentic RTCM capture exists?",
+  "datasets": [
+    "NLGCP-DATA-2026-003",
+    "NLGCP-DATA-2026-004"
+  ],
+  "software": {
+    "nlgcp_revision": "2e1b031",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "NOT_RECORDED",
+    "sha256": "NOT_RECORDED"
+  },
+  "execution": {
+    "command": "NOT_RECORDED",
+    "environment": "NOT_RECORDED",
+    "executed_date": "2026-09-10"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-015"
+  ],
+  "validation": {
+    "highest_level": "INTEGRATION_TESTED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "NOT_ATTEMPTED",
+    "level": "LEVEL_1_RECORD_COMPLETE"
+  },
+  "relationships": [
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-010"
+    },
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2026-003"
+    }
+  ],
+  "summary_results": "SYNTHETIC TEST DATA ONLY: Scenarios A-E passed (8/8 valid, corrupt quarantine, checkpoint resume, bounded backpressure). Real RTCM replay pilot explicitly BLOCKED (zero authorized RTCM captures on disk).",
+  "limitations": [
+    "NLGCP-LIM-005"
+  ]
+}

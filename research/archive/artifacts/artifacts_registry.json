@@ -1,0 +1,429 @@
+{
+  "schema_version": "nlgcp.archive.artifact.v1",
+  "recorded_utc": "2026-11-26T12:40:00Z",
+  "artifacts": [
+    {
+      "artifact_id": "NLGCP-ART-2026-001",
+      "experiment_id": "NLGCP-EXP-2026-001",
+      "file_path": "${NLGCP_DATA_ROOT}/validation/scientific-expansion-2024/reports/scientific-expansion-report.md",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "MARKDOWN_REPORT",
+      "file_size_bytes": 6478,
+      "sha256": "b8593b57fff6af78d172ae18eda031f0bbbd0cbfa864fb694b077d073efc3a85",
+      "description": "Interim 2024 scientific expansion validation report (1,290 station-days, 220/220 BKG BRDC validated).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-001",
+        "NLGCP-DATA-2024-002"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-002",
+      "experiment_id": "NLGCP-EXP-2026-001",
+      "file_path": "${NLGCP_DATA_ROOT}/validation/southern-nignet/run-20261030T125136Z/audit_summary.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_SUMMARY",
+      "file_size_bytes": 8243,
+      "sha256": "14ba3e49a1aaabc926fbc98213a668875b9a2b78ff4f07b371aeffeb15c4a52c",
+      "description": "Read-only 2011 NIGNET2011.zip audit summary (3,018 RINEX files, 11 stations, provisional coords).",
+      "source_datasets": [
+        "NLGCP-DATA-2011-001"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-003",
+      "experiment_id": "NLGCP-EXP-2026-001",
+      "file_path": "${NLGCP_DATA_ROOT}/validation/southern-nignet/coordinate-navigation-recovery/run-20261123T163056Z/navigation_recovery_manifest.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_MANIFEST",
+      "file_size_bytes": 565000,
+      "sha256": "9041c00fc8d4cd47125672ce38ba144efd4dad97e783a68e4016cce21cb866e5",
+      "description": "Automated 2011 navigation recovery manifest (66/66 BKG GPS+GLONASS validated, 132 CDDIS AUTHENTICATION_REQUIRED).",
+      "source_datasets": [
+        "NLGCP-DATA-2011-001",
+        "NLGCP-DATA-2011-002",
+        "NLGCP-DATA-2011-003"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-004",
+      "experiment_id": "NLGCP-EXP-2026-002",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/single-base/sb-2024d026-ekak-phri-static/manifest.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_MANIFEST",
+      "file_size_bytes": 6032,
+      "sha256": "ba2f1ba9382a2ee75f2b8e0131fe9146762b33ea47770e0a941cc4b7a1ffbdb8",
+      "description": "Phase 3 shorter-baseline control manifest (EKAK->PHRI 105.553 km, FLOAT-only 0.968/0.584/1.130 m).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-003",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-005",
+      "experiment_id": "NLGCP-EXP-2026-002",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/single-base/_phase3-summary/followon-comparison.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_SUMMARY",
+      "file_size_bytes": 3375,
+      "sha256": "5b45766d87a20da5179403fb5fe6f5d9f3c856aa4662167110adb5d6e6b533c4",
+      "description": "Phase 3 multi-baseline comparative summary (105.553 km control vs 470-690 km ABFC baselines).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-003",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-006",
+      "experiment_id": "NLGCP-EXP-2026-003",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/qc/profiles/network_rtk/summaries/phase4-summary.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_SUMMARY",
+      "file_size_bytes": 7991,
+      "sha256": "9c7c8afde69789e73f35466c530805f1a8d65cc88ec95153b15b84052146b05c",
+      "description": "Phase 4 GNSS QC network_rtk profile summary across 1,290 canonical 2024 sessions (4 ACCEPT on DOY 026, 341 REJECT, 945 BLOCKED).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-001",
+        "NLGCP-DATA-2024-002"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-007",
+      "experiment_id": "NLGCP-EXP-2026-004",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/network-rtk/experiments/net-2024d026-phri-rover/manifest.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_MANIFEST",
+      "file_size_bytes": 17070,
+      "sha256": "31a4082f790b4b9b5cd3c023a27c7a6c76c773b0c49b0ac8fe458c3c061ba7b9",
+      "description": "Phase 5 offline NRTK pilot manifest (3 baselines to PHRI00NGA, nearest reference beats network mean).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-003",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-008",
+      "experiment_id": "NLGCP-EXP-2026-005",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/atmospheric-model/experiments/atm-2024d026-phri-target/metrics.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_METRICS",
+      "file_size_bytes": 1909,
+      "sha256": "64fb85ec2cac449d9e414c31ea9a022fdd80647f99f68dacd26f02c3a6d64a09",
+      "description": "Superseded pre-review Phase 6 pilot metrics (n=17,768; retained read-only for historical auditability, superseded by geometry-v3).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-003",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-009",
+      "experiment_id": "NLGCP-EXP-2026-006",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/atmospheric-model/experiments/atm-2024d026-phri-target-geometry-v3/metrics.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_METRICS",
+      "file_size_bytes": 1908,
+      "sha256": "3a2e79db023566ce1b33c088b1bac8eb37027d9c98c4578525b30fc33c47a310",
+      "description": "Authoritative reviewed Phase 6 geometry-v3 LOOCV metrics (n=15,948 identical samples; zero 3.076 m wins, all 4 folds extrapolation).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-003",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-010",
+      "experiment_id": "NLGCP-EXP-2026-007",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/atmospheric-model/sprint-phase67/dataset_selection_manifest.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_MANIFEST",
+      "file_size_bytes": 89423,
+      "sha256": "6945d42144d12f6bc80bde655479cf6bf751ab14317216a58658f8e48e09d1a6",
+      "description": "Phase 6/7 sprint content-level audit manifest over 3,018 2011 NIGNET files and 2024 DOY 026 PRIDE ZTD.",
+      "source_datasets": [
+        "NLGCP-DATA-2011-001",
+        "NLGCP-DATA-2011-002",
+        "NLGCP-DATA-2011-003",
+        "NLGCP-DATA-2024-010"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-011",
+      "experiment_id": "NLGCP-EXP-2026-007",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/atmospheric-model/sprint-phase67/phase6_sprint_summary.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_SUMMARY",
+      "file_size_bytes": 38519,
+      "sha256": "dc3f00cd84ee0d31c5113bfb2fe10e83084a16b831426766acf017a498ac68ba",
+      "description": "Phase 6 multi-day stratified LOOCV, ROTI, and UNB3m vs PRIDE ZTD validation summary.",
+      "source_datasets": [
+        "NLGCP-DATA-2011-001",
+        "NLGCP-DATA-2011-002",
+        "NLGCP-DATA-2011-003",
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007",
+        "NLGCP-DATA-2024-010"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-012",
+      "experiment_id": "NLGCP-EXP-2026-008",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/vrs/experiments/vrs-2024d026-phri-geometry-v3/validation.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_VALIDATION",
+      "file_size_bytes": 3473,
+      "sha256": "c9a4729295903ba5830bdbda4057060c3b134b23aabdbfd1c24255664ea66572",
+      "description": "Reviewed Phase 7 geometry-v3 PHRI validation output (ZERO / VRS_GEOMETRY_ONLY, target leakage PASS).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-003",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-013",
+      "experiment_id": "NLGCP-EXP-2026-009",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/vrs/sprint-phase67/phase7_vrs_sprint_results.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_SUMMARY",
+      "file_size_bytes": 64954,
+      "sha256": "60aa2c3eb2c8537dae815107379873046e6d4cb383a8ca01aabddc775933f862",
+      "description": "Phase 7 experimental VRS sprint results (Exp 5A/5B residual benchmarks, Exp 6/7 NLGCP_VRS_EXP + RTKLIB + gLAB decode, Exp 8 11/11 failure checks).",
+      "source_datasets": [
+        "NLGCP-DATA-2011-001",
+        "NLGCP-DATA-2011-002",
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007",
+        "NLGCP-DATA-2024-010",
+        "NLGCP-DATA-2026-001",
+        "NLGCP-DATA-2026-002"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-014",
+      "experiment_id": "NLGCP-EXP-2026-010",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/hybrid-decisions/requests/pilot-d026-phri-auto/decision.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_DECISION",
+      "file_size_bytes": 4432,
+      "sha256": "4f0782e70d6627fa2d32a9cb47367c7f67c20068db17e0e0f6c51d863d97ab5e",
+      "description": "Phase 8 reviewed DOY 026 PHRI AUTO decision output (SINGLE_BASE EKAK fallback; automatic VRS blocked).",
+      "source_datasets": [
+        "NLGCP-DATA-2024-003"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-015",
+      "experiment_id": "NLGCP-EXP-2026-011",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/rtcm-replay/summaries/replay-runs.csv",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "CSV_SUMMARY",
+      "file_size_bytes": 454,
+      "sha256": "2c72e4762aa6946b3fd03b2d7126cd4fab254dcd77630d23c88795496c563ebf",
+      "description": "Phase 9 synthetic RTCM replay pilot summary CSV (Scenarios A-E; SYNTHETIC TEST DATA \u2014 real pilot BLOCKED).",
+      "source_datasets": [
+        "NLGCP-DATA-2026-003"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-016",
+      "experiment_id": "NLGCP-EXP-2026-012",
+      "file_path": "${NLGCP_DATA_ROOT}/working/ntrip-pilot-synthetic/pilot-summary.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_SUMMARY",
+      "file_size_bytes": 1811,
+      "sha256": "00537687c62a841f54d8be4c8067d67803849cae349abff05c17b6edb9fe942b",
+      "description": "Phase 10 synthetic loopback live-ingestion pilot summary (8/8 valid frames; SYNTHETIC TEST DATA \u2014 real live ingestion BLOCKED).",
+      "source_datasets": [
+        "NLGCP-DATA-2026-003",
+        "NLGCP-DATA-2026-004"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-017",
+      "experiment_id": "NLGCP-EXP-2026-013",
+      "file_path": "docs/sprints/14-day-beta-sprint/09-day3-report.md",
+      "storage_type": "REPOSITORY",
+      "file_type": "MARKDOWN_REPORT",
+      "file_size_bytes": 15151,
+      "sha256": "684465b9f32a1e9e3ccdccd423933445099b4d92a3d6804dd89f9c79d5be0303",
+      "description": "Day 3 Phase 11 synthetic RTCM 1005/1074/1084 independent RTKLIB decoder validation report.",
+      "source_datasets": [
+        "NLGCP-DATA-2026-003"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-018",
+      "experiment_id": "NLGCP-EXP-2026-014",
+      "file_path": "docs/sprints/14-day-beta-sprint/11-day6-integration-assurance.md",
+      "storage_type": "REPOSITORY",
+      "file_type": "MARKDOWN_REPORT",
+      "file_size_bytes": 30051,
+      "sha256": "131428a49bd00cf903a32379f85117e2c7d015e7704a9140696644df292c2f3a",
+      "description": "Day 6 Phase 9-12 loopback integration assurance and fault verification report (SYNTHETIC TEST DATA).",
+      "source_datasets": [
+        "NLGCP-DATA-2026-003"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-019",
+      "experiment_id": "NLGCP-EXP-2026-015",
+      "file_path": "docs/sprints/14-day-beta-sprint/13-day7-backend-security-review.md",
+      "storage_type": "REPOSITORY",
+      "file_type": "MARKDOWN_REPORT",
+      "file_size_bytes": 12294,
+      "sha256": "e84d8c7e98eac26f31aa9c86167ade8fc03659032281abb3d4786a46e73bdd05",
+      "description": "Day 7 backend security and reliability review documenting SEC-01 through SEC-14.",
+      "source_datasets": [],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-020",
+      "experiment_id": "NLGCP-EXP-2026-016",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/rover-benchmark/b02/b02_benchmark_summary.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_BENCHMARK_SUMMARY",
+      "file_size_bytes": 675156,
+      "sha256": "47dc74574a1e9744693da1eba269c72a1600b765db3634c46e42ecc745043c98",
+      "description": "Complete B-02 offline rover positioning benchmark summary across all 52 full-24h runs, preserved Phase 7 probes, and 12/12 failure checks.",
+      "source_datasets": [
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007",
+        "NLGCP-DATA-2024-008",
+        "NLGCP-DATA-2024-010",
+        "NLGCP-DATA-2026-001",
+        "NLGCP-DATA-2011-001",
+        "NLGCP-DATA-2011-002",
+        "NLGCP-DATA-2011-003",
+        "NLGCP-DATA-2011-004",
+        "NLGCP-DATA-2011-005",
+        "NLGCP-DATA-2026-002"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-021",
+      "experiment_id": "NLGCP-EXP-2026-016",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/rover-benchmark/b02/comparison_summary.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_COMPARISON",
+      "file_size_bytes": 86412,
+      "sha256": "f36956c02defa57a53c8fc2f0f8bde8bf4f0f9ca0dc38da863e2443b0126bd5e",
+      "description": "B-02 paired bootstrap statistical comparison tables across physical anchor, geometry-only VRS, and atmospheric VRS variants.",
+      "source_datasets": [
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-008",
+        "NLGCP-DATA-2011-004",
+        "NLGCP-DATA-2011-005"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-022",
+      "experiment_id": "NLGCP-EXP-2026-017",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/rover-benchmark/b02/2011_03_20_osgf_interior/benchmark_results.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "JSON_BENCHMARK_RESULTS",
+      "file_size_bytes": 287360,
+      "sha256": "0e1e6728998203e3363758097a652b16a00d90274f4d951032c93a3bde951d32",
+      "description": "B-02 Dataset A (2011-03-20 interior OSGF, 8 refs) 24-run positioning metrics and false-FIX forensic records.",
+      "source_datasets": [
+        "NLGCP-DATA-2011-001",
+        "NLGCP-DATA-2011-002",
+        "NLGCP-DATA-2011-003",
+        "NLGCP-DATA-2011-004",
+        "NLGCP-DATA-2011-005",
+        "NLGCP-DATA-2026-002"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-023",
+      "experiment_id": "NLGCP-EXP-2026-016",
+      "file_path": "docs/research/b02_offline_rover_positioning_benchmark.md",
+      "storage_type": "REPOSITORY",
+      "file_type": "MARKDOWN_REPORT",
+      "file_size_bytes": 50779,
+      "sha256": "0f4f9a121093575ff4aa5736cfd4630ddf379afed40d6e8c783afe24a2340c50",
+      "description": "Primary B-02 Offline Rover Positioning Benchmark scientific report covering 2024 PHRI verified and 2011 OSGF interior datasets.",
+      "source_datasets": [
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-008",
+        "NLGCP-DATA-2011-004",
+        "NLGCP-DATA-2011-003"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    },
+    {
+      "artifact_id": "NLGCP-ART-2026-024",
+      "experiment_id": "NLGCP-EXP-2026-016",
+      "file_path": "${NLGCP_DATA_ROOT}/processed/rover-benchmark/b02/hashes_manifest.json",
+      "storage_type": "EXTERNAL_FILESYSTEM",
+      "file_type": "NESTED_HASH_MANIFEST",
+      "file_size_bytes": 48656,
+      "sha256": "2a2a921f787425a68a3e084302dbf6bf469444562ff8e435452fc8589242e31e",
+      "contains_nested_hash_manifest": true,
+      "description": "Complete B-02 SHA-256 manifest indexing all 311 derived RTCM, RINEX, RTKLIB .conf/.pos, and JSON outputs without copying them into Git.",
+      "source_datasets": [
+        "NLGCP-DATA-2024-002",
+        "NLGCP-DATA-2024-004",
+        "NLGCP-DATA-2024-005",
+        "NLGCP-DATA-2024-006",
+        "NLGCP-DATA-2024-007",
+        "NLGCP-DATA-2024-008",
+        "NLGCP-DATA-2024-010",
+        "NLGCP-DATA-2011-001",
+        "NLGCP-DATA-2011-002",
+        "NLGCP-DATA-2011-003",
+        "NLGCP-DATA-2011-004",
+        "NLGCP-DATA-2011-005"
+      ],
+      "schema_version": "nlgcp.archive.artifact.v1"
+    }
+  ]
+}

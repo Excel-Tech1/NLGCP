@@ -1,0 +1,71 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-001",
+  "title": "Phase 2 / 2024 Scientific Expansion & Southern Nigeria 2011 Data Audit + Navigation Recovery",
+  "milestone": "Phase 2 / Southern Recovery",
+  "status": "COMPLETED",
+  "data_classification": "AUTHENTIC",
+  "research_question": "What authentic Nigerian GNSS observations, verified station coordinates, and broadcast navigation products are available for reproducible positioning and atmospheric experiments?",
+  "datasets": [
+    "NLGCP-DATA-2011-001",
+    "NLGCP-DATA-2011-002",
+    "NLGCP-DATA-2011-003",
+    "NLGCP-DATA-2024-001",
+    "NLGCP-DATA-2024-002"
+  ],
+  "software": {
+    "nlgcp_revision": "d789da0",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-PYTHON-312",
+      "NLGCP-SW-PRIDE-PDP3"
+    ]
+  },
+  "configuration": {
+    "location": "NOT_RECORDED",
+    "sha256": "NOT_RECORDED"
+  },
+  "execution": {
+    "command": "NOT_RECORDED",
+    "environment": "NOT_RECORDED",
+    "executed_date": "2026-11-23"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-001",
+    "NLGCP-ART-2026-002",
+    "NLGCP-ART-2026-003"
+  ],
+  "validation": {
+    "highest_level": "INTEGRATION_TESTED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "PARTIALLY_REPRODUCED",
+    "level": "LEVEL_1_RECORD_COMPLETE"
+  },
+  "relationships": [
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2011-001"
+    },
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2024-001"
+    },
+    {
+      "type": "PRODUCES_DATASET",
+      "target_id": "NLGCP-DATA-2011-002"
+    },
+    {
+      "type": "PRODUCES_DATASET",
+      "target_id": "NLGCP-DATA-2011-003"
+    }
+  ],
+  "summary_results": "2024 archive: 1,290 station-days across 8 stations, 220/220 BKG BRDC validated, only DOY 026 verified IGS20. 2011 archive: 3,018 RINEX files / 11 stations (PROVISIONAL OSGoF coords); 66/66 BKG nav validated; 132 CDDIS AUTHENTICATION_REQUIRED.",
+  "limitations": [
+    "NLGCP-LIM-002",
+    "NLGCP-LIM-003",
+    "NLGCP-LIM-010"
+  ]
+}

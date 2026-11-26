@@ -1,0 +1,67 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2024-004",
+  "name": "QC-Converted 2024 DOY 026 PHRI00NGA Observation (PHRI0260.24O)",
+  "dataset_type": "RINEX_OBSERVATION",
+  "source_classification": "DERIVED_DATA",
+  "source_provider": "OSGoF / NIGNET (converted via NLGCP Phase 4 QC pipeline)",
+  "description": "Derived RINEX 2.11 observation file for rover station PHRI00NGA (Port Harcourt) on 2024-01-26 (2,880 epochs at 30 s; TRM59900.00 NONE, DELTA H=0.1710 m).",
+  "acquisition_method": "Derived from NLGCP-DATA-2024-001 into ${NLGCP_DATA_ROOT}/working/qc-converted/",
+  "immutable_source": false,
+  "storage": {
+    "location": "${NLGCP_DATA_ROOT}/working/qc-converted/2024/PHRI00NGA/026/PHRI0260.24O",
+    "storage_type": "EXTERNAL_FILESYSTEM",
+    "original_filename": "PHRI0260.24O",
+    "file_size_bytes": 4796500
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "a2bae005e8973aedd9a920540a8a96c77ffda4c12d1d1630d37c8610a43f24b6",
+    "verification_status": "VERIFIED",
+    "last_verified_utc": "2026-11-26T12:00:00Z"
+  },
+  "metadata": {
+    "format": "RINEX 2.11 OBS",
+    "temporal_coverage": {
+      "start": "2024-01-26T00:00:00Z",
+      "end": "2024-01-26T23:59:30Z"
+    },
+    "station_coverage": [
+      "PHRI00NGA"
+    ],
+    "constellations": [
+      "GPS",
+      "GLONASS"
+    ],
+    "coordinate_reference_status": "VERIFIED_IGS20_PPP_AR",
+    "reference_frame": "IGS20"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Registered directly from observed repository and external data-root audit."
+  },
+  "relationships": {
+    "derived_from_datasets": [
+      "NLGCP-DATA-2024-001"
+    ],
+    "derived_datasets": [
+      "NLGCP-DATA-2024-008"
+    ],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-002",
+      "NLGCP-EXP-2026-004",
+      "NLGCP-EXP-2026-005",
+      "NLGCP-EXP-2026-006",
+      "NLGCP-EXP-2026-007",
+      "NLGCP-EXP-2026-008",
+      "NLGCP-EXP-2026-009",
+      "NLGCP-EXP-2026-016"
+    ]
+  }
+}

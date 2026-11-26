@@ -2,6 +2,16 @@
 
 Only observed results belong here. Commands are reproducible from the repository root.
 
+## B-00 Research Archive, Data Provenance and Reproducibility Foundation (2026-11-26)
+
+Machine-readable provenance archive (`research/archive/`) and strictly read-only verification CLI (`nlgcp archive ...`) verified live against `/home/excellence/nlgcp-data` without modifying raw data or fabricating missing records.
+
+| Date | Phase | Contribution | Evidence | Result |
+|---|---|---|---|---|
+| 2026-11-26 | B-00 Archive Package & CLI | Read-only research archive validator, SHA-256 verifier, nested B-02 verifier, secret-redacted environment capture, lineage builder, 6 JSON Schemas, and `nlgcp archive` CLI (`exit 0/1/2/3`) | `research/research_archive/`; `scripts/run_research_archive.py`; `research/archive/schema/*.schema.json`; `docs/architecture/b00_*.md` | IMPLEMENTED / UNIT_TESTED: 9 focused unit, CLI, read-only invariant, authentic/synthetic isolation, secret-redaction, and real-repo schema tests PASS (`research/research_archive/tests/test_research_archive.py`); fixed `scan_unregistered_outputs()` `/tmp` relative-path bug, artifact bundle `schema_version` propagation, and fail-closed `--out-dir` `OSError` exit `3` |
+| 2026-11-26 | B-00 Live Full-Archive SHA-256 Verification | Strictly read-only full-archive SHA-256 & cross-reference verification including 5.82 GiB `NIGNET2011.zip` and all 311 nested B-02 outputs | `.venv/bin/nlgcp archive verify --verify-nested --out-dir /home/excellence/nlgcp-data/processed/research-archive/b00`; `research/archive/`; `docs/sprints/b00-research-archive/10-b00-archive-completeness-report.md` | PASS (exit `0`, `VERIFIED_WITH_RECORDED_PROVENANCE_GAPS`): `18/18` available datasets verified (`3` `UNAVAILABLE`), `17/17` experiments schema-valid (`2` complete B-02 provenance, `15` recorded historical gaps), `24/24` artifacts verified, **`311/311` nested B-02 outputs verified**, `5/5` hashed scientific tools verified (`rnx2rtkp`, `convbin`, `pdp3`, `gLAB_linux`, `input.c`), `18` findings, `12` limitations, `14` claims, `14` Day 7 security findings, `6` reproductions, `0` mismatches |
+| 2026-11-26 | B-00 Central Docs & Full Repository Quality Gate | 13 central project/research/operations documents, B-00 audit/completeness/handover docs, and full `make check` | `docs/{project,research,operations}/*.md`; `docs/sprints/b00-research-archive/*.md`; `make check`; `git diff --check` | PASS: `make check` exit `0` — Ruff clean, Go `gofmt`/`vet`/`test` clean, ESLint clean, strict `mypy` clean (`266` source files), TypeScript clean, pytest **`849 passed, 13 skipped`** (`53.46 s`), CTest `1/1`, Next.js production build clean |
+
 ## B-02 Offline Rover Positioning Benchmark for Experimental VRS (2026-11-26)
 
 Authentic 24-hour (`30.0 s`, `2,880` epochs) RTKLIB `v2.4.2-p13` rover positioning evidence separated strictly by truth tier (`VERIFIED_IGS20_PPP_AR` for `2024-01-26` `PHRI00NGA` vs. `PROVISIONAL_OSGOF_LIMITED` + truth-independent repeatability for `2011-03-20` interior `OSGF`). Genuine centimetre RTK FIX was NOT achieved (`0.0%`), and operational approval remains strictly `FORBIDDEN`.

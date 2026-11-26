@@ -1,0 +1,83 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-016",
+  "title": "B-02 Offline Rover Positioning Benchmark \u2014 Dataset B (2024-01-26 PHRI00NGA, Verified IGS20)",
+  "milestone": "B-02 Rover Positioning Benchmark",
+  "status": "COMPLETED",
+  "data_classification": "AUTHENTIC",
+  "research_question": "On verified IGS20 2024-01-26 PHRI00NGA (3-ref extrapolation, zero rover leakage), do experimental atmospheric VRS RTCM streams improve actual RTKLIB rover positioning over the 105.553 km physical anchor and geometry-only VRS?",
+  "datasets": [
+    "NLGCP-DATA-2024-002",
+    "NLGCP-DATA-2024-003",
+    "NLGCP-DATA-2024-004",
+    "NLGCP-DATA-2024-005",
+    "NLGCP-DATA-2024-006",
+    "NLGCP-DATA-2024-007",
+    "NLGCP-DATA-2024-008",
+    "NLGCP-DATA-2024-009",
+    "NLGCP-DATA-2024-010",
+    "NLGCP-DATA-2026-001"
+  ],
+  "software": {
+    "nlgcp_revision": "5b5217a",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-RTKLIB-RNX2RTKP",
+      "NLGCP-SW-RTKLIB-CONVBIN",
+      "NLGCP-SW-PRIDE-PDP3",
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "${NLGCP_DATA_ROOT}/processed/rover-benchmark/b02/experiment_config.json",
+    "sha256": "44d22f17b3541593b74792ca4ff4a74f2b30cb219bb2a57a52ab37faca491f1b"
+  },
+  "execution": {
+    "command": ".venv/bin/python scripts/run_b02_rover_benchmark.py",
+    "environment": "research/archive/provenance/environment_snapshot_2026-11-26.json",
+    "executed_date": "2026-11-26"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-020",
+    "NLGCP-ART-2026-021",
+    "NLGCP-ART-2026-023",
+    "NLGCP-ART-2026-024"
+  ],
+  "validation": {
+    "highest_level": "INDEPENDENTLY_VALIDATED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "REPRODUCED",
+    "level": "LEVEL_3_NUMERICAL"
+  },
+  "relationships": [
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-009"
+    },
+    {
+      "type": "REPRODUCES",
+      "target_id": "NLGCP-EXP-2026-002"
+    },
+    {
+      "type": "VALIDATES",
+      "target_id": "NLGCP-EXP-2026-009"
+    },
+    {
+      "type": "USES_DATASET",
+      "target_id": "NLGCP-DATA-2024-008"
+    }
+  ],
+  "summary_results": "28/28 full-24h runs (2,880 ep, 30 s) + 12/12 failure checks PASS. Reproduced Phase 3 exact (0.9677/0.5838/1.1301 m). vrs_idw2_unb3m improved static H +8.23% (CI [+0.047, +0.121] m) & kinematic 3D +14.14%; kinematic H +5.70% CI crossed zero; RTK FIX = 0.0%. Fixed experimental_vrs.py:517 ZWD bug.",
+  "limitations": [
+    "NLGCP-LIM-001",
+    "NLGCP-LIM-003",
+    "NLGCP-LIM-004",
+    "NLGCP-LIM-006",
+    "NLGCP-LIM-007",
+    "NLGCP-LIM-009",
+    "NLGCP-LIM-011"
+  ]
+}

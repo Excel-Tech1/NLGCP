@@ -1,0 +1,55 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2024-011",
+  "name": "External 2024 IGS DCB and IONEX Global Ionosphere Maps (UNAVAILABLE)",
+  "dataset_type": "IONOSPHERIC_BIAS_PRODUCTS",
+  "source_classification": "AUTHENTIC_RECORDED_CORS",
+  "source_provider": "IGS / CODE (not acquired locally)",
+  "description": "Explicit provenance placeholder documenting that ${NLGCP_DATA_ROOT}/external-products/igs/2024/ contains zero files (no external DCB or IONEX products exist locally).",
+  "acquisition_method": "NOT_AVAILABLE",
+  "immutable_source": true,
+  "storage": {
+    "location": "NOT_AVAILABLE",
+    "storage_type": "UNAVAILABLE",
+    "original_filename": "NOT_AVAILABLE",
+    "file_size_bytes": null
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "NOT_AVAILABLE",
+    "verification_status": "NOT_AVAILABLE",
+    "last_verified_utc": "NOT_VERIFIED"
+  },
+  "metadata": {
+    "format": "BSX / IONEX",
+    "temporal_coverage": {
+      "start": "2024-01-26T00:00:00Z",
+      "end": "2024-01-26T23:59:59Z"
+    },
+    "station_coverage": [
+      "GLOBAL_IONO"
+    ],
+    "constellations": [
+      "GPS"
+    ],
+    "coordinate_reference_status": "NOT_AVAILABLE",
+    "reference_frame": "NOT_AVAILABLE"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Explicitly documents absent external DCB/IONEX products."
+  },
+  "relationships": {
+    "derived_from_datasets": [],
+    "derived_datasets": [],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-007"
+    ]
+  }
+}

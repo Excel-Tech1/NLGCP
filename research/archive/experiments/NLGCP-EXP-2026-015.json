@@ -1,0 +1,50 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-015",
+  "title": "Day 7 Backend Architecture, Security & Beta Readiness Audit",
+  "milestone": "14-Day Beta Sprint Day 7",
+  "status": "COMPLETED",
+  "data_classification": "DOCUMENTATION_AUDIT",
+  "research_question": "What security, architectural, scientific, and operational blockers prevent moving the NLGCP backend beyond isolated 127.0.0.1 laboratory execution?",
+  "datasets": [],
+  "software": {
+    "nlgcp_revision": "5b5217a",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-PYTHON-312",
+      "NLGCP-SW-GO-125",
+      "NLGCP-SW-NODE-2020"
+    ]
+  },
+  "configuration": {
+    "location": "NOT_APPLICABLE",
+    "sha256": "NOT_APPLICABLE"
+  },
+  "execution": {
+    "command": "make check && RTKLIB_SOURCE=/home/excellence/RTKLIB .venv/bin/python scripts/run_phase12_lab_demo.py",
+    "environment": "research/archive/provenance/environment_snapshot_2026-11-26.json",
+    "executed_date": "2026-11-25"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-019"
+  ],
+  "validation": {
+    "highest_level": "INTEGRATION_TESTED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "REPRODUCED",
+    "level": "LEVEL_2_COMPUTATIONAL"
+  },
+  "relationships": [
+    {
+      "type": "VALIDATES",
+      "target_id": "NLGCP-EXP-2026-014"
+    }
+  ],
+  "summary_results": "Catalogued 14 security/reliability findings (SEC-01..SEC-14: 2 CRITICAL, 4 HIGH, 4 MEDIUM, 3 LOW, 1 INFO), 8 atmospheric/VRS interface gaps, formal Phase 13 UI deferral, and 5-track technical debt matrix.",
+  "limitations": [
+    "NLGCP-LIM-008"
+  ]
+}

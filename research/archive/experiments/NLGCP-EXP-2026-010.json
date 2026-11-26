@@ -1,0 +1,55 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-010",
+  "title": "Phase 8 Hybrid Correction Decision Engine Reviewed DOY 026 Pilot",
+  "milestone": "Phase 8",
+  "status": "COMPLETED",
+  "data_classification": "AUTHENTIC",
+  "research_question": "Does the fail-closed hybrid decision engine block unvalidated VRS and fall back deterministically to single-base EKAK00NGA under reviewed Phase 6/7 evidence?",
+  "datasets": [
+    "NLGCP-DATA-2024-003"
+  ],
+  "software": {
+    "nlgcp_revision": "1b6132c",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "NOT_RECORDED",
+    "sha256": "NOT_RECORDED"
+  },
+  "execution": {
+    "command": "NOT_RECORDED",
+    "environment": "NOT_RECORDED",
+    "executed_date": "2026-09-09"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-014"
+  ],
+  "validation": {
+    "highest_level": "INTEGRATION_TESTED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "NOT_ATTEMPTED",
+    "level": "LEVEL_1_RECORD_COMPLETE"
+  },
+  "relationships": [
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-006"
+    },
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-008"
+    }
+  ],
+  "summary_results": "AUTO selected SINGLE_BASE/OK via EKAK00NGA (105.553 km) with VRS_MODEL_NOT_VALIDATED; VRS_ONLY returned NO_CORRECTION/BLOCKED. Automatic corrected VRS remains blocked.",
+  "limitations": [
+    "NLGCP-LIM-003",
+    "NLGCP-LIM-012"
+  ]
+}

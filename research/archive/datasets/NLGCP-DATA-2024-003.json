@@ -1,0 +1,66 @@
+{
+  "schema_version": "nlgcp.archive.dataset.v1",
+  "dataset_id": "NLGCP-DATA-2024-003",
+  "name": "Verified IGS20 2024 DOY 026 Station Coordinate Set (derived-coordinates.json)",
+  "dataset_type": "STATION_COORDINATES",
+  "source_classification": "DERIVED_DATA",
+  "source_provider": "NLGCP PRIDE PPP-AR 3.2.8 processing",
+  "description": "Authoritative verified IGS20 ARP coordinates for the 4 admitted DOY 2024/026 stations (ABFC00NGA, EKAK00NGA, MGBO00NGA, PHRI00NGA) at epoch 2024-01-26T11:59:42Z.",
+  "acquisition_method": "Derived from PRIDE PPP-AR 3.2.8 daily static PPP solutions",
+  "immutable_source": false,
+  "storage": {
+    "location": "${NLGCP_DATA_ROOT}/processed/single-base/derived-coordinates.json",
+    "storage_type": "EXTERNAL_FILESYSTEM",
+    "original_filename": "derived-coordinates.json",
+    "file_size_bytes": 3665
+  },
+  "integrity": {
+    "algorithm": "SHA256",
+    "expected_hash": "f48411df72fc787118bd37da11cac89afc2b242a4a1511458c91a482edd6f639",
+    "verification_status": "VERIFIED",
+    "last_verified_utc": "2026-11-26T12:00:00Z"
+  },
+  "metadata": {
+    "format": "JSON",
+    "temporal_coverage": {
+      "start": "2024-01-26T00:00:00Z",
+      "end": "2024-01-26T23:59:30Z"
+    },
+    "station_coverage": [
+      "ABFC00NGA",
+      "EKAK00NGA",
+      "MGBO00NGA",
+      "PHRI00NGA"
+    ],
+    "constellations": [
+      "GPS"
+    ],
+    "coordinate_reference_status": "VERIFIED_IGS20_PPP_AR",
+    "reference_frame": "IGS20"
+  },
+  "licensing": {
+    "usage_rights": "RESEARCH_INTERNAL_ONLY",
+    "redistribution_allowed": false,
+    "notes": "Research-only archival provenance; raw data immutable and never redistributed in Git."
+  },
+  "registration": {
+    "registered_by": "B-00 Research Archive Foundation",
+    "registered_date": "2026-11-26",
+    "notes": "Registered directly from observed repository and external data-root audit."
+  },
+  "relationships": {
+    "derived_from_datasets": [
+      "NLGCP-DATA-2024-008"
+    ],
+    "derived_datasets": [],
+    "used_in_experiments": [
+      "NLGCP-EXP-2026-002",
+      "NLGCP-EXP-2026-004",
+      "NLGCP-EXP-2026-005",
+      "NLGCP-EXP-2026-006",
+      "NLGCP-EXP-2026-008",
+      "NLGCP-EXP-2026-010",
+      "NLGCP-EXP-2026-016"
+    ]
+  }
+}

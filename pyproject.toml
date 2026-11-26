@@ -25,6 +25,9 @@ dev = [
   "ruff>=0.9,<1",
 ]
 
+[project.scripts]
+nlgcp = "nlgcp_research_archive.cli:main"
+
 [tool.hatch.build.targets.wheel]
 packages = [
   "apps/api/src/nlgcp_api",
@@ -40,6 +43,7 @@ packages = [
   "research/scientific_expansion/src/nlgcp_scientific_expansion",
   "research/southern_network_audit/src/nlgcp_southern_audit",
   "research/rover_benchmark/src/nlgcp_rover_benchmark",
+  "research/research_archive/src/nlgcp_research_archive",
   "services/correction-service/src/nlgcp_correction_service",
 ]
 
@@ -47,6 +51,7 @@ packages = [
 pythonpath = [
   "research/southern_network_audit/src",
   "research/rover_benchmark/src",
+  "research/research_archive/src",
   "services/correction-service/src",
 ]
 testpaths = [
@@ -63,6 +68,7 @@ testpaths = [
   "research/scientific_expansion/tests",
   "research/southern_network_audit/tests",
   "research/rover_benchmark/tests",
+  "research/research_archive/tests",
   "services/correction-service/tests",
 ]
 
@@ -109,6 +115,8 @@ files = [
   "research/southern_network_audit/tests",
   "research/rover_benchmark/src",
   "research/rover_benchmark/tests",
+  "research/research_archive/src",
+  "research/research_archive/tests",
   "services/correction-service/src",
   "services/correction-service/tests",
   "scripts/run_gnss_qc.py",
@@ -124,4 +132,5 @@ files = [
   "scripts/run_phase6_atmospheric_sprint.py",
   "scripts/run_phase7_vrs_sprint.py",
   "scripts/run_b02_rover_benchmark.py",
+  "scripts/run_research_archive.py",
 ]

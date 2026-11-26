@@ -1,0 +1,204 @@
+{
+  "schema_version": "nlgcp.archive.validation_register.v1",
+  "recorded_utc": "2026-11-26T12:40:00Z",
+  "findings": [
+    {
+      "finding_id": "NLGCP-FIND-001",
+      "polarity": "POSITIVE_WITH_LIMITATIONS",
+      "title": "B-02 Verified-IGS20 2024 PHRI static FLOAT and kinematic 3D improvement under 3-ref extrapolation",
+      "summary": "On verified IGS20 2024-01-26 PHRI00NGA (3-ref extrapolation, 105.553 km anchor EKAK00NGA, zero rover leakage), vrs_idw2_unb3m improved static FLOAT H RMSE by +8.23% (0.9677 -> 0.8881 m, 95% CI [+0.0468, +0.1213] m, 94.8% epoch wins) and kinematic 3D RMSE by +14.14% (2.5449 -> 2.1851 m; V +17.37%, median H -29.0%).",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-016"],
+      "supporting_datasets": ["NLGCP-DATA-2024-002", "NLGCP-DATA-2024-004", "NLGCP-DATA-2024-005", "NLGCP-DATA-2024-006", "NLGCP-DATA-2024-007", "NLGCP-DATA-2024-008"],
+      "result_artifacts": ["NLGCP-ART-2026-020", "NLGCP-ART-2026-021", "NLGCP-ART-2026-023", "NLGCP-ART-2026-024"],
+      "limitations": ["NLGCP-LIM-001", "NLGCP-LIM-003", "NLGCP-LIM-004", "NLGCP-LIM-006"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-002",
+      "polarity": "POSITIVE_WITH_LIMITATIONS",
+      "title": "B-02 Interior-hull 2011 OSGF large FLOAT and DGPS positioning and scatter reduction",
+      "summary": "Inside the 8-reference 2011-03-20 convex hull (216.320 km anchor CGGT, 99.95% sat parity), vrs_ipp_idw2_unb3m reduced kinematic FLOAT H RMSE by +56.65% (1.4562 -> 0.6313 m, CI [+0.5899, +1.0148] m, 97.5% wins), static H by +57.06% (0.9166 -> 0.3935 m), and truth-independent centered scatter by -57.2% (1.4521 -> 0.6218 m); vrs_nighttime_ipp_idw2_unb3m reduced DGPS H by +45.38%. Provisional truth limits status to technically validated / exploratory.",
+      "validation_level": "INTEGRATION_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-017"],
+      "supporting_datasets": ["NLGCP-DATA-2011-001", "NLGCP-DATA-2011-002", "NLGCP-DATA-2011-003", "NLGCP-DATA-2011-004", "NLGCP-DATA-2011-005"],
+      "result_artifacts": ["NLGCP-ART-2026-020", "NLGCP-ART-2026-021", "NLGCP-ART-2026-022", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-001", "NLGCP-LIM-002", "NLGCP-LIM-004", "NLGCP-LIM-006"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-003",
+      "polarity": "NEGATIVE",
+      "title": "Zero genuine RTK FIX rate (0.0%) across all 52 B-02 runs and all Phase 3/5 baselines",
+      "summary": "Across 52 full-24h B-02 runs (149,760 epochs) and all Phase 3 baselines, zero epochs achieved genuine centimetre RTK integer ambiguity resolution. Current ANCHOR_RELATIVE_FLOAT VRS cannot deliver centimetre RTK FIX.",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-002", "NLGCP-EXP-2026-004", "NLGCP-EXP-2026-016", "NLGCP-EXP-2026-017"],
+      "supporting_datasets": ["NLGCP-DATA-2024-004", "NLGCP-DATA-2024-005", "NLGCP-DATA-2024-008", "NLGCP-DATA-2011-004", "NLGCP-DATA-2011-005"],
+      "result_artifacts": ["NLGCP-ART-2026-004", "NLGCP-ART-2026-020", "NLGCP-ART-2026-022", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-001"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-004",
+      "polarity": "NEGATIVE",
+      "title": "Seven Q=1 epochs on 2011 non-ionospheric VRS forensically proven wrong-integer false fixes",
+      "summary": "The only 7 Q=1 epochs in B-02 (2 on 2011 vrs_zero_geom_only, 5 on 2011 vrs_tropo_unb3m_only) exhibited 1.30-2.43 m horizontal errors (1.30-3.89 m 3D), proving wrong-integer false ambiguity resolution; atmospheric VRS variants produced 0 false fixes.",
+      "validation_level": "INTEGRATION_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-017"],
+      "supporting_datasets": ["NLGCP-DATA-2011-004", "NLGCP-DATA-2011-005", "NLGCP-DATA-2011-003"],
+      "result_artifacts": ["NLGCP-ART-2026-022", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-001", "NLGCP-LIM-002"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-005",
+      "polarity": "NEGATIVE",
+      "title": "Geometry-only VRS degrades positioning relative to physical anchor due to RTKLIB zdres() hydrostatic cancellation loss",
+      "summary": "vrs_zero_geom_only degraded positioning relative to the physical anchor (-8.41% to -13.02% H on 2024; -14.98% to -25.28% H on 2011). Source inspection of RTKLIB src/rtkpos.c:883-1110 confirmed zdres() unconditionally removes hydrostatic Saastamoinen at base & rover, so relocating the base near the rover without VRS differential troposphere exposes unmodeled baseline hydrostatic delay.",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-016", "NLGCP-EXP-2026-017"],
+      "supporting_datasets": ["NLGCP-DATA-2024-004", "NLGCP-DATA-2024-005", "NLGCP-DATA-2011-004", "NLGCP-DATA-2011-005"],
+      "result_artifacts": ["NLGCP-ART-2026-020", "NLGCP-ART-2026-021", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-001"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-006",
+      "polarity": "INCONCLUSIVE",
+      "title": "2024 verified PHRI kinematic horizontal RMSE gain (+5.70%) crosses zero 95% CI under 3-ref extrapolation",
+      "summary": "Full-day 2024 PHRI kinematic H RMSE improvement (+5.70%, 1.3074 -> 1.2329 m) had 95% block-bootstrap CI [-0.0847, +0.2399] m crossing zero, reflecting 00-06 UTC extrapolation error and -0.53 fewer satellites/epoch (8.06 -> 7.53).",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-016"],
+      "supporting_datasets": ["NLGCP-DATA-2024-004", "NLGCP-DATA-2024-005", "NLGCP-DATA-2024-006", "NLGCP-DATA-2024-007", "NLGCP-DATA-2024-008"],
+      "result_artifacts": ["NLGCP-ART-2026-020", "NLGCP-ART-2026-021", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-003", "NLGCP-LIM-011"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-007",
+      "polarity": "NEGATIVE",
+      "title": "Provisional 2011 OSGoF coordinate truth prevents verified accuracy promotion (Blocker B-01)",
+      "summary": "All 11 stations in NIGNET2011.zip remain PROVISIONAL_OSGOF_2011_01_01 with undocumented ITRF realization, ARP continuity, and uncertainty; zero 2011 SP3/CLK/ERP/OSB products exist locally to run PRIDE PPP-AR.",
+      "validation_level": "INTEGRATION_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-001", "NLGCP-EXP-2026-017"],
+      "supporting_datasets": ["NLGCP-DATA-2011-001", "NLGCP-DATA-2011-003", "NLGCP-DATA-2011-006"],
+      "result_artifacts": ["NLGCP-ART-2026-002", "NLGCP-ART-2026-003", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-002"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-008",
+      "polarity": "NEGATIVE",
+      "title": "Perimeter extrapolation remains ZERO-dominated in Phase 6 LOOCV (geometry-v3 and multi-day sprint)",
+      "summary": "In reviewed Phase 6 geometry-v3 (2024 DOY 026, n=15,948, all 4 folds extrapolation), ZERO (3.076 m) beat IDW (3.352 m), nearest (3.757 m), and planar (14.373 m). Multi-day 2011 sprint confirmed +26.1% to +30.0% gains inside the 9-station convex hull while perimeter extrapolation remained ZERO-dominated; operational Phase 6 default remains ZERO.",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-006", "NLGCP-EXP-2026-007"],
+      "supporting_datasets": ["NLGCP-DATA-2024-002", "NLGCP-DATA-2024-004", "NLGCP-DATA-2024-005", "NLGCP-DATA-2024-006", "NLGCP-DATA-2024-007", "NLGCP-DATA-2011-001"],
+      "result_artifacts": ["NLGCP-ART-2026-009", "NLGCP-ART-2026-011"],
+      "limitations": ["NLGCP-LIM-002", "NLGCP-LIM-003"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-009",
+      "polarity": "DEFECT_FOUND_AND_FIXED",
+      "title": "Tropospheric ZWD interpolation defect in experimental_vrs.py:517 caught during B-02 and fixed with regression test",
+      "summary": "Combining spatial_model='zero' with tropo_mode='network_ztd' previously passed model_name='zero' to ZWD interpolation, zeroing target ZWD against EKAK 0.229 m and injecting +0.54-0.74 m Up bias. Fixed to use 'idw2' (cutting 2024 DGPS 3D RMSE 1.4456 -> 1.3419 m and kinematic 3D 2.9255 -> 2.5546 m) with unit regression test.",
+      "validation_level": "UNIT_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-016"],
+      "supporting_datasets": ["NLGCP-DATA-2024-004", "NLGCP-DATA-2024-005", "NLGCP-DATA-2024-010"],
+      "result_artifacts": ["NLGCP-ART-2026-020", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-003"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-010",
+      "polarity": "NEGATIVE",
+      "title": "No non-RTKLIB RTCM MSM4 decoder available (gLAB v6.0.0 supports 1005/CRC-24Q only)",
+      "summary": "ESA/gAGE-UPC gLAB v6.0.0 independently decoded CRC-24Q and RTCM 1005 ECEF (0.000000-0.000054 m error) on Phase 7 VRS streams, but RTCM MSM4 (1074/1084) is NOT_SUPPORTED_BY_GLAB_V6. Independent non-RTKLIB MSM4 decoding (B-06) remains open.",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-009", "NLGCP-EXP-2026-013"],
+      "supporting_datasets": ["NLGCP-DATA-2026-001", "NLGCP-DATA-2026-002", "NLGCP-DATA-2026-003"],
+      "result_artifacts": ["NLGCP-ART-2026-013", "NLGCP-ART-2026-017"],
+      "limitations": ["NLGCP-LIM-006"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-011",
+      "polarity": "NEGATIVE",
+      "title": "132 CDDIS 2011 navigation acquisition attempts returned AUTHENTICATION_REQUIRED (BKG fallback succeeded 66/66)",
+      "summary": "Automated 2011 navigation recovery validated 66/66 public BKG GPS+GLONASS files across 33 primary dates, while all 132 CDDIS attempts failed with AUTHENTICATION_REQUIRED (no credentials stored or bypassed).",
+      "validation_level": "INTEGRATION_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-001"],
+      "supporting_datasets": ["NLGCP-DATA-2011-002"],
+      "result_artifacts": ["NLGCP-ART-2026-003"],
+      "limitations": ["NLGCP-LIM-002"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-012",
+      "polarity": "NEGATIVE",
+      "title": "Missing local precise products (2011 SP3/CLK/ERP/OSB and 2024 DCB/IONEX)",
+      "summary": "Direct filesystem audit confirmed external-products/igs/2024/ has 0 files (no DCB/IONEX) and zero 2011 SP3/CLK/ERP/OSB products exist anywhere under /home/excellence/nlgcp-data; in 2024 PRIDE working runs, WUM ORB.SP3 persists while original CLK/BIA/ERP files were converted/cleaned by PRIDE.",
+      "validation_level": "INTEGRATION_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-001", "NLGCP-EXP-2026-017"],
+      "supporting_datasets": ["NLGCP-DATA-2011-006", "NLGCP-DATA-2024-009", "NLGCP-DATA-2024-011"],
+      "result_artifacts": ["NLGCP-ART-2026-001", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-002", "NLGCP-LIM-010"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-013",
+      "polarity": "NEGATIVE",
+      "title": "Day 7 security review identified 14 findings (2 CRITICAL, 4 HIGH) blocking non-loopback deployment",
+      "summary": "Day 7 backend security audit catalogued SEC-01..SEC-14 (2 CRITICAL, 4 HIGH, 4 MEDIUM, 3 LOW, 1 INFO). While 127.0.0.1 loopback lab guardrails are strong, plaintext auth, static credentials, pre-auth threading, and Compose secret defaults strictly block shared/public network use.",
+      "validation_level": "INTEGRATION_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-015"],
+      "supporting_datasets": [],
+      "result_artifacts": ["NLGCP-ART-2026-019"],
+      "limitations": ["NLGCP-LIM-008"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-014",
+      "polarity": "POSITIVE",
+      "title": "Phase 3 EKAK->PHRI static baseline numerically reproduced to 4 decimals in B-02",
+      "summary": "B-02 physical_anchor_ekak00nga static rnx2rtkp run produced H=0.9677 m, V=0.5838 m, 3D=1.1301 m, exactly reproducing Phase 3's recorded 0.968 / 0.584 / 1.130 m control baseline.",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-002", "NLGCP-EXP-2026-016"],
+      "supporting_datasets": ["NLGCP-DATA-2024-002", "NLGCP-DATA-2024-003", "NLGCP-DATA-2024-004", "NLGCP-DATA-2024-005", "NLGCP-DATA-2024-008"],
+      "result_artifacts": ["NLGCP-ART-2026-004", "NLGCP-ART-2026-020", "NLGCP-ART-2026-023"],
+      "limitations": ["NLGCP-LIM-001"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-015",
+      "polarity": "POSITIVE_WITH_LIMITATIONS",
+      "title": "UNB3m ZHD matches PRIDE PPP-AR ZTD to 1.85 mm RMSE while exposing 12.6 cm coastal-vs-Harmattan ZWD gradient",
+      "summary": "Across 11,520 epochs on 2024 DOY 026, UNB3m hydrostatic delay matched independent PRIDE PPP-AR 3.2.8 ZTD to 1.85 mm RMSE (100% within 5 cm), while exposing a genuine 12.6 cm wet-delay contrast between coastal EKAK (0.229 m) and dry Harmattan MGBO (0.103 m).",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-007"],
+      "supporting_datasets": ["NLGCP-DATA-2024-010"],
+      "result_artifacts": ["NLGCP-ART-2026-011"],
+      "limitations": ["NLGCP-LIM-003", "NLGCP-LIM-011"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-016",
+      "polarity": "POSITIVE_WITH_LIMITATIONS",
+      "title": "Phase 11/12 synthetic RTCM 1005/1074/1084 and loopback NTRIP NLGCP_TEST validated end-to-end with RTKLIB",
+      "summary": "Synthetic RTCM 1005/1074/1084 streams pass bit-level validation, byte-exact loopback NTRIP v2/v1 delivery over 127.0.0.1 /NLGCP_TEST (10/10 stages), and unmodified RTKLIB convbin + native input_rtcm3() decoding within half-LSB tolerances. Strictly synthetic-only; GLONASS FCN absent in standalone 1084.",
+      "validation_level": "INTEGRATION_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-013", "NLGCP-EXP-2026-014"],
+      "supporting_datasets": ["NLGCP-DATA-2026-003"],
+      "result_artifacts": ["NLGCP-ART-2026-017", "NLGCP-ART-2026-018"],
+      "limitations": ["NLGCP-LIM-005", "NLGCP-LIM-006", "NLGCP-LIM-007", "NLGCP-LIM-008"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-017",
+      "polarity": "NEGATIVE",
+      "title": "Phase 9 real RTCM replay and Phase 10 real live CORS ingestion remain BLOCKED by missing authorized streams",
+      "summary": "Real-source audits confirmed zero authorized RTCM captures or NTRIP caster endpoints exist under /home/excellence/nlgcp-data; web checks (miranet/nignet) are not NTRIP casters and unprovenanced files were rejected fail-closed.",
+      "validation_level": "INTEGRATION_TESTED",
+      "supporting_experiments": ["NLGCP-EXP-2026-011", "NLGCP-EXP-2026-012"],
+      "supporting_datasets": ["NLGCP-DATA-2026-004"],
+      "result_artifacts": ["NLGCP-ART-2026-015", "NLGCP-ART-2026-016"],
+      "limitations": ["NLGCP-LIM-005"]
+    },
+    {
+      "finding_id": "NLGCP-FIND-018",
+      "polarity": "POSITIVE_WITH_LIMITATIONS",
+      "title": "Phase 7 authentic experimental VRS streams decoded cleanly by RTKLIB and gLAB (1005) over isolated NLGCP_VRS_EXP",
+      "summary": "Authentic 2011 OSGF (4,045 B) and 2024 PHRI (3,914 B) experimental VRS RTCM 1005+1074 streams streamed byte-exact over isolated loopback /NLGCP_VRS_EXP and decoded with 0 CRC errors in RTKLIB convbin/input_rtcm3 and gLAB v6.0.0 (1005/CRC-24Q). 120 s cadence later confirmed to exceed RTKLIB maxage=30 s in B-02 probe, motivating 30 s B-02 streams.",
+      "validation_level": "INDEPENDENTLY_VALIDATED",
+      "supporting_experiments": ["NLGCP-EXP-2026-009", "NLGCP-EXP-2026-016"],
+      "supporting_datasets": ["NLGCP-DATA-2026-001", "NLGCP-DATA-2026-002"],
+      "result_artifacts": ["NLGCP-ART-2026-013", "NLGCP-ART-2026-020"],
+      "limitations": ["NLGCP-LIM-001", "NLGCP-LIM-006", "NLGCP-LIM-007"]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": "nlgcp.archive.experiment.v1",
+  "experiment_id": "NLGCP-EXP-2026-004",
+  "title": "Phase 5 Offline Network RTK Multi-Baseline Pilot (net-2024d026-phri-rover)",
+  "milestone": "Phase 5",
+  "status": "COMPLETED",
+  "data_classification": "AUTHENTIC",
+  "research_question": "Does multi-baseline offline network-input aggregation outperform the nearest single reference station on the admitted DOY 2024/026 network?",
+  "datasets": [
+    "NLGCP-DATA-2024-002",
+    "NLGCP-DATA-2024-003",
+    "NLGCP-DATA-2024-004",
+    "NLGCP-DATA-2024-005",
+    "NLGCP-DATA-2024-006",
+    "NLGCP-DATA-2024-007"
+  ],
+  "software": {
+    "nlgcp_revision": "9a2d870",
+    "git_dirty": false,
+    "python_version": "3.12.3",
+    "software_ids": [
+      "NLGCP-SW-RTKLIB-RNX2RTKP",
+      "NLGCP-SW-PYTHON-312"
+    ]
+  },
+  "configuration": {
+    "location": "research/network_rtk/config/pilot-net-2024d026-phri-rover.json",
+    "sha256": "fd3d999ea0371620a6b50a147a691ac5cc630856153bf6657b7ef2354d536d34"
+  },
+  "execution": {
+    "command": ".venv/bin/python scripts/run_network_rtk.py run --definition research/network_rtk/config/pilot-net-2024d026-phri-rover.json --workers 3",
+    "environment": "NOT_RECORDED",
+    "executed_date": "2026-09-07"
+  },
+  "outputs": [
+    "NLGCP-ART-2026-007"
+  ],
+  "validation": {
+    "highest_level": "INDEPENDENTLY_VALIDATED",
+    "operational_approved": false
+  },
+  "reproducibility": {
+    "status": "NOT_ATTEMPTED",
+    "level": "LEVEL_1_RECORD_COMPLETE"
+  },
+  "relationships": [
+    {
+      "type": "DEPENDS_ON",
+      "target_id": "NLGCP-EXP-2026-003"
+    },
+    {
+      "type": "REPRODUCES",
+      "target_id": "NLGCP-EXP-2026-002"
+    }
+  ],
+  "summary_results": "3/3 baselines complete (8,640 epochs); aggregate mean H RMSE 1.288 m underperformed nearest single reference EKAK->PHRI (0.968 m). No general NRTK improvement claimed.",
+  "limitations": [
+    "NLGCP-LIM-001",
+    "NLGCP-LIM-003",
+    "NLGCP-LIM-012"
+  ]
+}

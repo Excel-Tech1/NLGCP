@@ -1,0 +1,153 @@
+{
+  "schema_version": "nlgcp.archive.software_provenance.v1",
+  "recorded_utc": "2026-11-26T12:40:00Z",
+  "software": [
+    {
+      "software_id": "NLGCP-SW-RTKLIB-RNX2RTKP",
+      "name": "RTKLIB rnx2rtkp",
+      "category": "GNSS_PROCESSING_ENGINE",
+      "version": "v2.4.2-p13",
+      "source_commit": "71db0ffa0d9735697c6adfd06fdf766d0e5ce807",
+      "source_repository": "/home/excellence/RTKLIB",
+      "executable_or_source_path": "/home/excellence/.local/bin/rnx2rtkp",
+      "expected_sha256": "b4a96cd0d5ffc00b44dab3a4fda214318c9f69cccee52128aec8bc26ad4f7d21",
+      "verified_against_upstream_source": true,
+      "notes": "Unmodified RTKLIB v2.4.2-p13 post-processing positioning binary. Verified in src/rtkpos.c:883-1110 that zdres() unconditionally applies hydrostatic Saastamoinen + Niell regardless of pos1-tropopt and relpos() ignores pos1-ionoopt=brdc.",
+      "linked_experiments": [
+        "NLGCP-EXP-2026-002",
+        "NLGCP-EXP-2026-004",
+        "NLGCP-EXP-2026-016",
+        "NLGCP-EXP-2026-017"
+      ]
+    },
+    {
+      "software_id": "NLGCP-SW-RTKLIB-CONVBIN",
+      "name": "RTKLIB convbin",
+      "category": "RTCM_CONVERTER_DECODER",
+      "version": "v2.4.2-p13",
+      "source_commit": "71db0ffa0d9735697c6adfd06fdf766d0e5ce807",
+      "source_repository": "/home/excellence/RTKLIB",
+      "executable_or_source_path": "/home/excellence/.local/bin/convbin",
+      "expected_sha256": "b575f81ead50bd94184364d7b5d828874878737dc527c849ff751137ac08e278",
+      "verified_against_upstream_source": true,
+      "notes": "Unmodified RTKLIB v2.4.2-p13 converter used as primary independent RTCM 3.x (1005/1074/1084) decoder and RTCM-to-RINEX 3.02 converter.",
+      "linked_experiments": [
+        "NLGCP-EXP-2026-009",
+        "NLGCP-EXP-2026-013",
+        "NLGCP-EXP-2026-014",
+        "NLGCP-EXP-2026-016",
+        "NLGCP-EXP-2026-017"
+      ]
+    },
+    {
+      "software_id": "NLGCP-SW-PRIDE-PDP3",
+      "name": "PRIDE PPP-AR pdp3",
+      "category": "PPP_ENGINE",
+      "version": "3.2.8",
+      "source_commit": "4907bfe5ba1e9d9faf90414fcf7a2bed5ad44695",
+      "source_repository": "/home/excellence/PRIDE-PPPAR",
+      "executable_or_source_path": "/home/excellence/.PRIDE_PPPAR_BIN/pdp3",
+      "expected_sha256": "9e526f55c5ac9b611cc3ba42ae3be7ac34f2f0f31dd32f8a08e9ca55b908ccb7",
+      "verified_against_upstream_source": true,
+      "notes": "Deployed pdp3 binary (178,876 B) verified byte-identical to /home/excellence/PRIDE-PPPAR/scripts/pdp3.sh at commit 4907bfe5. Used to derive verified IGS20 coordinates and reference ZTD for 2024 DOY 026.",
+      "linked_experiments": [
+        "NLGCP-EXP-2026-001",
+        "NLGCP-EXP-2026-002",
+        "NLGCP-EXP-2026-007",
+        "NLGCP-EXP-2026-016"
+      ]
+    },
+    {
+      "software_id": "NLGCP-SW-GLAB-600",
+      "name": "ESA/gAGE-UPC gLAB",
+      "category": "INDEPENDENT_DECODER_NON_RTKLIB",
+      "version": "6.0.0",
+      "source_commit": "NOT_RECORDED",
+      "source_repository": "/opt/gLAB",
+      "executable_or_source_path": "/opt/gLAB/gLAB_linux",
+      "expected_sha256": "ca530155b5f64d9b45e841a0be4ca424d92091f3712754b436fc07cb16931eb8",
+      "verified_against_upstream_source": false,
+      "notes": "Unmodified ESA/gAGE-UPC gLAB v6.0.0 binary (3,287,408 B). Supports RTCM 3.x framing, CRC-24Q, and RTCM 1005 station ARP; MSM4 (1074/1084) is NOT_SUPPORTED_BY_GLAB_V6.",
+      "linked_experiments": [
+        "NLGCP-EXP-2026-009"
+      ]
+    },
+    {
+      "software_id": "NLGCP-SW-GLAB-INPUTC",
+      "name": "ESA/gAGE-UPC gLAB input.c",
+      "category": "INDEPENDENT_DECODER_SOURCE",
+      "version": "6.0.0",
+      "source_commit": "NOT_RECORDED",
+      "source_repository": "/opt/gLAB/source/core",
+      "executable_or_source_path": "/opt/gLAB/source/core/input.c",
+      "expected_sha256": "16fd82ea230f068b1aac4b64d740846d7939a7b7e15ece2d68b36bad2c6bfb62",
+      "verified_against_upstream_source": false,
+      "notes": "Read-only C source linked by research/rtcm_generation/native/glab_rtcm1005_decode.c (alongside dataHandling.c 77053f83... and output.c 917f62ae...) for non-RTKLIB CRC-24Q and RTCM 1005 cross-decoding.",
+      "linked_experiments": [
+        "NLGCP-EXP-2026-009"
+      ]
+    },
+    {
+      "software_id": "NLGCP-SW-PYTHON-312",
+      "name": "Python (NLGCP .venv)",
+      "category": "LANGUAGE_RUNTIME",
+      "version": "3.12.3",
+      "source_commit": "NOT_APPLICABLE",
+      "source_repository": "NOT_APPLICABLE",
+      "executable_or_source_path": "/home/excellence/NLGCP/.venv/bin/python",
+      "expected_sha256": "NOT_RECORDED",
+      "verified_against_upstream_source": false,
+      "notes": "Project virtual environment runtime hosting numpy 2.5.3, matplotlib 3.11.1, PyYAML 6.0.3, fastapi 0.141.1, pytest 8.4.2, mypy 1.20.2, and ruff 0.16.4.",
+      "linked_experiments": [
+        "NLGCP-EXP-2026-001",
+        "NLGCP-EXP-2026-002",
+        "NLGCP-EXP-2026-003",
+        "NLGCP-EXP-2026-004",
+        "NLGCP-EXP-2026-005",
+        "NLGCP-EXP-2026-006",
+        "NLGCP-EXP-2026-007",
+        "NLGCP-EXP-2026-008",
+        "NLGCP-EXP-2026-009",
+        "NLGCP-EXP-2026-010",
+        "NLGCP-EXP-2026-011",
+        "NLGCP-EXP-2026-012",
+        "NLGCP-EXP-2026-013",
+        "NLGCP-EXP-2026-014",
+        "NLGCP-EXP-2026-015",
+        "NLGCP-EXP-2026-016",
+        "NLGCP-EXP-2026-017"
+      ]
+    },
+    {
+      "software_id": "NLGCP-SW-GO-125",
+      "name": "Go Toolchain",
+      "category": "LANGUAGE_RUNTIME",
+      "version": "go1.25.6 linux/amd64",
+      "source_commit": "NOT_APPLICABLE",
+      "source_repository": "NOT_APPLICABLE",
+      "executable_or_source_path": "NOT_RECORDED",
+      "expected_sha256": "NOT_RECORDED",
+      "verified_against_upstream_source": false,
+      "notes": "Used to build and test services/gnss-ingestor (Phase 10 NTRIP client transport & health packages).",
+      "linked_experiments": [
+        "NLGCP-EXP-2026-012",
+        "NLGCP-EXP-2026-015"
+      ]
+    },
+    {
+      "software_id": "NLGCP-SW-NODE-2020",
+      "name": "Node.js / npm Toolchain",
+      "category": "LANGUAGE_RUNTIME",
+      "version": "v20.20.2 / npm 10.8.2",
+      "source_commit": "NOT_APPLICABLE",
+      "source_repository": "NOT_APPLICABLE",
+      "executable_or_source_path": "NOT_RECORDED",
+      "expected_sha256": "NOT_RECORDED",
+      "verified_against_upstream_source": false,
+      "notes": "Used by make check for apps/web ESLint, TypeScript typecheck, and Next.js build verification.",
+      "linked_experiments": [
+        "NLGCP-EXP-2026-015"
+      ]
+    }
+  ]
+}

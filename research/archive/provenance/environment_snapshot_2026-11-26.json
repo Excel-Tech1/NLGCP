@@ -1,0 +1,44 @@
+{
+  "captured_utc": "2026-11-26T11:52:25.915382Z",
+  "data_root": {
+    "accessible": true,
+    "path": "/home/excellence/nlgcp-data"
+  },
+  "environment_variables": {
+    "LANG": "en_US.UTF-8",
+    "VIRTUAL_ENV": "/home/excellence/NLGCP/.venv"
+  },
+  "git": {
+    "branch": "research/nlgcp-14-day-beta-sprint",
+    "git_dirty": true,
+    "head_commit": "5b5217a0033191134effebe0027d4ee16f70de5f",
+    "repository_root": "/home/excellence/NLGCP"
+  },
+  "lockfiles_sha256": {
+    "apps/web/package-lock.json": "4774b4285e8856dd1939c4cb944edae6e03eb457c468a153218dede2983c9d3e",
+    "apps/web/package.json": "809b43d66b585b67c118f6c47797c68becd5b334983c6c44c9280fcbcf9bd894",
+    "compose.yml": "0edcb9090864397800f385dd3fcd8991c7614a7904cc53fab6f5da46f24dc9c7",
+    "pyproject.toml": "d335a04afd17ef14bb5088a4c4e9eabd52b3e0e0adc0bfad7740fe2f72a5bb25",
+    "services/gnss-ingestor/go.mod": "87f62e4410b6b44ee1a4dda92d0e964699be29076340109c25a2358ba1d6788d",
+    "services/gnss-ingestor/go.sum": "NOT_AVAILABLE",
+    "services/nrtk-engine/CMakeLists.txt": "f1571414d80f60254221c556a21b44329aa17d8a1726786871458fd840fbc29a"
+  },
+  "operating_system": {
+    "machine": "x86_64",
+    "release": "7.0.0-28-generic",
+    "system": "Linux",
+    "version": "#28~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Wed Jul  1 15:50:57 UTC 2"
+  },
+  "schema_version": "nlgcp.archive.environment.v1",
+  "toolchains": {
+    "cmake": "cmake version 3.28.3",
+    "docker": "Docker version 29.4.3, build 055a478",
+    "docker_compose": "Docker Compose version v2.5.0",
+    "g++": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "gcc": "gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0",
+    "go": "go version go1.25.6 linux/amd64",
+    "node": "v20.20.2",
+    "npm": "10.8.2",
+    "python": "3.12.3"
+  }
+}

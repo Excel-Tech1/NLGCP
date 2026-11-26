@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nlgcp.local/schemas/archive/validation_register.schema.json",
+  "title": "NLGCP Research Archive Findings & Validation Register (v1)",
+  "type": "object",
+  "required": ["schema_version", "findings"],
+  "properties": {
+    "schema_version": { "const": "nlgcp.archive.findings_register.v1" },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "finding_id",
+          "research_question",
+          "claim",
+          "finding_polarity",
+          "supporting_experiments",
+          "supporting_datasets",
+          "result_artifacts",
+          "validation_level",
+          "limitations",
+          "confidence_or_uncertainty",
+          "status",
+          "publication_suitability"
+        ]
+      }
+    }
+  }
+}

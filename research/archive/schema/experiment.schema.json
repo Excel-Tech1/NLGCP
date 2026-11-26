@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nlgcp.local/schemas/archive/experiment.schema.json",
+  "title": "NLGCP Research Archive Experiment Manifest (v1)",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "experiment_id",
+    "title",
+    "milestone",
+    "status",
+    "data_classification",
+    "research_question",
+    "hypothesis",
+    "datasets",
+    "software",
+    "configuration",
+    "execution",
+    "outputs",
+    "metrics",
+    "results",
+    "validation",
+    "limitations",
+    "relationships",
+    "reproducibility"
+  ],
+  "properties": {
+    "schema_version": { "const": "nlgcp.archive.experiment.v1" },
+    "experiment_id": { "type": "string", "pattern": "^NLGCP-EXP-\\d{4}-\\d{3}$" },
+    "status": {
+      "enum": [
+        "PLANNED",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "FAILED",
+        "BLOCKED",
+        "SUPERSEDED",
+        "REQUIRES_REVALIDATION"
+      ]
+    },
+    "data_classification": {
+      "enum": ["AUTHENTIC", "SYNTHETIC", "DOCUMENTATION_AUDIT", "MIXED_SEPARATED"]
+    },
+    "datasets": { "type": "array", "items": { "type": "string" } },
+    "software": { "type": "object" },
+    "configuration": { "type": "object" },
+    "execution": { "type": "object" },
+    "outputs": { "type": "array" },
+    "metrics": { "type": "object" },
+    "results": { "type": "object" },
+    "validation": { "type": "object" },
+    "limitations": { "type": "array", "items": { "type": "string" } },
+    "relationships": { "type": "array" },
+    "reproducibility": { "type": "object" }
+  }
+}
