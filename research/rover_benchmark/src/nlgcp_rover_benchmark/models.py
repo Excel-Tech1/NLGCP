@@ -22,6 +22,7 @@ class TruthTier(StrEnum):
     """Explicit classification of rover reference coordinate defensibility."""
 
     VERIFIED_IGS20_PPP_AR = "VERIFIED_IGS20_PPP_AR"
+    VERIFIED_ITRF = "VERIFIED_ITRF"
     PROVISIONAL_OSGOF_LIMITED = "PROVISIONAL_OSGOF_LIMITED"
     UNAVAILABLE_EXPLORATORY_ONLY = "UNAVAILABLE_EXPLORATORY_ONLY"
 
@@ -84,9 +85,13 @@ class RoverTruthRecord:
             raise BenchmarkFailure(
                 f"rover truth radius {radius:.1f} m outside Earth surface bounds"
             )
-        if self.truth_tier != TruthTier.VERIFIED_IGS20_PPP_AR and self.accuracy_claim_permitted:
+        if (
+            self.truth_tier not in (TruthTier.VERIFIED_IGS20_PPP_AR, TruthTier.VERIFIED_ITRF)
+            and self.accuracy_claim_permitted
+        ):
             raise BenchmarkFailure(
-                "verified accuracy claims are forbidden without VERIFIED_IGS20_PPP_AR truth"
+                "verified accuracy claims are forbidden without VERIFIED_IGS20_PPP_AR "
+                "or VERIFIED_ITRF truth"
             )
 
     def as_dict(self) -> dict[str, Any]:
