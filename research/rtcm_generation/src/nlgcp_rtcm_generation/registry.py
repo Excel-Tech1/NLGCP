@@ -68,6 +68,56 @@ DEFAULT_MESSAGE_FAMILIES = (
         encoder_key="rtcm1005",
     ),
     MessageFamily(
+        "REFERENCE_STATION_1006",
+        (1006,),
+        "Reference-station ARP ECEF with antenna height (B-06); synthetic fixtures only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 encode_type1006 + ESA gLAB v6.0.0 readMSG1006 + B-07 spec decoder.",
+        encoder_key="rtcm1006",
+    ),
+    MessageFamily(
+        "ANTENNA_DESCRIPTOR_1007",
+        (1007,),
+        "Antenna descriptor and setup ID (B-06); synthetic fixtures only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 encode_type1007 + B-07 spec decoder.",
+        encoder_key="rtcm1007",
+    ),
+    MessageFamily(
+        "ANTENNA_DESCRIPTOR_SERIAL_1008",
+        (1008,),
+        "Antenna descriptor, setup ID, and serial number (B-06); synthetic fixtures only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 encode_type1008 + B-07 spec decoder.",
+        encoder_key="rtcm1008",
+    ),
+    MessageFamily(
+        "RECEIVER_ANTENNA_DESCRIPTOR_1033",
+        (1033,),
+        "Receiver type/firmware/serial and antenna descriptor/serial (B-06); synthetic only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 encode_type1033 + B-07 spec decoder.",
+        encoder_key="rtcm1033",
+    ),
+    MessageFamily(
+        "GLONASS_EPHEMERIS_1020",
+        (1020,),
+        "GLONASS broadcast ephemeris carrying FCN to resolve 1084 carrier phase (B-06); "
+        "synthetic fixtures only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 encode_type1020/decode_type1020 + B-07 spec decoder.",
+        encoder_key="rtcm1020",
+    ),
+    MessageFamily(
+        "GLONASS_CODE_PHASE_BIAS_1230",
+        (1230,),
+        "GLONASS L1/L2 FDMA code-phase biases (B-06); synthetic fixtures only "
+        "(unsupported by RTKLIB v2.4.2-p13; decoded by B-07 spec decoder).",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTCM 10403.3 bitfield layout verified by B-07 independent spec decoder.",
+        encoder_key="rtcm1230",
+    ),
+    MessageFamily(
         "MSM4_GPS_1074",
         (1074,),
         "GPS MSM4 bit-level encoder; synthetic fixtures only.",
@@ -85,6 +135,24 @@ DEFAULT_MESSAGE_FAMILIES = (
         "src/rtcm3.c decode_msm_head/decode_msm4 plus GLONASS signal table; "
         "licensed RTCM text not copied.",
         encoder_key="msm4-glonass",
+    ),
+    MessageFamily(
+        "MSM4_GALILEO_1094",
+        (1094,),
+        "Galileo MSM4 bit-level encoder (B-06, motivated by 2024 ABFC/EKAK/MGBO); "
+        "synthetic fixtures only.",
+        MessageFamilyStatus.SYNTHETICALLY_VALIDATED,
+        "RTKLIB v2.4.2-p13 decode_msm4(SYS_GAL) + B-07 spec decoder.",
+        encoder_key="msm4-galileo",
+    ),
+    MessageFamily(
+        "MSM4_BEIDOU_1124",
+        (1124,),
+        "BeiDou MSM4 declared only: 0 authentic BeiDou observations exist in inspected "
+        "2011/2024 Nigerian RINEX archives (not fabricated).",
+        MessageFamilyStatus.DECLARED,
+        "Declared placeholder pending authentic Nigerian BeiDou observations.",
+        encoder_key=None,
     ),
     MessageFamily(
         "SYNTHETIC_TEST_FRAME",

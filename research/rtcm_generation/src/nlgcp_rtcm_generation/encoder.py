@@ -9,6 +9,12 @@ from typing import Protocol
 from nlgcp_rtcm_generation import (
     ENCODER_VERSION,
     ENCODER_VERSION_1005,
+    ENCODER_VERSION_1006,
+    ENCODER_VERSION_1007,
+    ENCODER_VERSION_1008,
+    ENCODER_VERSION_1020,
+    ENCODER_VERSION_1033,
+    ENCODER_VERSION_1230,
     ENCODER_VERSION_MSM4,
 )
 from nlgcp_rtcm_generation.framing import (
@@ -18,11 +24,24 @@ from nlgcp_rtcm_generation.framing import (
 )
 from nlgcp_rtcm_generation.messages import (
     MESSAGE_NUMBER_1005,
+    MESSAGE_NUMBER_1006,
+    MESSAGE_NUMBER_1007,
+    MESSAGE_NUMBER_1008,
+    MESSAGE_NUMBER_1020,
+    MESSAGE_NUMBER_1033,
     MESSAGE_NUMBER_1074,
     MESSAGE_NUMBER_1084,
+    MESSAGE_NUMBER_1094,
+    MESSAGE_NUMBER_1230,
+    AntennaDescriptor1007,
+    AntennaDescriptorSerial1008,
+    GlonassCodePhaseBias1230,
+    GlonassEphemeris1020,
     Msm4Message,
     MsmSystem,
+    ReceiverAntennaDescriptor1033,
     ReferenceStation1005,
+    ReferenceStation1006,
 )
 from nlgcp_rtcm_generation.models import (
     CorrectionGenerationContext,
@@ -181,6 +200,116 @@ class GlonassMsm4Encoder(_Msm4Encoder):
     message_number = MESSAGE_NUMBER_1084
 
 
+class GalileoMsm4Encoder(_Msm4Encoder):
+    """RTCM 1094 Galileo MSM4 encoder over synthetic fixture fields."""
+
+    system = MsmSystem.GALILEO
+    family_id = "MSM4_GALILEO_1094"
+    message_number = MESSAGE_NUMBER_1094
+
+
+class ReferenceStation1006Encoder:
+    family_id = "REFERENCE_STATION_1006"
+    message_number = MESSAGE_NUMBER_1006
+    encoder_version = ENCODER_VERSION_1006
+
+    def encode(self, context: CorrectionGenerationContext) -> GeneratedCorrectionFrame:
+        _require_synthetic_context(context, self.encoder_version)
+        msg = ReferenceStation1006.from_mapping(context.fields)
+        return _build_frame(
+            context,
+            family_id=self.family_id,
+            message_number=self.message_number,
+            encoder_version=self.encoder_version,
+            payload=msg.encode(),
+        )
+
+
+class AntennaDescriptor1007Encoder:
+    family_id = "ANTENNA_DESCRIPTOR_1007"
+    message_number = MESSAGE_NUMBER_1007
+    encoder_version = ENCODER_VERSION_1007
+
+    def encode(self, context: CorrectionGenerationContext) -> GeneratedCorrectionFrame:
+        _require_synthetic_context(context, self.encoder_version)
+        msg = AntennaDescriptor1007.from_mapping(context.fields)
+        return _build_frame(
+            context,
+            family_id=self.family_id,
+            message_number=self.message_number,
+            encoder_version=self.encoder_version,
+            payload=msg.encode(),
+        )
+
+
+class AntennaDescriptorSerial1008Encoder:
+    family_id = "ANTENNA_DESCRIPTOR_SERIAL_1008"
+    message_number = MESSAGE_NUMBER_1008
+    encoder_version = ENCODER_VERSION_1008
+
+    def encode(self, context: CorrectionGenerationContext) -> GeneratedCorrectionFrame:
+        _require_synthetic_context(context, self.encoder_version)
+        msg = AntennaDescriptorSerial1008.from_mapping(context.fields)
+        return _build_frame(
+            context,
+            family_id=self.family_id,
+            message_number=self.message_number,
+            encoder_version=self.encoder_version,
+            payload=msg.encode(),
+        )
+
+
+class ReceiverAntennaDescriptor1033Encoder:
+    family_id = "RECEIVER_ANTENNA_DESCRIPTOR_1033"
+    message_number = MESSAGE_NUMBER_1033
+    encoder_version = ENCODER_VERSION_1033
+
+    def encode(self, context: CorrectionGenerationContext) -> GeneratedCorrectionFrame:
+        _require_synthetic_context(context, self.encoder_version)
+        msg = ReceiverAntennaDescriptor1033.from_mapping(context.fields)
+        return _build_frame(
+            context,
+            family_id=self.family_id,
+            message_number=self.message_number,
+            encoder_version=self.encoder_version,
+            payload=msg.encode(),
+        )
+
+
+class GlonassEphemeris1020Encoder:
+    family_id = "GLONASS_EPHEMERIS_1020"
+    message_number = MESSAGE_NUMBER_1020
+    encoder_version = ENCODER_VERSION_1020
+
+    def encode(self, context: CorrectionGenerationContext) -> GeneratedCorrectionFrame:
+        _require_synthetic_context(context, self.encoder_version)
+        msg = GlonassEphemeris1020.from_mapping(context.fields)
+        return _build_frame(
+            context,
+            family_id=self.family_id,
+            message_number=self.message_number,
+            encoder_version=self.encoder_version,
+            payload=msg.encode(),
+        )
+
+
+class GlonassCodePhaseBias1230Encoder:
+    family_id = "GLONASS_CODE_PHASE_BIAS_1230"
+    message_number = MESSAGE_NUMBER_1230
+    encoder_version = ENCODER_VERSION_1230
+
+    def encode(self, context: CorrectionGenerationContext) -> GeneratedCorrectionFrame:
+        _require_synthetic_context(context, self.encoder_version)
+        msg = GlonassCodePhaseBias1230.from_mapping(context.fields)
+        return _build_frame(
+            context,
+            family_id=self.family_id,
+            message_number=self.message_number,
+            encoder_version=self.encoder_version,
+            payload=msg.encode(),
+        )
+
+
 class ScaffoldOnlyEncoder:
     """Explicit placeholder for message families without a permitted layout."""
 
@@ -199,6 +328,13 @@ def default_encoders() -> dict[str, MessageEncoder]:
     return {
         "SYNTHETIC_TEST_FRAME": SyntheticMessageEncoder(),
         "REFERENCE_STATION_1005": ReferenceStation1005Encoder(),
+        "REFERENCE_STATION_1006": ReferenceStation1006Encoder(),
+        "ANTENNA_DESCRIPTOR_1007": AntennaDescriptor1007Encoder(),
+        "ANTENNA_DESCRIPTOR_SERIAL_1008": AntennaDescriptorSerial1008Encoder(),
+        "RECEIVER_ANTENNA_DESCRIPTOR_1033": ReceiverAntennaDescriptor1033Encoder(),
+        "GLONASS_EPHEMERIS_1020": GlonassEphemeris1020Encoder(),
+        "GLONASS_CODE_PHASE_BIAS_1230": GlonassCodePhaseBias1230Encoder(),
         "MSM4_GPS_1074": GpsMsm4Encoder(),
         "MSM4_GLONASS_1084": GlonassMsm4Encoder(),
+        "MSM4_GALILEO_1094": GalileoMsm4Encoder(),
     }

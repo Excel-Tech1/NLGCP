@@ -120,17 +120,35 @@ int main(int argc, char **argv)
             event_count++;
             printf("{\"ret\":%d,\"crc_ok\":%s,\"msg_no\":%d,\"frame_len\":%d,",
                    ret, crc_ok ? "true" : "false", msg_no, rtcm.len + 3);
-            printf("\"staid\":%d,\"itrf\":%d,\"pos_ecef\":[%.6f,%.6f,%.6f],",
+            printf("\"staid\":%d,\"itrf\":%d,\"pos_ecef\":[%.6f,%.6f,%.6f],\"hgt_m\":%.4f,",
                    rtcm.staid, rtcm.sta.itrf,
-                   rtcm.sta.pos[0], rtcm.sta.pos[1], rtcm.sta.pos[2]);
-            printf("\"gps_week\":%d,\"gps_tow_s\":%.6f,\"obsflag\":%d,",
+                   rtcm.sta.pos[0], rtcm.sta.pos[1], rtcm.sta.pos[2], rtcm.sta.hgt);
+            printf("\"antdes\":"); print_json_str(rtcm.sta.antdes);
+            printf(",\"antsno\":"); print_json_str(rtcm.sta.antsno);
+            printf(",\"antsetup\":%d,\"rectype\":", rtcm.sta.antsetup);
+            print_json_str(rtcm.sta.rectype);
+            printf(",\"recver\":"); print_json_str(rtcm.sta.recver);
+            printf(",\"recsno\":"); print_json_str(rtcm.sta.recsno);
+            printf(",\"gps_week\":%d,\"gps_tow_s\":%.6f,\"obsflag\":%d,",
                    week, tow, rtcm.obsflag);
             printf("\"msgtype\":"); print_json_str(rtcm.msgtype);
             printf(",\"msmtype_gps\":"); print_json_str(rtcm.msmtype[0]);
             printf(",\"msmtype_glo\":"); print_json_str(rtcm.msmtype[1]);
-            printf(",\"obs\":[");
+            printf(",\"msmtype_gal\":"); print_json_str(rtcm.msmtype[2]);
+            printf(",\"geph_fcns\":{");
+            {
+                int gfirst = 1;
+                for (i = 0; i < MAXPRNGLO; i++) {
+                    if (rtcm.nav.geph[i].sat > 0) {
+                        if (!gfirst) putchar(',');
+                        gfirst = 0;
+                        printf("\"%d\":%d", i + 1, rtcm.nav.geph[i].frq);
+                    }
+                }
+            }
+            printf("},\"obs\":[");
             k = 0;
-            if (ret == 1 || (ret == 0 && crc_ok && (msg_no == 1074 || msg_no == 1084))) {
+            if (ret == 1 || (ret == 0 && crc_ok && (msg_no == 1074 || msg_no == 1084 || msg_no == 1094))) {
                 for (i = 0; i < rtcm.obs.n; i++) {
                     obsd_t *d = &rtcm.obs.data[i];
                     int prn = 0;
@@ -160,10 +178,14 @@ int main(int argc, char **argv)
     fclose(fp);
 
     printf("],\"summary\":{\"total_bytes\":%d,\"events\":%d,\"crc_errors\":%d,"
-           "\"decode_errors\":%d,\"nmsg3_1005\":%u,\"nmsg3_1074\":%u,"
-           "\"nmsg3_1084\":%u,\"nmsg3_other\":%u,\"trailing_nbyte\":%d}}\n",
+           "\"decode_errors\":%d,\"nmsg3_1005\":%u,\"nmsg3_1006\":%u,"
+           "\"nmsg3_1007\":%u,\"nmsg3_1008\":%u,\"nmsg3_1020\":%u,"
+           "\"nmsg3_1033\":%u,\"nmsg3_1074\":%u,\"nmsg3_1084\":%u,"
+           "\"nmsg3_1094\":%u,\"nmsg3_1230\":%u,\"nmsg3_other\":%u,\"trailing_nbyte\":%d}}\n",
            total_bytes, event_count, crc_errors, decode_errors,
-           rtcm.nmsg3[5], rtcm.nmsg3[74], rtcm.nmsg3[84], rtcm.nmsg3[0],
+           rtcm.nmsg3[5], rtcm.nmsg3[6], rtcm.nmsg3[7], rtcm.nmsg3[8],
+           rtcm.nmsg3[20], rtcm.nmsg3[33], rtcm.nmsg3[74], rtcm.nmsg3[84],
+           rtcm.nmsg3[94], rtcm.nmsg3[230], rtcm.nmsg3[0],
            rtcm.nbyte);
 
     free_rtcm(&rtcm);

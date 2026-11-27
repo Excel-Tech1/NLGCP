@@ -108,8 +108,46 @@ int main(int argc, char **argv) {
                 st.ecef_y,
                 st.ecef_z
             );
+        } else if (crc_ok && msg_type == 1006 && payload_len >= 21) {
+            TMSG1006 st;
+            memset(&st, 0, sizeof(st));
+            readMSG1006(&st, frame);
+            printf(
+                "{\"message_number\":1006,\"payload_length\":%d,"
+                "\"crc_ok\":true,\"decoded\":true,"
+                "\"station_id\":%u,\"gps_indicator\":%d,"
+                "\"glonass_indicator\":%d,\"reference_station_indicator\":%d,"
+                "\"oscillator_indicator\":%d,"
+                "\"ecef_x_m\":%.4f,\"ecef_y_m\":%.4f,\"ecef_z_m\":%.4f,"
+                "\"antenna_height_m\":%.4f}",
+                payload_len,
+                st.station_id,
+                (st.gps_indicator == '1') ? 1 : 0,
+                (st.glonass_indicator == '1') ? 1 : 0,
+                (st.referStation_indicator == '1') ? 1 : 0,
+                (st.oscillator_indicator == '1') ? 1 : 0,
+                st.ecef_x,
+                st.ecef_y,
+                st.ecef_z,
+                st.antenna_height
+            );
+        } else if (crc_ok && msg_type == 1008 && payload_len >= 6) {
+            TMSG1008 st;
+            memset(&st, 0, sizeof(st));
+            readMSG1008(&st, frame);
+            printf(
+                "{\"message_number\":1008,\"payload_length\":%d,"
+                "\"crc_ok\":true,\"decoded\":true,"
+                "\"station_id\":%u,\"antenna_descriptor\":\"%s\","
+                "\"antenna_setup_id\":%u,\"serial_len\":%u}",
+                payload_len,
+                st.station_id,
+                st.descriptor,
+                st.setup_id,
+                st.serialNum_no
+            );
         } else {
-            if (msg_type == 1074 || msg_type == 1084) {
+            if (msg_type == 1074 || msg_type == 1084 || msg_type == 1094) {
                 msm_unparsed_count++;
             }
             printf(

@@ -26,6 +26,16 @@ class BitWriter:
             raise ValueError(f"signed value {value} does not fit {bits} bits")
         self.write_unsigned(value if value >= 0 else (1 << bits) + value, bits)
 
+    def write_sign_magnitude(self, value: int, bits: int) -> None:
+        """Write a sign-magnitude integer (1 sign bit + bits-1 magnitude bits)."""
+        if bits < 2:
+            raise ValueError("sign-magnitude requires at least 2 bits")
+        max_mag = (1 << (bits - 1)) - 1
+        if abs(value) > max_mag:
+            raise ValueError(f"sign-magnitude value {value} does not fit {bits} bits")
+        self.write_unsigned(1 if value < 0 else 0, 1)
+        self.write_unsigned(abs(value), bits - 1)
+
     def write_bytes(self, value: bytes) -> None:
         for byte in value:
             self.write_unsigned(byte, 8)
