@@ -133,4 +133,7 @@ files = [
   "scripts/run_phase7_vrs_sprint.py",
   "scripts/run_b02_rover_benchmark.py",
   "scripts/run_research_archive.py",
+  "scripts/run_b05_atmospheric_sprint.py",
+  "scripts/run_b03_network_iar_sprint.py",
+  "scripts/run_b09_cors_assessment.py",
 ]
