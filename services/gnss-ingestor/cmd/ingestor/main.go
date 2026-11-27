@@ -9,11 +9,33 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/nlgcp/nigeria-rtk-platform/services/gnss-ingestor/internal/config"
 	"github.com/nlgcp/nigeria-rtk-platform/services/gnss-ingestor/internal/health"
 	"github.com/nlgcp/nigeria-rtk-platform/services/gnss-ingestor/internal/ntrip"
 )
+
+const (
+	defaultReadHeaderTimeout = 5 * time.Second
+	defaultReadTimeout       = 10 * time.Second
+	defaultWriteTimeout      = 10 * time.Second
+	defaultIdleTimeout       = 60 * time.Second
+	defaultShutdownTimeout   = 5 * time.Second
+	defaultMaxHeaderBytes    = 8192
+)
+
+func buildHTTPServer(address string, handler http.Handler) *http.Server {
+	return &http.Server{
+		Addr:              address,
+		Handler:           handler,
+		ReadHeaderTimeout: defaultReadHeaderTimeout,
+		ReadTimeout:       defaultReadTimeout,
+		WriteTimeout:      defaultWriteTimeout,
+		IdleTimeout:       defaultIdleTimeout,
+		MaxHeaderBytes:    defaultMaxHeaderBytes,
+	}
+}
 
 func main() {
 	settings := config.Load()
@@ -29,7 +51,7 @@ func main() {
 	mux.HandleFunc("GET /live", health.Handler)
 	mux.HandleFunc("GET /ready", reporter.ReadyHandler)
 	mux.HandleFunc("GET /status", reporter.StatusHandler)
-	server := &http.Server{Addr: settings.Address, Handler: mux}
+	server := buildHTTPServer(settings.Address, mux)
 	slog.Info("starting GNSS ingestor health boundary", "address", settings.Address, "configured_stream", configured)
 	stopContext, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -41,7 +63,9 @@ func main() {
 	}()
 	<-stopContext.Done()
 	slog.Info("shutdown requested")
-	if err := server.Shutdown(context.Background()); err != nil {
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), defaultShutdownTimeout)
+	defer cancel()
+	if err := server.Shutdown(shutdownCtx); err != nil {
 		slog.Error("graceful shutdown failed", "error", err)
 		os.Exit(1)
 	}

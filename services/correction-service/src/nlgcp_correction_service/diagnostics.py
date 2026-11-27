@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import logging
 import threading
+from collections import deque
 from datetime import UTC, datetime
 from typing import Any
 
@@ -79,6 +80,8 @@ class CasterDiagnostics:
         self.queue_overflow_drops: int = 0
         self.connection_errors: int = 0
         self.last_stream_activity_utc: str | None = None
+        self._active_sessions: dict[str, dict[str, Any]] = {}
+        self._recent_faults: deque[dict[str, Any]] = deque(maxlen=200)
 
     def set_running(self, port: int) -> None:
         with self._lock:
@@ -151,6 +154,61 @@ class CasterDiagnostics:
     def record_connection_error(self) -> None:
         with self._lock:
             self.connection_errors += 1
+
+    def register_client_session(
+        self,
+        *,
+        client_id: str,
+        mountpoint: str,
+        ntrip_version: str,
+    ) -> None:
+        """Record a secret-free active session summary (never stores passwords)."""
+        with self._lock:
+            self._active_sessions[client_id] = {
+                "client_id": client_id,
+                "mountpoint": mountpoint,
+                "ntrip_version": ntrip_version,
+                "connected_utc": utc_now_iso(),
+                "frames_sent": 0,
+            }
+
+    def note_client_frame_sent(self, client_id: str) -> None:
+        with self._lock:
+            sess = self._active_sessions.get(client_id)
+            if sess is not None:
+                sess["frames_sent"] = int(sess["frames_sent"]) + 1
+
+    def unregister_client_session(self, client_id: str) -> None:
+        with self._lock:
+            self._active_sessions.pop(client_id, None)
+
+    def active_sessions_snapshot(self) -> list[dict[str, Any]]:
+        with self._lock:
+            return [dict(v) for v in self._active_sessions.values()]
+
+    def record_fault_event(
+        self,
+        *,
+        event_type: str,
+        reason_code: str,
+        detail: str = "",
+        secrets: tuple[str, ...] = (),
+    ) -> None:
+        """Append a redacted fault summary into the bounded ring buffer."""
+        with self._lock:
+            self._recent_faults.append(
+                {
+                    "timestamp_utc": utc_now_iso(),
+                    "event_type": event_type,
+                    "reason_code": reason_code,
+                    "detail": redact_text(detail, secrets),
+                }
+            )
+
+    def recent_faults_snapshot(self, *, limit: int = 50) -> list[dict[str, Any]]:
+        with self._lock:
+            items = list(self._recent_faults)
+        return items[-max(1, limit) :]
 
     def snapshot(self) -> dict[str, Any]:
         with self._lock:

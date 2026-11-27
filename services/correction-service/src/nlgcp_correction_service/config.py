@@ -49,9 +49,11 @@ class CasterConfig:
     host: str = LOOPBACK_HOST
     port: int = 0
     mountpoint: str = DEFAULT_MOUNTPOINT
-    client_credentials: dict[str, str] = field(default_factory=dict)
-    source_credentials: dict[str, str] = field(default_factory=dict)
+    client_credentials: dict[str, str] = field(default_factory=dict, repr=False)
+    source_credentials: dict[str, str] = field(default_factory=dict, repr=False)
     max_clients: int = 16
+    max_sources: int = 4
+    max_pre_auth_connections: int = 32
     max_request_bytes: int = 8192
     max_queue_frames: int = 256
     socket_timeout_s: float = 5.0
@@ -82,6 +84,10 @@ class CasterConfig:
                 )
         if not 1 <= self.max_clients <= 128:
             raise ConfigurationError("max_clients must be within [1, 128]")
+        if not 1 <= self.max_sources <= 32:
+            raise ConfigurationError("max_sources must be within [1, 32]")
+        if not 1 <= self.max_pre_auth_connections <= 256:
+            raise ConfigurationError("max_pre_auth_connections must be within [1, 256]")
         if not 512 <= self.max_request_bytes <= 65536:
             raise ConfigurationError("max_request_bytes must be within [512, 65536]")
         if not 1 <= self.max_queue_frames <= 4096:
@@ -134,7 +140,7 @@ class ClientConfig:
     port: int = 2101
     mountpoint: str = DEFAULT_MOUNTPOINT
     username: str = ""
-    password: str = ""
+    password: str = field(default="", repr=False)
     ntrip_version: str = "2.0"
     user_agent: str = "NTRIP NLGCP-Phase12-LabClient/0.1"
     connect_timeout_s: float = 3.0

@@ -29,6 +29,7 @@ import queue
 import select
 import socket
 import threading
+import time
 import uuid
 from contextlib import suppress
 from types import TracebackType
@@ -123,6 +124,10 @@ class LocalNtripCaster:
         self._active_sockets_lock = threading.Lock()
         self._active_sockets: set[socket.socket] = set()
         self._worker_threads: set[threading.Thread] = set()
+        self._pre_auth_sem = threading.BoundedSemaphore(config.max_pre_auth_connections)
+        self._source_sem = threading.BoundedSemaphore(config.max_sources)
+        self._source_mount_lock = threading.Lock()
+        self._active_source_mounts: set[str] = set()
         self._bound_port: int = config.port
 
     @property
@@ -282,6 +287,20 @@ class LocalNtripCaster:
                 continue
             except OSError:
                 return
+            if not self._pre_auth_sem.acquire(blocking=False):
+                self.diagnostics.record_connection_error()
+                self.diagnostics.record_fault_event(
+                    event_type="pre_auth_capacity_reached",
+                    reason_code="PRE_AUTH_LIMIT_EXCEEDED",
+                    detail="rejected connection prior to authentication",
+                )
+                with suppress(OSError):
+                    conn.settimeout(0.5)
+                    self._send_http_error(
+                        conn, "503 Service Unavailable", "Pre-authentication capacity reached\n"
+                    )
+                    conn.close()
+                continue
             worker = threading.Thread(
                 target=self._handle_connection,
                 args=(conn,),
@@ -294,7 +313,7 @@ class LocalNtripCaster:
             worker.start()
 
     def _read_request_head(self, conn: socket.socket) -> tuple[bytes, bytes] | None:
-        conn.settimeout(self.config.socket_timeout_s)
+        deadline = time.monotonic() + self.config.socket_timeout_s
         buf = bytearray()
         while not self._stop_event.is_set():
             split = split_head(bytes(buf), max_header_bytes=self.config.max_request_bytes)
@@ -302,6 +321,10 @@ class LocalNtripCaster:
                 return split
             if len(buf) > self.config.max_request_bytes:
                 return None
+            remaining = deadline - time.monotonic()
+            if remaining <= 0.0:
+                return None
+            conn.settimeout(remaining)
             try:
                 chunk = conn.recv(4096)
             except (TimeoutError, OSError):
@@ -327,15 +350,22 @@ class LocalNtripCaster:
             _sendall_loop(conn, response)
 
     def _handle_connection(self, conn: socket.socket) -> None:
+        pre_auth_held = True
         try:
             with conn:
                 split = self._read_request_head(conn)
                 if split is None:
                     self.diagnostics.record_connection_error()
+                    self.diagnostics.record_fault_event(
+                        event_type="malformed_or_timed_out_header",
+                        reason_code="BAD_REQUEST_HEADER",
+                    )
                     self._send_http_error(
                         conn, "400 Bad Request", "Malformed or oversized request\n"
                     )
                     return
+                self._pre_auth_sem.release()
+                pre_auth_held = False
                 head_bytes, trailing_bytes = split
                 request_line, raw_headers = parse_head(head_bytes)
                 headers = {k.lower(): v for k, v in raw_headers.items()}
@@ -354,6 +384,13 @@ class LocalNtripCaster:
                     self._handle_v2_source(conn, parts[1], headers, trailing_bytes)
                     return
                 if method != "GET":
+                    self.diagnostics.record_connection_error()
+                    self.diagnostics.record_fault_event(
+                        event_type="method_not_allowed",
+                        reason_code="HTTP_405",
+                        detail=f"unsupported method {method}",
+                    )
+                    self.logger.emit(logging.WARNING, "method_not_allowed", method=method)
                     self._send_http_error(
                         conn, "405 Method Not Allowed", "Only GET, POST, and SOURCE supported\n"
                     )
@@ -369,6 +406,8 @@ class LocalNtripCaster:
                     return
                 self._handle_client_stream(conn, path, headers, is_v2=is_v2)
         finally:
+            if pre_auth_held:
+                self._pre_auth_sem.release()
             with self._active_sockets_lock:
                 self._active_sockets.discard(conn)
                 self._worker_threads.discard(threading.current_thread())
@@ -451,6 +490,11 @@ class LocalNtripCaster:
 
         client_id = str(uuid.uuid4())
         sub: ClientSubscription | None = None
+        self.diagnostics.register_client_session(
+            client_id=client_id,
+            mountpoint=mount_name,
+            ntrip_version="2.0" if is_v2 else "1.0",
+        )
         try:
             sub = self.broker.subscribe(client_id, mount_name, auth.username)
             conn.settimeout(self.config.client_write_timeout_s)
@@ -487,11 +531,13 @@ class LocalNtripCaster:
                     break
                 _sendall_loop(conn, frame.raw_bytes)
                 self.diagnostics.record_frame_transmitted(len(frame.raw_bytes))
+                self.diagnostics.note_client_frame_sent(client_id)
         except (BrokenPipeError, ConnectionResetError, TimeoutError, OSError):
             self.diagnostics.record_connection_error()
         finally:
             if sub is not None:
                 self.broker.unsubscribe(sub)
+            self.diagnostics.unregister_client_session(client_id)
             self.diagnostics.client_disconnected()
             self.logger.emit(
                 logging.INFO,
@@ -499,6 +545,21 @@ class LocalNtripCaster:
                 client_id=client_id,
                 mountpoint=mount_name,
             )
+
+    def _try_acquire_source_lease(self, mount_name: str) -> bool:
+        if not self._source_sem.acquire(blocking=False):
+            return False
+        with self._source_mount_lock:
+            if mount_name in self._active_source_mounts:
+                self._source_sem.release()
+                return False
+            self._active_source_mounts.add(mount_name)
+        return True
+
+    def _release_source_lease(self, mount_name: str) -> None:
+        with self._source_mount_lock:
+            self._active_source_mounts.discard(mount_name)
+        self._source_sem.release()
 
     def _handle_v2_source(
         self,
@@ -512,6 +573,18 @@ class LocalNtripCaster:
         auth = self._source_auth.verify_basic(headers.get("authorization"))
         if not auth.authenticated or auth.username is None:
             self.diagnostics.record_auth_failure()
+            self.diagnostics.record_fault_event(
+                event_type="source_auth_failed",
+                reason_code="HTTP_401_SOURCE",
+                detail=f"v2 source auth rejected for {mount_name}",
+            )
+            self.logger.emit(
+                logging.WARNING,
+                "source_auth_failed",
+                mountpoint=mount_name,
+                ntrip_version="2.0",
+                reason=auth.reason,
+            )
             self._send_http_error(
                 conn,
                 "401 Unauthorized",
@@ -520,22 +593,47 @@ class LocalNtripCaster:
             )
             return
         if self.registry.get(mount_name) is None:
+            self.diagnostics.record_fault_event(
+                event_type="unknown_source_mountpoint",
+                reason_code="HTTP_404_SOURCE",
+                detail=f"unknown mountpoint {mount_name}",
+            )
+            self.logger.emit(
+                logging.WARNING,
+                "unknown_source_mountpoint",
+                mountpoint=mount_name,
+                ntrip_version="2.0",
+            )
             self._send_http_error(conn, "404 Not Found", "Unknown source mountpoint\n")
             return
-        response = (
-            "HTTP/1.1 200 OK\r\n"
-            "Ntrip-Version: Ntrip/2.0\r\n"
-            f"Server: NLGCP-Phase12-LabCaster/{SERVICE_VERSION}\r\n"
-            "Connection: close\r\n\r\n"
-        ).encode("ascii")
-        try:
-            _sendall_loop(conn, response)
-        except OSError:
+        if not self._try_acquire_source_lease(mount_name):
             self.diagnostics.record_connection_error()
+            self.diagnostics.record_fault_event(
+                event_type="source_mountpoint_busy",
+                reason_code="HTTP_503_SOURCE_BUSY",
+                detail=f"mountpoint {mount_name} already has an active source publisher",
+            )
+            self._send_http_error(
+                conn, "503 Service Unavailable", "Source mountpoint busy or capacity reached\n"
+            )
             return
-        self._ingest_source_stream(
-            conn, mount_name, trailing_bytes, source_id=f"ntrip-v2-source:{auth.username}"
-        )
+        try:
+            response = (
+                "HTTP/1.1 200 OK\r\n"
+                "Ntrip-Version: Ntrip/2.0\r\n"
+                f"Server: NLGCP-Phase12-LabCaster/{SERVICE_VERSION}\r\n"
+                "Connection: close\r\n\r\n"
+            ).encode("ascii")
+            try:
+                _sendall_loop(conn, response)
+            except OSError:
+                self.diagnostics.record_connection_error()
+                return
+            self._ingest_source_stream(
+                conn, mount_name, trailing_bytes, source_id=f"ntrip-v2-source:{auth.username}"
+            )
+        finally:
+            self._release_source_lease(mount_name)
 
     def _handle_v1_source(
         self, conn: socket.socket, parts: list[str], trailing_bytes: bytes
@@ -549,21 +647,56 @@ class LocalNtripCaster:
         auth = self._source_auth.verify_v1_source_password(password)
         if not auth.authenticated or auth.username is None:
             self.diagnostics.record_auth_failure()
+            self.diagnostics.record_fault_event(
+                event_type="source_auth_failed",
+                reason_code="V1_BAD_PASSWORD",
+                detail=f"v1 source auth rejected for {mount_name}",
+            )
+            self.logger.emit(
+                logging.WARNING,
+                "source_auth_failed",
+                mountpoint=mount_name,
+                ntrip_version="1.0",
+            )
             with suppress(OSError):
                 _sendall_loop(conn, b"ERROR - Bad Password\r\n")
             return
         if self.registry.get(mount_name) is None:
+            self.diagnostics.record_fault_event(
+                event_type="unknown_source_mountpoint",
+                reason_code="V1_BAD_MOUNTPOINT",
+                detail=f"unknown mountpoint {mount_name}",
+            )
+            self.logger.emit(
+                logging.WARNING,
+                "unknown_source_mountpoint",
+                mountpoint=mount_name,
+                ntrip_version="1.0",
+            )
             with suppress(OSError):
                 _sendall_loop(conn, b"ERROR - Bad Mountpoint\r\n")
             return
-        try:
-            _sendall_loop(conn, b"ICY 200 OK\r\n")
-        except OSError:
+        if not self._try_acquire_source_lease(mount_name):
             self.diagnostics.record_connection_error()
+            self.diagnostics.record_fault_event(
+                event_type="source_mountpoint_busy",
+                reason_code="V1_MOUNTPOINT_BUSY",
+                detail=f"mountpoint {mount_name} already has an active source publisher",
+            )
+            with suppress(OSError):
+                _sendall_loop(conn, b"ERROR - Mountpoint Busy\r\n")
             return
-        self._ingest_source_stream(
-            conn, mount_name, trailing_bytes, source_id=f"ntrip-v1-source:{auth.username}"
-        )
+        try:
+            try:
+                _sendall_loop(conn, b"ICY 200 OK\r\n")
+            except OSError:
+                self.diagnostics.record_connection_error()
+                return
+            self._ingest_source_stream(
+                conn, mount_name, trailing_bytes, source_id=f"ntrip-v1-source:{auth.username}"
+            )
+        finally:
+            self._release_source_lease(mount_name)
 
     def _ingest_source_stream(
         self,
